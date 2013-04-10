@@ -1,0 +1,85 @@
+<?php echo $this->doctype(); ?>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <?php echo $this->headTitle('账号登录')->setSeparator(' - ')->setAutoEscape(false) ?>
+
+    <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+
+    <!-- Le styles -->
+    <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/images/favicon.ico'))
+    ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
+    ->prependStylesheet($this->basePath() . '/css/style.css')
+    ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css') ?>
+
+    <!-- Scripts -->
+    <?php echo $this->headScript()->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+    ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+    ->prependFile($this->basePath() . '/js/jquery.min.js') ?>
+
+
+    <style type="text/css">
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .form-signin {
+            max-width: 300px;
+            padding: 19px 29px 29px;
+            margin: 0 auto 20px;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        }
+        .form-signin .form-signin-heading,
+        .form-signin .checkbox {
+            margin-bottom: 10px;
+        }
+        .form-signin input[type="text"],
+        .form-signin input[type="password"] {
+            font-size: 16px;
+            height: auto;
+            margin-bottom: 15px;
+            padding: 7px 9px;
+        }
+
+    </style>
+    <script>
+        $.ajaxSetup({type: "POST", dataType:"json", error: function (){
+            console.error('数据格式错误');
+        }});
+        $(function (){
+            $('#login').submit(function (){
+                $.post(location.href, $(this).serialize(), function (result){
+                    if (result.code == 1) {
+                        console.log('登录成功');
+                    } else {
+                        console.log('登录失败');
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <form class="form-signin" id="login">
+        <h2 class="form-signin-heading">账号登录</h2>
+        <input name="account" type="text" class="input-block-level" autofocus="autofocus" placeholder="请输入账号">
+        <input name="password" type="password" class="input-block-level" placeholder="请输入密码">
+        <!--<label class="checkbox">
+            <input type="checkbox" value="remember-me">
+        </label>-->
+        <button class="btn btn-large btn-primary" type="submit">登录</button>
+    </form>
+</div> <!-- /container -->
+</body>
+</html>
