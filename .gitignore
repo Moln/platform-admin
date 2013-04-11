@@ -1,6 +1,3 @@
-#################
-## Eclipse
-#################
 nbproject
 ._*
 .~lock.*
@@ -12,6 +9,10 @@ nbproject
 composer.lock
 vendor/bin
 vendor/zendframework
+
+#################
+## Eclipse
+#################
 
 *.pydevproject
 .project

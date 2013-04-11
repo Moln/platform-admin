@@ -40,6 +40,9 @@ class UserTable
         return $authAdapter;
     }
 
+    /**
+     * @return \Zend\Db\ResultSet\ResultSet
+     */
     public function fetchAll()
     {
         $resultSet = $this->tableGateway->select();

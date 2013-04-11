@@ -1,0 +1,53 @@
+<div id="grid"></div>
+
+<script>
+    $(document).ready(function () {
+        var crudServiceBaseUrl = "/system/user/",
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: crudServiceBaseUrl + "read",
+                    update: crudServiceBaseUrl + "update",
+                    destroy: crudServiceBaseUrl + "delete",
+                    create: crudServiceBaseUrl + "create",
+                    parameterMap: function(options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return {models: kendo.stringify(options.models)};
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 20,
+                schema: {
+                    model: {
+                        id: "user_id",
+                        fields: {
+                            user_id: { editable: false, nullable: true },
+                            account: { validation: { required: true } },
+                            real_name: { validation: { required: true, min: 1} },
+                            email: { type: "email", validation: {required: true } },
+                            password: {}
+                        }
+                    },
+                    "data": "data",
+                    "errors": "errors",
+                    "groups": "groups",
+                    "total": "total"
+                }
+            });
+
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            height: 430,
+            toolbar: ["create"],
+            columns: [
+                { field: "account", title: "用户名" },
+                { field: "real_name", title:"真实姓名", width: "100px" },
+                { field: "email", title:"Email", width: "100px" },
+                { field: "password", title: "密码"},
+                { command: ["edit", "destroy"], title: "&nbsp;", width: "190px" }],
+            editable: "inline",
+            "sortable": true
+        });
+    });
+</script>

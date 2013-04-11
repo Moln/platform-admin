@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin framework</title>
+    <link rel="stylesheet" href="/shared/styles/suite.css" />
+    <link href="/kendoui/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="/kendoui/styles/kendo.default.min.css" rel="stylesheet" />
+    <script src="/kendoui/js/jquery.min.js"></script>
+    <script src="/kendoui/js/kendo.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $("#menu").kendoMenu({
+                select: function(e) {
+                    var $item = $(e.item);
+                    console.log('open:'+$item.data('url'));
+                    if ($item.data('url')) {
+                        $('<div></div>').kendoWindow({
+                            width: "600px",
+                            minHeight: '400px',
+                            actions: ["Refresh", "Custom", "Minimize", "Maximize", "Close"],
+                            title: $item.text(),
+                            content: $item.data('url'),
+                            close: function() {
+//                            undo.show();
+                            },
+                            activate: function (e){
+//                                console.log(this.element, e);
+                                this.element.data("kendoWindow").center();
+                            }
+                        }).data("kendoWindow").center().open();
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="page">
+<ul id="menu">
+    <li>
+        系统
+        <ul>
+            <li data-url="/system/user">
+                用户管理
+            </li>
+            <li>
+                角色管理
+                <ul> <!-- moving the UL to the next line will cause an IE7 problem -->
+                    <li>添加角色</li>
+                    <li>角色列表</li>
+                    <li>角色权限</li>
+                </ul>
+            </li>
+            <li>
+                权限管理
+                <ul> <!-- moving the UL to the next line will cause an IE7 problem -->
+                    <li>权限列表</li>
+                    <li>权限分配</li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">个人信息</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        积分商城
+        <ul>
+            <li>
+                商品管理
+                <ul> <!-- moving the UL to the next line will cause an IE7 problem -->
+                    <li>列表</li>
+                    <li>商品</li>
+                </ul>
+            </li>
+
+            <li>
+                订单管理
+                <ul> <!-- moving the UL to the next line will cause an IE7 problem -->
+                    <li>订单列表</li>
+                    <li>已出订单</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+
+    <div id="window">
+    </div>
+
+</div>
+</body>
+</html>

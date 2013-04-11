@@ -1,11 +1,15 @@
 <?php
 namespace System;
 
-use System\Service\ControllerAutoLoader;
+use System\Model\User;
+use System\Model\UserTable;
 use Zend\Authentication\AuthenticationService;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\TableGateway\TableGateway;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceManager;
 
 class Module
 {
@@ -23,26 +27,19 @@ class Module
             if (!$auth->hasIdentity()) {
                 header('Location: /login');
                 exit;
+            } else {
+                $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
             }
         }
-
-        $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
     }
 
+    /**
+     * @todo permission rbac
+     * @param MvcEvent $e
+     */
     public function onRoute(MvcEvent $e)
     {
-//        $rm = $e->getRouteMatch();
 
-        //Auto load controllers
-        $controllerAutoLoader = new ControllerAutoLoader();
-
-        /**
-         * @var \Zend\Mvc\Controller\ControllerManager $controllerLoader
-         */
-        $controllerLoader = $e->getApplication()->getServiceManager()->get('ControllerLoader');
-        $controllerLoader->addAbstractFactory($controllerAutoLoader);
-
-        //todo permission rbac
     }
 
     public function getConfig()
@@ -57,6 +54,23 @@ class Module
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
+            ),
+        );
+    }
+
+    public function getServiceConfig()
+    {
+        return array(
+            'factories' => array(
+                'UserTable' =>  function(ServiceManager $sm) {
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new User());
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $tableGateway = new TableGateway(
+                        'system_user', $dbAdapter, null, $resultSetPrototype
+                    );
+                    return new UserTable($tableGateway);
+                },
             ),
         );
     }

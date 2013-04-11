@@ -27,11 +27,13 @@ class AuthController extends AbstractActionController
         return (new ViewModel())->setTerminal(true);
     }
 
-
+    /**
+     * @return \System\Model\UserTable;
+     */
     public function getUserTable()
     {
         if (!$this->userTable) {
-            $this->userTable = $this->getServiceLocator()->get('System\Model\UserTable');
+            $this->userTable = $this->getServiceLocator()->get('UserTable');
         }
         return $this->userTable;
     }

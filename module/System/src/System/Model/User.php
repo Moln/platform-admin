@@ -1,13 +1,15 @@
 <?php
 namespace System\Model;
 
+use ArrayObject;
+
 /**
  * User.php
  * @author Administrator
  * @DateTime 12-12-29 上午11:43
  * @version $Id$
  */
-class User
+class User extends ArrayObject
 {
 
     public $id;
@@ -15,16 +17,16 @@ class User
     public $title;
     protected $inputFilter;
 
-    public function exchangeArray($data)
-    {
-        $this->id     = (isset($data['id'])) ? $data['id'] : null;
-        $this->artist = (isset($data['artist'])) ? $data['artist'] : null;
-        $this->title  = (isset($data['title'])) ? $data['title'] : null;
-    }
+//    public function exchangeArray($data)
+//    {
+//        $this->id     = (isset($data['id'])) ? $data['id'] : null;
+//        $this->artist = (isset($data['artist'])) ? $data['artist'] : null;
+//        $this->title  = (isset($data['title'])) ? $data['title'] : null;
+//    }
 
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+//    public function getArrayCopy()
+//    {
+//        return get_object_vars($this);
+//    }
 
 }

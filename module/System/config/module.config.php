@@ -14,7 +14,7 @@ return array(
                     ),
                     'defaults' => array(
                         '__NAMESPACE__' => 'System\Controller',
-                        'controller' => 'system',
+                        'controller' => 'index',
                         'action'     => 'index',
                     ),
                 ),
