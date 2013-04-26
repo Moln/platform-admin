@@ -17,9 +17,9 @@
  */
 
 // Composer autoloading
-if (file_exists('vendor/autoload.php')) {
-    $loader = include 'vendor/autoload.php';
-}
+//if (file_exists('vendor/autoload.php')) {
+//    $loader = include 'vendor/autoload.php';
+//}
 
 $zf2Path = false;
 
@@ -38,7 +38,10 @@ if ($zf2Path) {
         include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
         Zend\Loader\AutoloaderFactory::factory(array(
             'Zend\Loader\StandardAutoloader' => array(
-                'autoregister_zf' => true
+                'autoregister_zf' => true,
+				'namespaces'      => array(
+                    'Platform'    => './vendor/Platform',
+                ),
             )
         ));
     }

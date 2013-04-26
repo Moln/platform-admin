@@ -1,15 +1,15 @@
 <?php
 namespace System;
 
-use System\Model\User;
-use System\Model\UserTable;
 use Zend\Authentication\AuthenticationService;
 use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\TableGateway\TableGateway;
+use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceManager;
+use Zend\View\Helper\Identity;
+use Zend\View\HelperPluginManager;
 
 class Module
 {
@@ -22,8 +22,9 @@ class Module
     {
         $match = explode('/', trim($e->getRequest()->getRequestUri(), '/'));
         $em = $e->getApplication()->getEventManager();
+        $sm = $e->getApplication()->getServiceManager();
         if ($match[0] == strtolower(__NAMESPACE__)) {
-            $auth = new AuthenticationService();
+            $auth = $sm->get('AuthenticationService');
             if (!$auth->hasIdentity()) {
                 header('Location: /login');
                 exit;
@@ -31,6 +32,8 @@ class Module
                 $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
             }
         }
+        $adapter = $e->getApplication()->getServiceManager()->get('Zend\Db\Adapter\Adapter');
+        GlobalAdapterFeature::setStaticAdapter($adapter);
     }
 
     /**
@@ -60,17 +63,19 @@ class Module
 
     public function getServiceConfig()
     {
+    }
+
+    public function getViewHelperConfig()
+    {
         return array(
             'factories' => array(
-                'UserTable' =>  function(ServiceManager $sm) {
-                    $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new User());
-                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
-                    $tableGateway = new TableGateway(
-                        'system_user', $dbAdapter, null, $resultSetPrototype
+                'identity' => function (HelperPluginManager $hpm) {
+                    $identity = new Identity();
+                    $identity->setAuthenticationService(
+                        $hpm->getServiceLocator()->get('AuthenticationService')
                     );
-                    return new UserTable($tableGateway);
-                },
+                    return $identity;
+                }
             ),
         );
     }

@@ -2,6 +2,7 @@
 
 namespace Application\Controller;
 
+use System\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 use Zend\Authentication\AuthenticationService;
@@ -67,7 +68,7 @@ class AuthController extends AbstractActionController
     public function getUserTable()
     {
         if (!$this->userTable) {
-            $this->userTable = $this->getServiceLocator()->get('UserTable');
+            $this->userTable = new UserTable();
         }
         return $this->userTable;
     }

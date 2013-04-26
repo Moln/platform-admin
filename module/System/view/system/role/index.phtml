@@ -1,0 +1,70 @@
+<div id="system-role-index-grid"></div>
+
+<script>
+    $(document).ready(function () {
+        var crudServiceBaseUrl = "/system/role/",
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: crudServiceBaseUrl + "read",
+                    update: crudServiceBaseUrl + "save",
+                    destroy: crudServiceBaseUrl + "delete",
+                    create: crudServiceBaseUrl + "save"
+                },
+                schema: {
+                    model: {
+                        id: "role_id",
+                        fields: {
+                            role_id: {type: "number", editable: false, nullable: true },
+                            name: {validation: { required: true} }
+                        }
+                    }
+                },
+                error: function (e){
+                    if (e.status == "customerror") {
+                        for (var i in e.errors) {
+                            for (var j in e.errors[i]) {
+                                alert(e.errors[i][j]);
+                                break;
+                            }
+                            break;
+                        }
+
+                        $('#system-role-index-grid').data("kendoGrid").cancelChanges();
+                    }
+                }
+            });
+
+        $("#system-role-index-grid").kendoGrid({
+            dataSource: dataSource,
+            toolbar: ["create"],
+            columns:[
+                { field: "name", title: "角色名", width: "150px"},
+                { command: ["edit", "destroy",
+                    {
+                        name:"分配角色权限",
+                        click: function (e){
+                            var tr = $(e.target).closest("tr");
+                            var data = this.dataItem(tr);
+                            Platform.newWindow({
+                                title: data.name + '::角色权限分配::角色管理',
+                                content: '/system/role/assign-permission/id/'+data.role_id
+                            });
+                        }
+                    },
+                    {
+                        name:"用户角色分配",
+                        click: function (e){
+                            var tr = $(e.target).closest("tr");
+                            var data = this.dataItem(tr);
+                            Platform.newWindow({
+                                title: data.name + '::用户角色分配::角色管理',
+                                content: '/system/role/assign-user/id/'+data.role_id
+                            });
+                        }
+                    }
+                ], title: "&nbsp;"}
+            ],
+            editable: "inline"
+        });
+    });
+</script>

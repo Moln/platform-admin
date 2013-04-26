@@ -2,33 +2,83 @@
 <html>
 <head>
     <title>Admin framework</title>
-    <link rel="stylesheet" href="/shared/styles/suite.css" />
+    <link rel="stylesheet" href="/styles/global.css" />
     <link href="/kendoui/styles/kendo.common.min.css" rel="stylesheet" />
     <link href="/kendoui/styles/kendo.default.min.css" rel="stylesheet" />
-    <script src="/kendoui/js/jquery.min.js"></script>
-    <script src="/kendoui/js/kendo.all.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/kendoui/src/js/kendo.web.js"></script>
 
     <script>
+        $.ajaxSetup({type: "POST", dataType: "json"});
+        var Platform = {
+            newWindow: function (params){
+                var $win = $('<div></div>');
+                $win.kendoWindow($.extend({
+                    width: 1000,
+                    minHeight: 400,
+                    actions: ["Refresh", "Custom", "Minimize", "Maximize", "Close"],
+                    close: function (){
+                        this.destroy();
+                    },
+                    activate: function (e){
+                        this.element.data("kendoWindow").center();
+                    }
+                }, params)).data("kendoWindow").center().open();
+                return $win;
+            },
+            toolbarClick: function (name, clickHandler){
+                var $elem = typeof(name) == 'string' ? $('.k-grid-'+name) : name;
+                if (typeof clickHandler == "string") {
+                    var url = clickHandler;
+                    clickHandler = function (){
+                        return {url: url};
+                    }
+                }
+
+                $elem.click(function (){
+                    var opt = clickHandler.apply(this, arguments);
+                    var params = $.extend(opt, {
+                        complete: function (){
+                            $elem.find('span.k-icon').toggleClass('k-i-refresh').toggleClass('k-loading');
+                        },
+                        success: function (result){
+                            if (result.code) {
+                                if (result.msg || this.message) {
+                                    $elem.attr('title', result.msg || this.message);
+                                }
+                                $elem.data('kendoTooltip').show($elem);
+                            }
+                        }
+                    });
+
+                    $elem.find('span.k-icon').toggleClass('k-i-refresh').toggleClass('k-loading');
+                    $.ajax(params);
+                    return false;
+                }).kendoTooltip({
+                    autoHide: false,
+                    showOn: "null",
+                    callout: true
+                });
+            }
+        };
         $(document).ready(function() {
             $("#menu").kendoMenu({
                 select: function(e) {
                     var $item = $(e.item);
-                    console.log('open:'+$item.data('url'));
-                    if ($item.data('url')) {
-                        $('<div></div>').kendoWindow({
-                            width: "600px",
-                            minHeight: '400px',
-                            actions: ["Refresh", "Custom", "Minimize", "Maximize", "Close"],
+                    console.log($item, 'open:'+$item.data('url'));
+
+                    if ($item.data('platformWindow')) {
+                        $item.data('platformWindow').data("kendoWindow").open();
+                    } else if ($item.data('url')) {
+                        var $win = Platform.newWindow({
                             title: $item.text(),
                             content: $item.data('url'),
-                            close: function() {
-//                            undo.show();
-                            },
-                            activate: function (e){
-//                                console.log(this.element, e);
-                                this.element.data("kendoWindow").center();
+                            close: function (){
+                                this.destroy();
+                                $item.removeData('platformWindow');
                             }
-                        }).data("kendoWindow").center().open();
+                        });
+                        $item.data('platformWindow', $win);
                     }
                 }
             });
@@ -44,23 +94,14 @@
             <li data-url="/system/user">
                 用户管理
             </li>
-            <li>
+            <li data-url="/system/role">
                 角色管理
-                <ul> <!-- moving the UL to the next line will cause an IE7 problem -->
-                    <li>添加角色</li>
-                    <li>角色列表</li>
-                    <li>角色权限</li>
-                </ul>
             </li>
-            <li>
+            <li data-url="/system/permission">
                 权限管理
-                <ul> <!-- moving the UL to the next line will cause an IE7 problem -->
-                    <li>权限列表</li>
-                    <li>权限分配</li>
-                </ul>
             </li>
-            <li>
-                <a href="#">个人信息</a>
+            <li data-url="/system/index/self">
+                个人信息
             </li>
         </ul>
     </li>

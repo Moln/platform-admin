@@ -10,7 +10,6 @@ return array(
                     'constraints' => array(
                         'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-//                        'id'     => '[0-9]+',
                     ),
                     'defaults' => array(
                         '__NAMESPACE__' => 'System\Controller',
@@ -18,14 +17,31 @@ return array(
                         'action'     => 'index',
                     ),
                 ),
+                'child_routes'  => array(
+                    'method' => array(
+                        'type' => 'Wildcard',
+                        'may_terminate' => true,
+                    ),
+                ),
             ),
         ),
     ),
 
+    'view_helpers' => array(
+        'invokables' => array(
+            'uri' => 'Platform\View\Helper\Uri',
+        ),
+    ),
 
     'view_manager' => array(
         'template_path_stack' => array(
             'system' => __DIR__ . '/../view',
+        ),
+    ),
+
+    'service_manager' => array(
+        'invokables' => array(
+            'AuthenticationService' => 'Zend\Authentication\AuthenticationService',
         ),
     ),
 );

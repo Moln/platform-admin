@@ -18,14 +18,12 @@ class Module
 {
     public function init(ModuleManager $mm)
     {
-        $sem = $mm->getEventManager()->getSharedManager();
-        $sem->attach('application', MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'));
+//        $sem = $mm->getEventManager()->getSharedManager();
+//        $sem->attach('application', MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'));
     }
 
-    public function onBootstrap(MvcEvent $e)
-    {
-        $em = $e->getApplication()->getEventManager();
-        $em->attach(MvcEvent::EVENT_BOOTSTRAP       , array($this, 'onDispatch'));
+    /*
+     *         $em->attach(MvcEvent::EVENT_BOOTSTRAP       , array($this, 'onDispatch'));
         $em->attach(MvcEvent::EVENT_DISPATCH        , array($this, 'onDispatch'));
         $em->attach(MvcEvent::EVENT_DISPATCH_ERROR  , array($this, 'onDispatch'));
         $em->attach(MvcEvent::EVENT_FINISH          , array($this, 'onDispatch'));
@@ -34,10 +32,16 @@ class Module
 //        $e->getApplication()->getServiceManager()->get('translator');
 
 
+     * */
+
+    public function onBootstrap(MvcEvent $e)
+    {
+        $em = $e->getApplication()->getEventManager();
+
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-        $em->attach(MvcEvent::EVENT_ROUTE           , array($this, 'onRoute'));
+        $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
     }
 
     public function onRoute(MvcEvent $e)

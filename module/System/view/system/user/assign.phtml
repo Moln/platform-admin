@@ -1,0 +1,31 @@
+<script>
+
+                var grid = $grid.data('kendoGrid');
+                var $button = $(grid._createButton({
+                text:"确认分配",
+                name:"system-user-assign",
+                imageClass:"k-i-tick",
+                iconClass:"k-icon"
+                }));
+
+                Platform.toolbarClick($button, function (){
+                    return {
+                        url: '<?=$this->uri()->getPath()?>',
+                        data: $grid.serialize(),
+                        message: '分配成功'
+                    };
+                });
+                return $button;
+            },
+            columns:[
+                { field: "role_id", sortable:false, title: "&nbsp;", template:'<input type="checkbox" name="role_id[]" value="#=role_id#">', width: 40},
+                { field: "name", title: "角色名"}
+            ],
+            dataBound: function(e) {
+                $.each(roles, function (i, id){
+                    $grid.find('input:checkbox[value='+id+']').prop('checked', true);
+                });
+            }
+        }).data('kendoGrid').thead.find('th:first').append($selectAll);
+    });
+</script>

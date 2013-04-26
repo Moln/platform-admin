@@ -9,23 +9,40 @@
 
 namespace System\Controller;
 
+use System\Form\SelfForm;
+use System\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
+use Zend\Version\Version;
+use Zend\View\Model\JsonModel;
 
 class IndexController extends AbstractActionController
 {
-    public function indexAction()
+    public function selfAction()
     {
-        return new ViewModel();
-    }
+        if ($this->getRequest()->isPost()) {
+            $form = new SelfForm();
+            $form->loadInputFilter();
+            $form->setData($_POST);
+            if ($form->isValid()) {
+                $data     = $form->getData();
+                $identity = $this->identity();
+                if ($data['password']) {
+                    $identity->setPassword($data['password']);
+                }
+                $identity->setRealName($data['real_name']);
+                $identity->setEmail($data['real_name']);
 
-    public function addAction()
-    {
-        echo 'add';
-    }
+                $userTable = new UserTable();
+                $userTable->save($identity);
+                return new JsonModel(array('code' => 1));
+            } else {
+                return new JsonModel(array(
+                    'code'   => 0,
+                    'errors' => $form->getInputFilter()->getMessages()
+                ));
+            }
+        }
 
-    public function systemAction()
-    {
-        echo 'sdfsdf';
+        return array();
     }
 }
