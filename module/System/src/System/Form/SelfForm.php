@@ -9,6 +9,7 @@ namespace System\Form;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
+use Zend\Validator\Callback;
 
 /**
  * Class SelfForm
@@ -27,6 +28,7 @@ class SelfForm extends Form
             $factory->createInput(
                 array(
                     'name'       => 'password',
+                    'required'   => false,
                     'validators' => array(
                         array(
                             'name'    => 'StringLength',
@@ -44,13 +46,18 @@ class SelfForm extends Form
             $factory->createInput(
                 array(
                     'name'       => 'confirm_password',
+                    'required'   => false,
                     'validators' => array(
                         array(
                             'name'    => 'Callback',
-                            'options' => function ($value, $row) {
-                                var_dump(func_get_args());exit;
-                                return true;
-                            },
+                            'options' => array(
+                                'callback' => function ($value, $row) {
+                                    return $row['password'] == $value;
+                                }
+                            ),
+                            'messages' => array(
+                                Callback::INVALID_VALUE => '两次输入的密码不一致'
+                            ),
                         ),
                     ),
                 )

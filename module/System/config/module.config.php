@@ -41,7 +41,7 @@ return array(
 
     'service_manager' => array(
         'invokables' => array(
-            'AuthenticationService' => 'Zend\Authentication\AuthenticationService',
+            'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
         ),
     ),
 );

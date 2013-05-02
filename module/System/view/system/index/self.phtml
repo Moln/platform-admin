@@ -14,7 +14,7 @@
         </li>
         <li>
             <label for="email" class="required">Email:</label>
-            <input type="email" name="Email" class="k-textbox" value="<?=$this->identity()->getEmail()?>" required data-email-msg="邮箱格式不正确" />
+            <input type="email" name="email" class="k-textbox" value="<?=$this->identity()->getEmail()?>" required data-email-msg="邮箱格式不正确" />
         </li>
         <li class="form-row">
             <button class="k-button" type="submit"><span class="k-icon k-i-tick"></span>提 交</button>
@@ -36,10 +36,23 @@
             }
         }
     }).submit(function (){
-        var $this = $(this);
-        $this.find('.k-button > span').toggleClass('k-i-tick').toggleClass('k-loading');
-        $.post('<?=$this->uri()->getPath()?>', $(this).serialize(), function (){
-            $this.find('.k-button > span').toggleClass('k-i-tick').toggleClass('k-loading');
+        var $this = $(this), $submit = $this.find('.k-button > span');
+        $submit.toggleClass('k-i-tick').toggleClass('k-loading');
+        $.ajax({
+            url: '<?=$this->uri()->getPath()?>',
+            data: $(this).serialize(),
+            success: function (result) {
+                if (!result.code) {
+                    for (var i in result.errors) {
+                        for (var j in result.errors[i]) {
+                            alert(result.errors[i][j]);
+                        }
+                    }
+                }
+            },
+            complete: function (){
+                $submit.toggleClass('k-i-tick').toggleClass('k-loading');
+            }
         });
         return false;
     });

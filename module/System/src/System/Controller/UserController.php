@@ -38,12 +38,7 @@ class UserController extends AbstractActionController
         $data = $this->getRequest()->getPost();
         $form = new UserForm();
         $form->setTableGateway($this->getUserTable());
-        if (empty($data['user_id'])) { // insert
-            $form->loadInputFilter();
-        } else { //update
-            $form->loadInputFilter(true);
-        }
-
+        $form->loadInputFilter(!empty($data['user_id']));
         $form->setData($data);
 
         if ($form->isValid()) {

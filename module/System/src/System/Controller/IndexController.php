@@ -30,7 +30,7 @@ class IndexController extends AbstractActionController
                     $identity->setPassword($data['password']);
                 }
                 $identity->setRealName($data['real_name']);
-                $identity->setEmail($data['real_name']);
+                $identity->setEmail($data['email']);
 
                 $userTable = new UserTable();
                 $userTable->save($identity);

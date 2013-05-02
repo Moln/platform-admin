@@ -60,11 +60,13 @@ class UserForm extends Form
                         array('name' => 'StringToLower'),
                     ),
                     'validators' => $edit ? array() : array(
-                        'name'    => 'Db\NoRecordExists',
-                        'options' =>     array(
-                            'table'   => $this->table->getTable(),
-                            'field'   => 'account',
-                            'adapter' => $this->table->getAdapter()
+                        array(
+                            'name'    => 'Db\NoRecordExists',
+                            'options' =>     array(
+                                'table'   => $this->table->getTable(),
+                                'field'   => 'account',
+                                'adapter' => $this->table->getAdapter()
+                            ),
                         ),
                     ),
                 )

@@ -1,11 +1,37 @@
+<form class="system-user-assign-grid"></form>
 <script>
+    $(document).ready(function () {
+        var roles = <?=json_encode($roles)?>;
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: "/system/role/read"
+            },
+            schema: {
+                model: {
+                    id: "role_id",
+                    fields: {
+                        role_id: {type: "number", editable: false, nullable: true },
+                        name: {validation: { required: true} }
+                    }
+                }
+            }
+        });
 
+        var $grid = $(".system-user-assign-grid");
+
+        var $selectAll = $("<input type='checkbox'>").click(function (){
+            $grid.find('input:checkbox[name="role_id[]"]').prop('checked', this.checked);
+        });
+
+        $grid.kendoGrid({
+            dataSource: dataSource,
+            toolbar: function () {
                 var grid = $grid.data('kendoGrid');
                 var $button = $(grid._createButton({
-                text:"确认分配",
-                name:"system-user-assign",
-                imageClass:"k-i-tick",
-                iconClass:"k-icon"
+                    text:"确认分配",
+                    name:"system-user-assign",
+                    imageClass:"k-i-tick",
+                    iconClass:"k-icon"
                 }));
 
                 Platform.toolbarClick($button, function (){

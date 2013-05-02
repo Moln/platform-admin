@@ -24,7 +24,7 @@ class Module
         $em = $e->getApplication()->getEventManager();
         $sm = $e->getApplication()->getServiceManager();
         if ($match[0] == strtolower(__NAMESPACE__)) {
-            $auth = $sm->get('AuthenticationService');
+            $auth = $sm->get('Zend\Authentication\AuthenticationService');
             if (!$auth->hasIdentity()) {
                 header('Location: /login');
                 exit;
@@ -72,7 +72,7 @@ class Module
                 'identity' => function (HelperPluginManager $hpm) {
                     $identity = new Identity();
                     $identity->setAuthenticationService(
-                        $hpm->getServiceLocator()->get('AuthenticationService')
+                        $hpm->getServiceLocator()->get('Zend\Authentication\AuthenticationService')
                     );
                     return $identity;
                 }
