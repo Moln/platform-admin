@@ -2,7 +2,7 @@
 namespace SystemTest\Controller;
 
 use SystemTest\Bootstrap;
-use System\Controller\AlbumController;
+use Admin\Controller\AlbumController;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;

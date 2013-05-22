@@ -12,7 +12,7 @@ use Zend\EventManager\ListenerAggregateInterface;
 /**
  * Class Rbac
  * @package Application\Listener
- * @author Xiemaomao
+ * @author Moln Xie
  * @version $Id$
  */
 class Rbac implements ListenerAggregateInterface

@@ -59,7 +59,7 @@
             $('#login').submit(function (){
                 $.post(location.href, $(this).serialize(), function (result){
                     if (result.code == 1) {
-                        location.href = '/system';
+                        location.href = '/admin';
                         console.log('登录成功');
                     } else {
                         console.log('登录失败');

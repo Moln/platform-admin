@@ -16,10 +16,11 @@ class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
-        return new ViewModel();
+//        print_r($this->getServiceLocator()->get('config'));exit;
+//        return new ViewModel();
     }
 
-    public function testAction()
+    public function applicationAction()
     {
         echo 111;
         return new ViewModel();

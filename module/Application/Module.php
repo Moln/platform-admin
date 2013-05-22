@@ -9,7 +9,7 @@
 
 namespace Application;
 
-use Application\Service\ControllerAutoLoader;
+use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
@@ -18,51 +18,41 @@ class Module
 {
     public function init(ModuleManager $mm)
     {
-//        $sem = $mm->getEventManager()->getSharedManager();
-//        $sem->attach('application', MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'));
     }
-
-    /*
-     *         $em->attach(MvcEvent::EVENT_BOOTSTRAP       , array($this, 'onDispatch'));
-        $em->attach(MvcEvent::EVENT_DISPATCH        , array($this, 'onDispatch'));
-        $em->attach(MvcEvent::EVENT_DISPATCH_ERROR  , array($this, 'onDispatch'));
-        $em->attach(MvcEvent::EVENT_FINISH          , array($this, 'onDispatch'));
-        $em->attach(MvcEvent::EVENT_RENDER          , array($this, 'onDispatch'));
-        $em->attach(MvcEvent::EVENT_RENDER_ERROR    , array($this, 'onDispatch'));
-//        $e->getApplication()->getServiceManager()->get('translator');
-
-
-     * */
 
     public function onBootstrap(MvcEvent $e)
     {
-        $em = $e->getApplication()->getEventManager();
+        $eventManager = $e->getApplication()->getEventManager();
+        $eventManager->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
 
-        $eventManager        = $e->getApplication()->getEventManager();
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
-        $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
+        $adapter = $e->getApplication()->getServiceManager()->get('Zend\Db\Adapter\Adapter');
+        GlobalAdapterFeature::setStaticAdapter($adapter);
     }
 
+    /**
+     * ZF1 /module/controller/action 加载方式的路由
+     * @param MvcEvent $e
+     */
     public function onRoute(MvcEvent $e)
     {
-//        $rm = $e->getRouteMatch();
+        $matches    = $e->getRouteMatch();
+        $module     = $matches->getParam('module');
+        $controller = $matches->getParam('controller');
 
-        //Auto load controllers
-        $controllerAutoLoader = new ControllerAutoLoader();
+        if ($module && $controller) {
+            /**
+             * @var \Zend\Mvc\Controller\ControllerManager $controllerLoader
+             */
+            $controllerLoader = $e->getApplication()->getServiceManager()->get('ControllerLoader');
 
-        /**
-         * @var \Zend\Mvc\Controller\ControllerManager $controllerLoader
-         */
-        $controllerLoader = $e->getApplication()->getServiceManager()->get('ControllerLoader');
-        $controllerLoader->addAbstractFactory($controllerAutoLoader);
+            $ctrlClass = ucfirst($module) . '\\Controller\\';
+            $ctrlClass .= str_replace(' ', '', ucwords(str_replace('-', ' ', $controller)));
+            $ctrlClass .= 'Controller';
+            if (class_exists($ctrlClass)) {
+                $controllerLoader->setInvokableClass($controller, $ctrlClass);
+            }
+        }
     }
-
-    public function onDispatch(MvcEvent $e)
-    {
-//        echo  __CLASS__ . '.' . __METHOD__ . "({$e->getName()})<br>";
-    }
-
 
     public function getConfig()
     {
@@ -80,7 +70,12 @@ class Module
         );
     }
 
-    public function getViewManager()
+    public function getViewHelperConfig()
     {
+    }
+
+    public function getServiceConfig()
+    {
+
     }
 }

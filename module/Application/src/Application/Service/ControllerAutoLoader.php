@@ -9,7 +9,7 @@ namespace Application\Service;
 /**
  * Class ControllerAutoLoader
  * @package System\Controller
- * @author Xiemaomao
+ * @author Moln Xie
  * @version $Id$
  */
 use Zend\ServiceManager\AbstractFactoryInterface;

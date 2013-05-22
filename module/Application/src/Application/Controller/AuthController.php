@@ -2,12 +2,12 @@
 
 namespace Application\Controller;
 
-use System\Model\UserTable;
+use Admin\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 use Zend\Authentication\AuthenticationService;
 use Application\Form\LoginForm;
-use System\Model\User;
+use Admin\Model\User;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -63,7 +63,7 @@ class AuthController extends AbstractActionController
 
 
     /**
-     * @return \System\Model\UserTable;
+     * @return \Admin\Model\UserTable;
      */
     public function getUserTable()
     {

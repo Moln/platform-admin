@@ -19,6 +19,12 @@ body {
     background: url("flowers-left.png") no-repeat fixed 0 400px transparent;
     min-height: 100%;
 }
+.hide {
+    display: none;
+}
+.show {
+    display: block;
+}
 
 #page {
     margin: 0;
@@ -27,8 +33,6 @@ body {
 }
 
 .form {
-    margin: 30px auto;
-    padding: 10px 20px 20px 0;
 }
 
 .form h3 {

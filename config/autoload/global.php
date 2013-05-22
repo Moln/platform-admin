@@ -11,19 +11,94 @@
  * file.
  */
 
+use Zend\View\Helper\Identity;
+use Zend\View\HelperPluginManager;
+
 return array(
-    'db' => array(
+    'db'              => array(
         'driver'         => 'Pdo',
-        'dsn'            => 'mysql:dbname=platform-kf;host=localhost',
+        'dsn'            => 'mysql:dbname=platform;host=localhost',
         'driver_options' => array(
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
         ),
-        'username' => 'root',
-        'password' => '111111',
+        'username'       => 'root',
+        'password'       => '111111',
     ),
     'service_manager' => array(
-        'factories' => array(
+        'factories'  => array(
             'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
         ),
+        'invokables' => array(
+            'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
+        ),
+        'aliases'    => array(
+            'auth' => 'Zend\Authentication\AuthenticationService',
+            'db'   => 'Zend\Db\Adapter\Adapter',
+        ),
+    ),
+    'view_helpers'    => array(
+        'invokables' => array(
+            'uri' => 'Platform\View\Helper\Uri',
+        ),
+        'factories' => array(
+            'identity' => function (HelperPluginManager $hpm) {
+                $identity = new Identity();
+                $identity->setAuthenticationService(
+                    $hpm->getServiceLocator()->get('auth')
+                );
+                return $identity;
+            }
+        ),
+    ),
+    'router'          => array(
+        'routes' => array(
+            'home'   => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/',
+                    'defaults' => array(
+                        'module'     => 'application',
+                        'controller' => 'index',
+                        'action'     => 'index',
+                    ),
+                ),
+            ),
+            'module' => array(
+                'type'         => 'segment',
+                'options'      => array(
+                    'route'       => '/:module[/][:controller[/:action]]',
+                    'constraints' => array(
+                        'module'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ),
+                    'defaults'    => array(
+                        'controller' => 'index',
+                        'action'     => 'index',
+                    ),
+                ),
+                'child_routes' => array(
+                    'method' => array(
+                        'type'          => 'Wildcard',
+                    ),
+                ),
+            ),
+        ),
+    ),
+    'view_manager'    => array(
+        'display_not_found_reason' => true,
+        'display_exceptions'       => true,
+        'doctype'                  => 'HTML5',
+        'not_found_template'       => 'error/404',
+        'exception_template'       => 'error/index',
+        'strategies'               => array('ViewJsonStrategy'),
+    ),
+
+    'controller_plugins' => array(
+        'invokables' => array(
+            'ui' => 'Platform\Mvc\Controller\Plugin\ui',
+            'page' => 'Platform\Mvc\Controller\Plugin\Page',
+            'result' => 'Platform\Mvc\Controller\Plugin\Result',
+        )
     ),
 );

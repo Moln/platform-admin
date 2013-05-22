@@ -23,7 +23,7 @@
 
 $zf2Path = false;
 
-if (getenv('ZF2_PATH')) {           // Support for ZF2_PATH environment variable or git submodule
+if (getenv('ZF2_PATH')) { // Support for ZF2_PATH environment variable or git submodule
     $zf2Path = getenv('ZF2_PATH');
 } elseif (get_cfg_var('zf2_path')) { // Support for zf2_path directive value
     $zf2Path = get_cfg_var('zf2_path');
@@ -36,14 +36,16 @@ if ($zf2Path) {
         $loader->add('Zend', $zf2Path);
     } else {
         include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
-        Zend\Loader\AutoloaderFactory::factory(array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'autoregister_zf' => true,
-				'namespaces'      => array(
-                    'Platform'    => './vendor/Platform',
-                ),
+        Zend\Loader\AutoloaderFactory::factory(
+            array(
+                'Zend\Loader\StandardAutoloader' => array(
+                    'autoregister_zf' => true,
+                    'namespaces'      => array(
+                        'Platform' => './vendor/Platform',
+                    ),
+                )
             )
-        ));
+        );
     }
 }
 

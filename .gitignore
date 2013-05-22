@@ -9,6 +9,7 @@ nbproject
 composer.lock
 vendor/bin
 vendor/zendframework
+.svn
 
 #################
 ## Eclipse
