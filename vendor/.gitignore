@@ -5,3 +5,4 @@ zendframework
 autoload.php
 ZF2
 bin
+*.dat
