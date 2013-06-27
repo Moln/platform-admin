@@ -15,7 +15,7 @@ use Zend\Validator\Callback;
  * Class SelfForm
  * @package Admin\Form
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: SelfForm.php 885 2013-05-22 03:08:41Z maomao $
  */
 class SelfForm extends Form
 {

@@ -7,9 +7,9 @@
 namespace Admin\Controller;
 
 use Admin\Form\UserForm;
-use Admin\Model\AssignUserTable;
-use Admin\Model\User;
-use Admin\Model\UserTable;
+use Admin\Table\AssignUserTable;
+use Admin\Table\User;
+use Admin\Table\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -17,7 +17,7 @@ use Zend\View\Model\JsonModel;
  * Class UserController
  * @package Admin\Controller
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: UserController.php 1024 2013-06-26 09:05:39Z maomao $
  */
 class UserController extends AbstractActionController
 {
@@ -25,8 +25,11 @@ class UserController extends AbstractActionController
 
     public function readAction()
     {
-//        return new JsonModel($this->getUserTable()->fetchAll());
-        $paginator = $this->getUserTable()->fetchPaginator();
+        $paginator = $this->getUserTable()->fetchPaginator(
+            null,
+            null,
+            array('user_id', 'account', 'real_name', 'email', 'status')
+        );
         return new JsonModel(array(
             'total' => $paginator->getTotalItemCount(),
             'data'  => $paginator->getCurrentItems()->toArray()
@@ -77,7 +80,7 @@ class UserController extends AbstractActionController
 
 
     /**
-     * @return \Admin\Model\UserTable;
+     * @return \Admin\Table\UserTable;
      */
     public function getUserTable()
     {

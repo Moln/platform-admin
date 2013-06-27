@@ -15,7 +15,7 @@ use Zend\InputFilter\InputFilter;
  * Class RoleForm
  * @package Admin\Form
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: RoleForm.php 885 2013-05-22 03:08:41Z maomao $
  */
 class RoleForm extends Form
 {

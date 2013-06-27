@@ -66,5 +66,46 @@ var Platform = {
     toolbarClick: function (name, clickHandler){
         var $elem = typeof(name) == 'string' ? $('.k-grid-'+name) : name;
         $elem.paRemoteClick(clickHandler);
+    },
+    imageBrowser: function (options){
+        var baseUrl = (options && options.baseUrl) || '/uploads/';
+
+        options = $.extend({
+            baseUrl: baseUrl,
+            transport: {
+                read: "/admin/image-browser/read",
+                destroy: "/admin/image-browser/delete",
+                create: "/admin/image-browser/create",
+                thumbnailUrl: function (path, name){
+                    if ($.inArray(name.split('.').pop(), ['gif', 'jpg', 'png', 'jpeg']) == -1) {
+                        return null;
+                    }
+                    return options.baseUrl + path + name;
+                },
+                uploadUrl: "/admin/image-browser/upload",
+                imageUrl: baseUrl + '{0}'
+            }
+        }, options);
+
+        var imageBrowser = $('<div />').appendTo('body');
+        imageBrowser.kendoWindow({
+            width: 700,
+            visible: false,
+            modal: true,
+            open: function (){
+                if (imageBrowser.data('kendoImageBrowser')) {
+                    return ;
+                }
+                var ib = new kendo.ui.ImageBrowser(imageBrowser, options);
+                ib.bind('apply', function () {
+                    imageBrowser.data('kendoWindow').close();
+                    imageBrowser.trigger('apply', this);
+                });
+                imageBrowser.data('kendoImageBrowser', ib);
+                this.center();
+            }
+        });
+
+        return imageBrowser;
     }
 };

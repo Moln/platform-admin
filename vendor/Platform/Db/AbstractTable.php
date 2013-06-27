@@ -19,13 +19,14 @@ use Zend\Paginator\Paginator;
  * Class AbstractTable
  * @package Platform\Db
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: AbstractTable.php 1020 2013-06-24 06:19:01Z maomao $
  */
 abstract class AbstractTable extends AbstractTableGateway
 {
     protected static $tableInstances = array();
 
     protected $schema;
+    protected $rowGateway;
 
     protected $primary = array();
 
@@ -35,7 +36,16 @@ abstract class AbstractTable extends AbstractTableGateway
         if ($this->schema && is_string($this->table)) {
             $this->table = new TableIdentifier($this->table, $this->schema);
         }
+
         $this->initialize();
+        if ($this->rowGateway && class_exists($this->rowGateway)) {
+            $rowGatewayPrototype = new $this->rowGateway(
+                current($this->primary),
+                $this->table,
+                $this->adapter, $this->sql
+            );
+            $this->getResultSetPrototype()->setArrayObjectPrototype($rowGatewayPrototype);
+        }
     }
 
     /**
@@ -118,25 +128,24 @@ abstract class AbstractTable extends AbstractTableGateway
     public function save(&$data)
     {
         $insert = false;
-        $temp   = $data;
         $where  = array();
         if (empty($this->primary)) {
             throw new \RuntimeException('Empty primary, can\'t use save() method.');
         }
         foreach ($this->primary as $primary) {
-            if (empty($temp[$primary])) {
+            if (empty($data[$primary])) {
                 $insert = true;
                 break;
             }
-            $where[$primary] = $temp[$primary];
-            unset($temp[$primary]);
+            $where[$primary] = $data[$primary];
         }
+        unset($data[$primary]);
 
         if ($insert) {
             $result         = $this->insert($data);
             $data[$primary] = $this->getLastInsertValue();
         } else {
-            $result = $this->update((array) $temp, $where);
+            $result = $this->update((array) $data, $where);
         }
         return $result;
     }

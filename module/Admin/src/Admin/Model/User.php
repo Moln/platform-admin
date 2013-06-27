@@ -1,13 +1,13 @@
 <?php
 namespace Admin\Model;
 
-use ArrayObject;
+use Zend\Db\RowGateway\AbstractRowGateway;
 
 /**
  * User.php
  * @author Administrator
  * @DateTime 12-12-29 上午11:43
- * @version $Id$
+ * @version $Id: User.php 1024 2013-06-26 09:05:39Z maomao $
  *
  * @property $user_id
  * @property $account
@@ -16,7 +16,7 @@ use ArrayObject;
  * @property $password
  * @property $status
  */
-class User extends ArrayObject
+class User extends AbstractRowGateway
 {
     protected $inputFilter;
     protected $properties = array(
@@ -111,5 +111,16 @@ class User extends ArrayObject
     public function setEmail($email)
     {
         parent::offsetSet('email', $email);
+    }
+
+
+    /**
+     * Get user roles
+     * @return array
+     */
+    public function getRoles()
+    {
+//        $select = $this->sql->select();
+        return array();
     }
 }

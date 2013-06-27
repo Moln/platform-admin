@@ -7,9 +7,9 @@
 namespace Admin\Controller;
 
 use Admin\Form\RoleForm;
-use Admin\Model\AssignPermissionTable;
-use Admin\Model\AssignUserTable;
-use Admin\Model\RoleTable;
+use Admin\Table\AssignPermissionTable;
+use Admin\Table\AssignUserTable;
+use Admin\Table\RoleTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -17,12 +17,15 @@ use Zend\View\Model\JsonModel;
  * Class RoleController
  * @package Admin\Controller
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: RoleController.php 1024 2013-06-26 09:05:39Z maomao $
  */
 class RoleController extends AbstractActionController
 {
     protected $roleTable;
 
+    /**
+     * @return RoleTable
+     */
     public function getRoleTable()
     {
         if (!$this->roleTable) {
@@ -54,7 +57,7 @@ class RoleController extends AbstractActionController
 
     public function deleteAction()
     {
-        $this->getRoleTable()->deleteKey($this->getRequest()->getPost('user_id'));
+        $this->getRoleTable()->deletePrimary($this->getRequest()->getPost('user_id'));
         return new JsonModel(array());
     }
 

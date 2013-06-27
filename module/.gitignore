@@ -1,3 +1,4 @@
-!.gitignore
-!Admin
-!Application
+.gitignore
+Shop
+Payment
+User

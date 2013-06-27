@@ -15,7 +15,7 @@ use Zend\View\Helper\AbstractHelper;
  * Class Uri
  * @package Platform\View\Helper
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: Uri.php 885 2013-05-22 03:08:41Z maomao $
  */
 class Uri extends AbstractHelper implements ServiceLocatorAwareInterface
 {

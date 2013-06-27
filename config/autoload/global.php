@@ -15,7 +15,7 @@ use Zend\View\Helper\Identity;
 use Zend\View\HelperPluginManager;
 
 return array(
-    'db'              => array(
+    'db'                 => array(
         'driver'         => 'Pdo',
         'dsn'            => 'mysql:dbname=platform;host=localhost',
         'driver_options' => array(
@@ -24,23 +24,25 @@ return array(
         'username'       => 'root',
         'password'       => '111111',
     ),
-    'service_manager' => array(
+    'service_manager'    => array(
         'factories'  => array(
             'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+            'Zend\Cache\Storage'      => 'Zend\Cache\Service\StorageCacheFactory',
         ),
         'invokables' => array(
             'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
         ),
         'aliases'    => array(
-            'auth' => 'Zend\Authentication\AuthenticationService',
-            'db'   => 'Zend\Db\Adapter\Adapter',
+            'auth'  => 'Zend\Authentication\AuthenticationService',
+            'db'    => 'Zend\Db\Adapter\Adapter',
+            'cache' => 'Zend\Cache\Storage',
         ),
     ),
-    'view_helpers'    => array(
+    'view_helpers'       => array(
         'invokables' => array(
             'uri' => 'Platform\View\Helper\Uri',
         ),
-        'factories' => array(
+        'factories'  => array(
             'identity' => function (HelperPluginManager $hpm) {
                 $identity = new Identity();
                 $identity->setAuthenticationService(
@@ -50,14 +52,14 @@ return array(
             }
         ),
     ),
-    'router'          => array(
+    'router'             => array(
         'routes' => array(
             'home'   => array(
                 'type'    => 'Literal',
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'module'     => 'application',
+                        'module'     => 'core',
                         'controller' => 'index',
                         'action'     => 'index',
                     ),
@@ -79,13 +81,13 @@ return array(
                 ),
                 'child_routes' => array(
                     'method' => array(
-                        'type'          => 'Wildcard',
+                        'type' => 'Wildcard',
                     ),
                 ),
             ),
         ),
     ),
-    'view_manager'    => array(
+    'view_manager'       => array(
         'display_not_found_reason' => true,
         'display_exceptions'       => true,
         'doctype'                  => 'HTML5',
@@ -93,12 +95,20 @@ return array(
         'exception_template'       => 'error/index',
         'strategies'               => array('ViewJsonStrategy'),
     ),
-
     'controller_plugins' => array(
         'invokables' => array(
-            'ui' => 'Platform\Mvc\Controller\Plugin\ui',
-            'page' => 'Platform\Mvc\Controller\Plugin\Page',
+            'ui'     => 'Platform\Mvc\Controller\Plugin\ui',
+            'page'   => 'Platform\Mvc\Controller\Plugin\Page',
             'result' => 'Platform\Mvc\Controller\Plugin\Result',
         )
+    ),
+    'cache' => array(
+        'adapter' => array(
+            'name' => 'filesystem',
+            'options' => array(
+                'cacheDir' => './data/cache'
+            ),
+        ),
+        'plugins' => array('serializer'),
     ),
 );

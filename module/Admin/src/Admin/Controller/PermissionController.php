@@ -6,8 +6,8 @@
 
 namespace Admin\Controller;
 
-use Admin\Model\AssignPermissionTable;
-use Admin\Model\PermissionTable;
+use Admin\Table\AssignPermissionTable;
+use Admin\Table\PermissionTable;
 use Zend\Code\Reflection\FileReflection;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
@@ -16,7 +16,7 @@ use Zend\View\Model\JsonModel;
  * Class Permission
  * @package Admin\Controller
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: PermissionController.php 1024 2013-06-26 09:05:39Z maomao $
  */
 class PermissionController extends AbstractActionController
 {
@@ -62,11 +62,15 @@ class PermissionController extends AbstractActionController
                     }
                     if (substr($method->getName(), -6) == 'Action') {
                         $action = substr($method->getName(), 0, -6);
-                        $title  = "$module.$ctrl.$action";
+                        $module = $this->toRouteName($module);
+                        $ctrl   = $this->toRouteName($ctrl);
+                        $action = $this->toRouteName($action);
+
+                        $title = $index = strtolower("$module.$ctrl.$action");
                         if ($method->getDocBlock()) {
                             $title = $method->getDocBlock()->getShortDescription();
                         }
-                        $actions["$module.$ctrl.$action"] = array($module, $ctrl, $action, $title);
+                        $actions[$index] = array($module, $ctrl, $action, $title);
                     }
                 }
             }
@@ -95,6 +99,11 @@ class PermissionController extends AbstractActionController
             );
         }
         return new JsonModel(array('code' => true));
+    }
+
+    private function toRouteName($name)
+    {
+        return strtolower(preg_replace('/[A-Z]/', '-$1', $name));
     }
 
     /**

@@ -15,7 +15,7 @@ use Zend\InputFilter\InputFilter;
  * Class User
  * @package Admin\Form
  * @author Moln Xie
- * @version $Id$
+ * @version $Id: UserForm.php 885 2013-05-22 03:08:41Z maomao $
  */
 class UserForm extends Form
 {
