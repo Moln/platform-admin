@@ -7,9 +7,9 @@
 namespace Admin\Controller;
 
 use Admin\Form\UserForm;
-use Admin\Table\AssignUserTable;
-use Admin\Table\User;
-use Admin\Table\UserTable;
+use Admin\Model\AssignUserTable;
+use Admin\Model\User;
+use Admin\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -45,10 +45,10 @@ class UserController extends AbstractActionController
         $form->setData($data);
 
         if ($form->isValid()) {
-            $userModel = new User($form->getData());
-            $this->getUserTable()->save($userModel);
-            unset($userModel['password']);
-            return new JsonModel(array('data' => $userModel));
+            $data = $form->getData();
+            $this->getUserTable()->save($data);
+            unset($data['password']);
+            return new JsonModel(array('data' => $data));
         } else {
             return new JsonModel(array('errors' => $form->getInputFilter()->getMessages()));
         }
@@ -56,7 +56,7 @@ class UserController extends AbstractActionController
 
     public function deleteAction()
     {
-        $this->getUserTable()->deleteKey($this->getRequest()->getPost('user_id'));
+        $this->getUserTable()->deletePrimary($this->getRequest()->getPost('user_id'));
         return new JsonModel(array());
     }
 
@@ -80,7 +80,7 @@ class UserController extends AbstractActionController
 
 
     /**
-     * @return \Admin\Table\UserTable;
+     * @return \Admin\Model\UserTable;
      */
     public function getUserTable()
     {

@@ -10,7 +10,7 @@
 namespace Admin\Controller;
 
 use Admin\Form\SelfForm;
-use Admin\Table\UserTable;
+use Admin\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Version\Version;
 use Zend\View\Model\JsonModel;

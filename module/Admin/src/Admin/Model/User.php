@@ -1,7 +1,7 @@
 <?php
 namespace Admin\Model;
 
-use Zend\Db\RowGateway\AbstractRowGateway;
+use Zend\Db\RowGateway\RowGateway;
 
 /**
  * User.php
@@ -15,104 +15,125 @@ use Zend\Db\RowGateway\AbstractRowGateway;
  * @property $email
  * @property $password
  * @property $status
+ * @property UserTable $table
  */
-class User extends AbstractRowGateway
+class User extends RowGateway
 {
-    protected $inputFilter;
-    protected $properties = array(
-        'user_id'   => null,
-        'account'   => null,
-        'real_name' => null,
-        'email'     => null,
-        'password'  => null,
-        'status'    => 0,
-    );
+    private $roles;
 
-    public function getUserId()
+    /**
+     * @param mixed $user_id
+     *
+     * @return User
+     */
+    public function setUserId($user_id)
     {
-        return $this['user_id'];
-    }
-
-    public function getAccount()
-    {
-        return $this['account'];
-    }
-
-    public function getEmail()
-    {
-        return $this['email'];
-    }
-
-    public function getPassword()
-    {
-        return $this['password'];
-    }
-
-    public function getStatus()
-    {
-        return $this['status'];
-    }
-
-    public function getRealName()
-    {
-        return $this['real_name'];
-    }
-
-    public function __construct($input = null)
-    {
-        if ($input) {
-            $this->exchangeArray($input);
-        }
-    }
-    public function __get($name)
-    {
-        return $this->offsetGet($name);
-    }
-
-    public function __set($name, $value)
-    {
-        $this->offsetSet($name, $value);
-    }
-
-    public function offsetSet($index, $value)
-    {
-        if (!array_key_exists($index, $this->properties)) {
-            throw new \InvalidArgumentException('未知字段:' . $index);
-        }
-
-        $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $index)));
-        if (method_exists($this, $method)) {
-            $this->$method($value);
-        } else {
-            parent::offsetSet($index, $value);
-        }
-    }
-
-    public function exchangeArray($data)
-    {
-        $data = array_intersect_key($data, $this->properties) + $this->properties;
-
-        foreach ($data as $key => $value) {
-            $this->offsetSet($key, $value);
-        }
-    }
-
-    public function setPassword($value)
-    {
-        parent::offsetSet('password', $value ? md5($value) : null);
+        $this->user_id = $user_id;
         return $this;
     }
 
-    public function setRealName($realName)
+    /**
+     * @return mixed
+     */
+    public function getUserId()
     {
-        parent::offsetSet('real_name', $realName);
+        return $this->user_id;
     }
 
+    /**
+     * @param mixed $account
+     *
+     * @return User
+     */
+    public function setAccount($account)
+    {
+        $this->account = $account;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccount()
+    {
+        return $this->account;
+    }
+
+    /**
+     * @param mixed $email
+     *
+     * @return User
+     */
     public function setEmail($email)
     {
-        parent::offsetSet('email', $email);
+        $this->email = $email;
+        return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param mixed $password
+     *
+     * @return User
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param mixed $real_name
+     *
+     * @return User
+     */
+    public function setRealName($real_name)
+    {
+        $this->real_name = $real_name;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRealName()
+    {
+        return $this->real_name;
+    }
+
+    /**
+     * @param mixed $status
+     *
+     * @return User
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
     /**
      * Get user roles
@@ -120,7 +141,9 @@ class User extends AbstractRowGateway
      */
     public function getRoles()
     {
-//        $select = $this->sql->select();
-        return array();
+        if (!$this->roles) {
+            $this->roles = AssignUserTable::getInstance()->getRoleNamesByUserId($this->getUserId());
+        }
+        return $this->roles;
     }
 }

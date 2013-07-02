@@ -3,7 +3,7 @@
 namespace Core\Controller;
 
 use Admin\Model\User;
-use Admin\Table\UserTable;
+use Admin\Model\UserTable;
 use Core\Form\LoginForm;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
@@ -64,7 +64,7 @@ class AuthController extends AbstractActionController
 
 
     /**
-     * @return \Admin\Table\UserTable;
+     * @return \Admin\Model\UserTable;
      */
     public function getUserTable()
     {

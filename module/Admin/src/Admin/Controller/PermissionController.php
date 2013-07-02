@@ -6,8 +6,8 @@
 
 namespace Admin\Controller;
 
-use Admin\Table\AssignPermissionTable;
-use Admin\Table\PermissionTable;
+use Admin\Model\AssignPermissionTable;
+use Admin\Model\PermissionTable;
 use Zend\Code\Reflection\FileReflection;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
@@ -98,12 +98,16 @@ class PermissionController extends AbstractActionController
                 )
             );
         }
+        /** @var \Zend\Cache\Storage\Adapter\Filesystem $cache */
+        $cache = $this->getServiceLocator()->get('cache');
+        $cache->clearByTags('permission');
+
         return new JsonModel(array('code' => true));
     }
 
     private function toRouteName($name)
     {
-        return strtolower(preg_replace('/[A-Z]/', '-$1', $name));
+        return ltrim(strtolower(preg_replace('/([A-Z])/', '-$1', $name)), '-');
     }
 
     /**

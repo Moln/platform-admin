@@ -37,6 +37,10 @@ abstract class AbstractTable extends AbstractTableGateway
             $this->table = new TableIdentifier($this->table, $this->schema);
         }
 
+        if (is_string($this->primary)) {
+            $this->primary = array($this->primary);
+        }
+
         $this->initialize();
         if ($this->rowGateway && class_exists($this->rowGateway)) {
             $rowGatewayPrototype = new $this->rowGateway(

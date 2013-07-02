@@ -1,10 +1,9 @@
 <?php
 namespace Album\Model;
 
-use Platform\Db\AbstractTable;
 use Zend\Db\TableGateway\TableGateway;
 
-class AlbumTable extends AbstractTable
+class AlbumTable
 {
     protected $tableGateway;
 

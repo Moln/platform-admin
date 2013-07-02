@@ -7,9 +7,9 @@
 namespace Admin\Controller;
 
 use Admin\Form\RoleForm;
-use Admin\Table\AssignPermissionTable;
-use Admin\Table\AssignUserTable;
-use Admin\Table\RoleTable;
+use Admin\Model\AssignPermissionTable;
+use Admin\Model\AssignUserTable;
+use Admin\Model\RoleTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 

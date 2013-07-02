@@ -1,8 +1,8 @@
 <?php
 namespace Admin;
 
-use Admin\Table\RoleTable;
-use Admin\Table\UserTable;
+use Admin\Model\RoleTable;
+use Admin\Model\UserTable;
 use Zend\Authentication\Storage\Session;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\Mvc\MvcEvent;
@@ -42,27 +42,35 @@ class Module implements AutoloaderProviderInterface
         $sm = $e->getApplication()->getServiceManager();
         /** @var \Zend\Authentication\AuthenticationService $auth */
         $auth  = $sm->get('auth');
-        $role  = new Role('guest');
+        $guest  = new Role('guest');
         $cache = $sm->get('cache');
 
         foreach ($this->getRolePermission('guest', $cache) as $r) {
-            $role->addPermission(implode('/', $r));
+            $guest->addPermission(implode('/', $r));
         }
 
-        $auth->setStorage(new Session('Sgty_Auth'));
+        $auth->setStorage(new Session('Application_Auth'));
 
         if (!$auth->hasIdentity()) {
-            if (!$role->hasPermission($permission) && $module != 'core') {
-//                header('Location: /login');
-                exit('sdfsfdsss');
+            if (!$guest->hasPermission($permission) && $module != 'core') {
+                header('Location: /login');
+                exit();
             }
         } else {
             /** @var \Admin\Model\User $user */
             $user = $auth->getIdentity();
 
             $rbac = new Rbac();
-            $rbac->addRole('guest');
+            $rbac->addRole($guest);
             $allow = false;
+
+            //Add global permission
+            $guest->addPermission('admin/index/index');
+            $guest->addPermission('admin/index/self');
+
+            if ($guest->hasPermission($permission)) {
+                return ;
+            }
 
             foreach ($user->getRoles() as $role) {
                 $role = new Role($role);
