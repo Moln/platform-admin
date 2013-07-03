@@ -7,7 +7,6 @@
 namespace Admin\Form;
 
 use Admin\Model\UserTable;
-use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Form\Form;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
@@ -16,7 +15,7 @@ use Zend\InputFilter\InputFilter;
  * Class User
  * @package Admin\Form
  * @author Moln Xie
- * @version $Id: UserForm.php 1077 2013-07-03 07:47:44Z maomao $
+ * @version $Id: UserForm.php 1085 2013-07-03 10:34:40Z maomao $
  */
 class UserForm extends Form
 {

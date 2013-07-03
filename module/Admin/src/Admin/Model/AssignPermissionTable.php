@@ -7,7 +7,6 @@
 namespace Admin\Model;
 
 use Platform\Db\AbstractTable;
-use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Db\TableGateway\Feature\FeatureSet;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 

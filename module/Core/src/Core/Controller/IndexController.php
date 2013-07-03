@@ -16,7 +16,6 @@ class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
-        print_r($this->getServiceLocator()->get('config'));exit;
         return new ViewModel();
     }
 

@@ -7,15 +7,15 @@
 namespace Admin\Form;
 
 use Zend\Form\Form;
-use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
+use Zend\InputFilter\InputFilter;
 use Zend\Validator\Callback;
 
 /**
  * Class SelfForm
  * @package Admin\Form
  * @author Moln Xie
- * @version $Id: SelfForm.php 885 2013-05-22 03:08:41Z maomao $
+ * @version $Id: SelfForm.php 1085 2013-07-03 10:34:40Z maomao $
  */
 class SelfForm extends Form
 {

@@ -12,6 +12,7 @@ namespace Core\Service;
  * @author Moln Xie
  * @version $Id: ControllerAutoLoader.php 885 2013-05-22 03:08:41Z maomao $
  */
+
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
