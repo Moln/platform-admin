@@ -49,8 +49,6 @@ class Module implements AutoloaderProviderInterface
             $guest->addPermission(implode('/', $r));
         }
 
-        $auth->setStorage(new Session('Application_Auth'));
-
         if (!$auth->hasIdentity()) {
             if (!$guest->hasPermission($permission) && $module != 'core') {
                 header('Location: /login');

@@ -7,7 +7,7 @@ use Zend\Db\RowGateway\RowGateway;
  * User.php
  * @author Administrator
  * @DateTime 12-12-29 上午11:43
- * @version $Id: User.php 1024 2013-06-26 09:05:39Z maomao $
+ * @version $Id: User.php 1077 2013-07-03 07:47:44Z maomao $
  *
  * @property $user_id
  * @property $account
@@ -54,7 +54,7 @@ class User extends RowGateway
     /**
      * @return mixed
      */
-    public function getAccount()
+    public function egetAccount()
     {
         return $this->account;
     }
@@ -85,7 +85,7 @@ class User extends RowGateway
      */
     public function setPassword($password)
     {
-        $this->password = $password;
+        $this->password = UserTable::encrypt($password);
         return $this;
     }
 
@@ -145,5 +145,17 @@ class User extends RowGateway
             $this->roles = AssignUserTable::getInstance()->getRoleNamesByUserId($this->getUserId());
         }
         return $this->roles;
+    }
+
+    public function __sleep()
+    {
+        return array('data', 'primaryKeyColumn', 'primaryKeyData');
+    }
+
+    public function __wakeup()
+    {
+        $this->table = UserTable::getInstance()->getTable();
+        $this->sql = UserTable::getInstance()->getSql();
+        $this->initialize();
     }
 }

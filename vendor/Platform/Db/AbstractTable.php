@@ -19,7 +19,7 @@ use Zend\Paginator\Paginator;
  * Class AbstractTable
  * @package Platform\Db
  * @author Moln Xie
- * @version $Id: AbstractTable.php 1020 2013-06-24 06:19:01Z maomao $
+ * @version $Id: AbstractTable.php 1077 2013-07-03 07:47:44Z maomao $
  */
 abstract class AbstractTable extends AbstractTableGateway
 {
@@ -42,6 +42,9 @@ abstract class AbstractTable extends AbstractTableGateway
         }
 
         $this->initialize();
+        if ($this->rowGateway === true) {
+            $this->rowGateway = substr(get_class($this), 0, -5);
+        }
         if ($this->rowGateway && class_exists($this->rowGateway)) {
             $rowGatewayPrototype = new $this->rowGateway(
                 current($this->primary),
@@ -133,23 +136,25 @@ abstract class AbstractTable extends AbstractTableGateway
     {
         $insert = false;
         $where  = array();
+        $temp   = $data;
         if (empty($this->primary)) {
             throw new \RuntimeException('Empty primary, can\'t use save() method.');
         }
         foreach ($this->primary as $primary) {
-            if (empty($data[$primary])) {
+            if (empty($temp[$primary])) {
                 $insert = true;
+                unset($temp[$primary]);
                 break;
             }
-            $where[$primary] = $data[$primary];
+            $where[$primary] = $temp[$primary];
+            unset($temp[$primary]);
         }
-        unset($data[$primary]);
 
         if ($insert) {
-            $result         = $this->insert($data);
+            $result         = $this->insert($temp);
             $data[$primary] = $this->getLastInsertValue();
         } else {
-            $result = $this->update((array) $data, $where);
+            $result = $this->update((array) $temp, $where);
         }
         return $result;
     }
@@ -162,5 +167,17 @@ abstract class AbstractTable extends AbstractTableGateway
     public function getPrimary()
     {
         return current($this->primary);
+    }
+
+    /**
+     * @param array $row
+     *
+     * @return \ArrayObject
+     */
+    public function create(array $row = null)
+    {
+        $result = clone $this->getResultSetPrototype()->getArrayObjectPrototype();
+        $row && $result->exchangeArray($row);
+        return $result;
     }
 }

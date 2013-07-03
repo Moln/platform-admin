@@ -17,38 +17,25 @@ use Zend\View\Model\JsonModel;
  * Class RoleController
  * @package Admin\Controller
  * @author Moln Xie
- * @version $Id: RoleController.php 1024 2013-06-26 09:05:39Z maomao $
+ * @version $Id: RoleController.php 1077 2013-07-03 07:47:44Z maomao $
  */
 class RoleController extends AbstractActionController
 {
-    protected $roleTable;
-
-    /**
-     * @return RoleTable
-     */
-    public function getRoleTable()
-    {
-        if (!$this->roleTable) {
-            $this->roleTable = new RoleTable();
-        }
-        return $this->roleTable;
-    }
 
     public function readAction()
     {
-        return new JsonModel($this->getRoleTable()->select()->toArray());
+        return new JsonModel(RoleTable::getInstance()->select()->toArray());
     }
 
     public function saveAction()
     {
         $data = $this->getRequest()->getPost();
         $form = new RoleForm();
-        $form->setTableGateway($this->getRoleTable());
         $form->loadInputFilter();
         $form->setData($data);
         if ($form->isValid()) {
             $data = $form->getData();
-            $this->getRoleTable()->save($data);
+            RoleTable::getInstance()->save($data);
             return new JsonModel($data);
         } else {
             return new JsonModel(array('errors' => $form->getInputFilter()->getMessages()));
@@ -57,7 +44,10 @@ class RoleController extends AbstractActionController
 
     public function deleteAction()
     {
-        $this->getRoleTable()->deletePrimary($this->getRequest()->getPost('user_id'));
+        $roleId = $this->getRequest()->getPost('role_id');
+        RoleTable::getInstance()->deletePrimary($roleId);
+        AssignUserTable::getInstance()->removeRoleId($roleId);
+        AssignPermissionTable::getInstance()->removeRoleId($roleId);
         return new JsonModel(array());
     }
 

@@ -31,7 +31,7 @@ class AuthController extends AbstractActionController
 
             if ($form->isValid()) {
                 $formData = $form->getData();
-                $authAdapter = $this->getUserTable()->getAuthAdapter(
+                $authAdapter = UserTable::getInstance()->getAuthAdapter(
                     $formData['account'], $formData['password']
                 );
                 /** @var \Zend\Authentication\AuthenticationService $auth */
@@ -40,8 +40,7 @@ class AuthController extends AbstractActionController
 
                 $result = $auth->authenticate();
                 if ($result->isValid()) {
-                    $user = new User();
-                    $user->exchangeArray((array)$authAdapter->getResultRowObject());
+                    $user = UserTable::getInstance()->create((array)$authAdapter->getResultRowObject());
                     $auth->getStorage()->write($user);
                     $return = array('code' => 1);
                 } else {
@@ -60,17 +59,5 @@ class AuthController extends AbstractActionController
             return new JsonModel($return);
         }
         return (new ViewModel())->setTerminal(true);
-    }
-
-
-    /**
-     * @return \Admin\Model\UserTable;
-     */
-    public function getUserTable()
-    {
-        if (!$this->userTable) {
-            $this->userTable = new UserTable();
-        }
-        return $this->userTable;
     }
 }

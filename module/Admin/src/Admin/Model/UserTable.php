@@ -6,12 +6,20 @@ use Zend\Authentication\Adapter\DbTable;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Zend\Paginator\Paginator;
 
+/**
+ * Class UserTable
+ * @package Admin\Model
+ * @author Xiemaomao
+ * @version $Id$
+ *
+ * @method User create()
+ */
 class UserTable extends AbstractTable
 {
     protected $primary = 'user_id';
     protected $table = 'admin_user';
 
-    protected $rowGateway = 'Admin\\Model\\User';
+    protected $rowGateway = true;
 
     public static function encrypt($password)
     {
@@ -36,11 +44,23 @@ class UserTable extends AbstractTable
         return $authAdapter;
     }
 
+    /**
+     * 更新不允许修改账号
+     * @param $data
+     *
+     * @return int
+     */
     public function save(&$data)
     {
+        $account = null;
         if (!empty($data['user_id'])) {
+            $account = $data['account'];
             unset($data['account']);
         }
-        return parent::save($data);
+        $result = parent::save($data);
+        if ($account) {
+            $data['account'] = $account;
+        }
+        return $result;
     }
 }

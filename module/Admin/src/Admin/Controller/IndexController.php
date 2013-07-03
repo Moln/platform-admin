@@ -26,15 +26,14 @@ class IndexController extends AbstractActionController
             $form->setData($_POST);
             if ($form->isValid()) {
                 $data     = $form->getData();
+                /** @var \Admin\Model\User $identity */
                 $identity = $this->identity();
                 if ($data['password']) {
                     $identity->setPassword($data['password']);
                 }
                 $identity->setRealName($data['real_name']);
                 $identity->setEmail($data['email']);
-
-                $userTable = new UserTable();
-                $userTable->save($identity);
+                $identity->save();
                 return new JsonModel(array('code' => 1));
             } else {
                 return new JsonModel(array(

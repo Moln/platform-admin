@@ -6,6 +6,7 @@
 
 namespace Admin\Model;
 
+use Platform\Db\AbstractTable;
 use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Db\TableGateway\Feature\FeatureSet;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
@@ -16,16 +17,10 @@ use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
  * @author Moln Xie
  * @version $Id: AssignPermissionTable.php 885 2013-05-22 03:08:41Z maomao $
  */
-class AssignPermissionTable extends AbstractTableGateway
+class AssignPermissionTable extends AbstractTable
 {
-
+    protected $primary = array('role_id', 'per_id');
     protected $table = 'admin_assign_role_permission';
-
-    public function __construct()
-    {
-        $this->adapter = GlobalAdapterFeature::getStaticAdapter();
-        $this->initialize();
-    }
 
     public function getRolesByPermissionId($id)
     {
@@ -69,5 +64,10 @@ class AssignPermissionTable extends AbstractTableGateway
         foreach ($permissions as $permissionId) {
             $this->insert(array('role_id' => $roleId, 'per_id' => $permissionId));
         }
+    }
+
+    public function removeRoleId($roleId)
+    {
+        $this->delete(array('role_id' => $roleId));
     }
 }

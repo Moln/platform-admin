@@ -8,6 +8,7 @@ namespace Admin\Controller;
 
 use Admin\Model\AssignPermissionTable;
 use Admin\Model\PermissionTable;
+use Admin\Model\UserTable;
 use Zend\Code\Reflection\FileReflection;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
@@ -16,7 +17,7 @@ use Zend\View\Model\JsonModel;
  * Class Permission
  * @package Admin\Controller
  * @author Moln Xie
- * @version $Id: PermissionController.php 1024 2013-06-26 09:05:39Z maomao $
+ * @version $Id: PermissionController.php 1077 2013-07-03 07:47:44Z maomao $
  */
 class PermissionController extends AbstractActionController
 {
@@ -24,7 +25,7 @@ class PermissionController extends AbstractActionController
 
     public function readAction()
     {
-        return new JsonModel($this->getPermissionTable()->select()->toArray());
+        return new JsonModel(PermissionTable::getInstance()->select()->toArray());
     }
 
     public function saveAction()
@@ -32,7 +33,7 @@ class PermissionController extends AbstractActionController
         $id    = (int)$this->getRequest()->getPost('per_id');
         $title = $this->getRequest()->getPost('title');
 
-        $this->getPermissionTable()->updateTitle($id, $title);
+        PermissionTable::getInstance()->updateTitle($id, $title);
         return new JsonModel($this->getRequest()->getPost());
     }
 
@@ -76,7 +77,7 @@ class PermissionController extends AbstractActionController
             }
         }
 
-        $perTable    = $this->getPermissionTable();
+        $perTable    = PermissionTable::getInstance();
         $permissions = $perTable->select();
 
         foreach ($permissions as $row) {
@@ -100,7 +101,7 @@ class PermissionController extends AbstractActionController
         }
         /** @var \Zend\Cache\Storage\Adapter\Filesystem $cache */
         $cache = $this->getServiceLocator()->get('cache');
-        $cache->clearByTags('permission');
+        $cache->clearByTags(array('permission'));
 
         return new JsonModel(array('code' => true));
     }
@@ -115,8 +116,8 @@ class PermissionController extends AbstractActionController
      */
     public function assignAction()
     {
-        $permissionId       = $this->params('id');
-        $assignTable  = new AssignPermissionTable();
+        $permissionId = $this->params('id');
+        $assignTable  = AssignPermissionTable::getInstance();
         $roles  = $assignTable->getRolesByPermissionId($permissionId);
 
         if ($this->getRequest()->isPost()) {
@@ -130,17 +131,5 @@ class PermissionController extends AbstractActionController
         return array(
             'roles' => $roles,
         );
-    }
-
-
-    /**
-     * @return PermissionTable;
-     */
-    public function getPermissionTable()
-    {
-        if (!$this->permissionTable) {
-            $this->permissionTable = new PermissionTable;
-        }
-        return $this->permissionTable;
     }
 }

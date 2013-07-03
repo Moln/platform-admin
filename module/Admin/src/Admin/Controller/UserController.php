@@ -8,7 +8,6 @@ namespace Admin\Controller;
 
 use Admin\Form\UserForm;
 use Admin\Model\AssignUserTable;
-use Admin\Model\User;
 use Admin\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
@@ -17,15 +16,13 @@ use Zend\View\Model\JsonModel;
  * Class UserController
  * @package Admin\Controller
  * @author Moln Xie
- * @version $Id: UserController.php 1024 2013-06-26 09:05:39Z maomao $
+ * @version $Id: UserController.php 1077 2013-07-03 07:47:44Z maomao $
  */
 class UserController extends AbstractActionController
 {
-    protected $userTable;
-
     public function readAction()
     {
-        $paginator = $this->getUserTable()->fetchPaginator(
+        $paginator = UserTable::getInstance()->fetchPaginator(
             null,
             null,
             array('user_id', 'account', 'real_name', 'email', 'status')
@@ -40,13 +37,17 @@ class UserController extends AbstractActionController
     {
         $data = $this->getRequest()->getPost();
         $form = new UserForm();
-        $form->setTableGateway($this->getUserTable());
         $form->loadInputFilter(!empty($data['user_id']));
         $form->setData($data);
 
         if ($form->isValid()) {
             $data = $form->getData();
-            $this->getUserTable()->save($data);
+            if (empty($data['password'])) {
+                unset($data['password']);
+            } else {
+                $data['password'] = UserTable::encrypt($data['password']);
+            }
+            UserTable::getInstance()->save($data);
             unset($data['password']);
             return new JsonModel(array('data' => $data));
         } else {
@@ -56,14 +57,16 @@ class UserController extends AbstractActionController
 
     public function deleteAction()
     {
-        $this->getUserTable()->deletePrimary($this->getRequest()->getPost('user_id'));
+        $userId = $this->getRequest()->getPost('user_id');
+        UserTable::getInstance()->deletePrimary($userId);
+        AssignUserTable::getInstance()->removeUserId($userId);
         return new JsonModel(array());
     }
 
     public function assignAction()
     {
         $userId      = $this->params('id');
-        $assignTable = new AssignUserTable();
+        $assignTable = AssignUserTable::getInstance();
         $roles       = $assignTable->getRolesByUserId($userId);
 
         if ($this->getRequest()->isPost()) {
@@ -76,17 +79,5 @@ class UserController extends AbstractActionController
         return array(
             'roles' => $roles,
         );
-    }
-
-
-    /**
-     * @return \Admin\Model\UserTable;
-     */
-    public function getUserTable()
-    {
-        if (!$this->userTable) {
-            $this->userTable = new UserTable();
-        }
-        return $this->userTable;
     }
 }

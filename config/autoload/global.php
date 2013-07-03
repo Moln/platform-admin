@@ -11,6 +11,7 @@
  * file.
  */
 
+use Zend\Authentication\Storage\Session;
 use Zend\View\Helper\Identity;
 use Zend\View\HelperPluginManager;
 
@@ -28,9 +29,9 @@ return array(
         'factories'  => array(
             'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
             'Zend\Cache\Storage'      => 'Zend\Cache\Service\StorageCacheFactory',
-        ),
-        'invokables' => array(
-            'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
+            'Zend\Authentication\AuthenticationService' => function () {
+                return new Zend\Authentication\AuthenticationService(new Session('Application_Auth'));
+            }
         ),
         'aliases'    => array(
             'auth'  => 'Zend\Authentication\AuthenticationService',

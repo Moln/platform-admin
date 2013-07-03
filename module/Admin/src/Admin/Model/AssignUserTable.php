@@ -17,6 +17,7 @@ use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
  */
 class AssignUserTable extends AbstractTable
 {
+    protected $primary = array('role_id', 'user_id');
     protected $table = 'admin_assign_user_role';
 
     public function getRolesByUserId($id)
@@ -67,7 +68,7 @@ class AssignUserTable extends AbstractTable
 
     public function resetUsersById($userId, array $roles)
     {
-        $this->delete(array('user_id' => $userId));
+        $this->removeUserId($userId);
         foreach ($roles as $roleId) {
             $this->insert(array('role_id' => $roleId, 'user_id' => $userId));
         }
@@ -75,9 +76,19 @@ class AssignUserTable extends AbstractTable
 
     public function resetUsersByRoleId($roleId, array $users)
     {
-        $this->delete(array('role_id' => $roleId));
+        $this->removeRoleId($roleId);
         foreach ($users as $userId) {
             $this->insert(array('role_id' => $roleId, 'user_id' => $userId));
         }
+    }
+
+    public function removeUserId($userId)
+    {
+        $this->delete(array('user_id' => $userId));
+    }
+
+    public function removeRoleId($roleId)
+    {
+        $this->delete(array('role_id' => $roleId));
     }
 }

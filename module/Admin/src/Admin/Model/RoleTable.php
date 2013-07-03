@@ -18,6 +18,7 @@ use Zend\Paginator\Paginator;
  */
 class RoleTable extends AbstractTable
 {
+    protected $primary = 'role_id';
     protected $table = 'admin_role';
 
     /**

@@ -6,6 +6,7 @@
 
 namespace Admin\Form;
 
+use Admin\Model\UserTable;
 use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Form\Form;
 use Zend\InputFilter\Factory as InputFactory;
@@ -15,22 +16,10 @@ use Zend\InputFilter\InputFilter;
  * Class User
  * @package Admin\Form
  * @author Moln Xie
- * @version $Id: UserForm.php 885 2013-05-22 03:08:41Z maomao $
+ * @version $Id: UserForm.php 1077 2013-07-03 07:47:44Z maomao $
  */
 class UserForm extends Form
 {
-
-    /**
-     * @var AbstractTableGateway
-     */
-    private $table;
-
-    public function setTableGateway(AbstractTableGateway $table)
-    {
-        $this->table = $table;
-        return $this;
-    }
-
     public function loadInputFilter($edit = false)
     {
         $inputFilter = new InputFilter();
@@ -63,9 +52,9 @@ class UserForm extends Form
                         array(
                             'name'    => 'Db\NoRecordExists',
                             'options' =>     array(
-                                'table'   => $this->table->getTable(),
+                                'table'   => UserTable::getInstance()->getTable(),
                                 'field'   => 'account',
-                                'adapter' => $this->table->getAdapter()
+                                'adapter' => UserTable::getInstance()->getAdapter()
                             ),
                         ),
                     ),

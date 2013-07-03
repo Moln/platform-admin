@@ -6,7 +6,7 @@
 
 namespace Admin\Model;
 
-use Zend\Db\TableGateway\AbstractTableGateway;
+use Platform\Db\AbstractTable;
 use Zend\Db\TableGateway\Feature\FeatureSet;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Zend\Db\TableGateway\Feature\RowGatewayFeature;
@@ -17,15 +17,11 @@ use Zend\Db\TableGateway\Feature\RowGatewayFeature;
  * @author Moln Xie
  * @version $Id: PermissionTable.php 885 2013-05-22 03:08:41Z maomao $
  */
-class PermissionTable extends AbstractTableGateway
+class PermissionTable extends AbstractTable
 {
+    protected $primary = 'per_id';
     protected $table = 'admin_permission';
-
-    public function __construct()
-    {
-        $this->adapter = GlobalAdapterFeature::getStaticAdapter();
-        $this->featureSet = new FeatureSet(array(new RowGatewayFeature('per_id')));
-    }
+    protected $rowGateway = 'Zend\Db\RowGateway\RowGateway';
 
     public function updateTitle($id, $title)
     {
