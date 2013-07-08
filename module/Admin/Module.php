@@ -15,7 +15,7 @@ class Module implements AutoloaderProviderInterface
     public function onBootstrap(MvcEvent $e)
     {
         $em = $e->getApplication()->getEventManager();
-        $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRouteAuth'));
+        $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRouteAuth'), 0);
         $em->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($this, 'onError'));
     }
 
@@ -23,6 +23,7 @@ class Module implements AutoloaderProviderInterface
     {
         if ($e->getError() == \Zend\Mvc\Application::ERROR_CONTROLLER_NOT_FOUND) {
             //todo 404 not found
+            $e->getViewModel()->setTemplate('layout/layout2');
         }
     }
 
@@ -40,6 +41,11 @@ class Module implements AutoloaderProviderInterface
         $permission = "$module/$controller/$action";
 
         $sm = $e->getApplication()->getServiceManager();
+        $controllerLoader = $sm->get('ControllerLoader');
+        if (!$controllerLoader->has($controller)) {
+            return ;
+        }
+
         /** @var \Zend\Authentication\AuthenticationService $auth */
         $auth  = $sm->get('auth');
         $guest  = new Role('guest');
