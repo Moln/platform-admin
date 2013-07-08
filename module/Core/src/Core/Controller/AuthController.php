@@ -57,6 +57,8 @@ class AuthController extends AbstractActionController
 
             return new JsonModel($return);
         }
-        return (new ViewModel())->setTerminal(true);
+        $view = new ViewModel;
+        $view->setTerminal(true);
+        return $view;
     }
 }
