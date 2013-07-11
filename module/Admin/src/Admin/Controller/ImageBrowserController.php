@@ -43,6 +43,9 @@ class ImageBrowserController extends AbstractActionController
 
     public function deleteAction()
     {
+        $path = $this->getRequest()->getPost('path') ? : '.';
+        $name = $this->getRequest()->getPost('name');
+        $this->getFileStorage()->delete(rtrim($path, '\\/') . '/' . $name);
         return new JsonModel(array());
     }
 
@@ -50,7 +53,6 @@ class ImageBrowserController extends AbstractActionController
     {
         $path = $this->getRequest()->getPost('path');
         $name = $this->getRequest()->getPost('name');
-        $path = realpath($this->uploadPath . $path);
 
         $this->getFileStorage()->mkdirs($path . '/' . $name);
         return new JsonModel(array());

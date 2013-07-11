@@ -72,4 +72,44 @@ class FileSystem extends AbstractStorage
 
         return $this->getFilterChain()->filter($value);
     }
+
+    /**
+     * Delete directory or file
+     * @param string $path
+     *
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public function delete($path)
+    {
+        $path = realpath($path);
+        if (strpos($path, $this->getDefaultPath()) === 0) {
+            if (is_dir($path)) {
+                foreach (glob($path . '/*') as $file) {
+                    $this->delete($path);
+                }
+                return @rmdir($path);
+            } else {
+                return @unlink($path);
+            }
+        } else {
+            throw new \InvalidArgumentException("Path not allowed '$path'");
+        }
+    }
+
+    /**
+     * @param string $defaultPath
+     *
+     * @throws \InvalidArgumentException
+     * @return AbstractStorage
+     */
+    public function setDefaultPath($defaultPath)
+    {
+        $defaultPath = realpath($defaultPath);
+        if (!$defaultPath) {
+            throw new \InvalidArgumentException('Error default path!');
+        }
+        $this->defaultPath = $defaultPath . DIRECTORY_SEPARATOR;
+        return $this;
+    }
 }

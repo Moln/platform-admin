@@ -12,6 +12,8 @@
  */
 
 use Zend\Authentication\Storage\Session;
+use Zend\Db\Adapter\AdapterServiceFactory;
+use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Zend\View\Helper\Identity;
 use Zend\View\HelperPluginManager;
 
@@ -27,7 +29,12 @@ return array(
     ),
     'service_manager'    => array(
         'factories'  => array(
-            'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+            'Zend\Db\Adapter\Adapter' => function ($serviceManager) {
+                $adapterFactory = new AdapterServiceFactory();
+                $adapter = $adapterFactory->createService($serviceManager);
+                GlobalAdapterFeature::setStaticAdapter($adapter);
+                return $adapter;
+            },
             'Zend\Cache\Storage'      => 'Zend\Cache\Service\StorageCacheFactory',
             'Zend\Authentication\AuthenticationService' => function () {
                 return new Zend\Authentication\AuthenticationService(new Session('Application_Auth'));

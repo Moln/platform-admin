@@ -189,5 +189,14 @@ abstract class AbstractStorage implements StorageInterface
         return $this->getValidatorChain()->isValid($value);
     }
 
+    /**
+     * Delete directory or file
+     * @param string $path
+     *
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    abstract public function delete($path);
+
     abstract public function upload($value);
 }

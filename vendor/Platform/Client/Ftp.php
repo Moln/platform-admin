@@ -35,6 +35,7 @@ class Ftp
             'ssl'      => false,
             'port'     => 21,
             'timeout'  => 10,
+            'pasv'     => false,
         );
 
     protected $func;
@@ -51,15 +52,14 @@ class Ftp
         $this->config['username'] = $config['username'];
         $this->config['password'] = $config['password'];
 
-        if (!empty($config['port'])) {
-            $this->config['port'] = (int)$config['port'];
-        }
-        if (!empty($config['timeout'])) {
-            $this->config['timeout'] = (int)$config['timeout'];
-        }
+        foreach ($this->config as $key => $val) {
+            if (!empty($config[$key])) {
+                $this->config[$key] = $config[$key];
+            }
 
-        if (!empty($config['ssl'])) {
-            $this->config['ssl'] = (boolean)$config['ssl'];
+            if ($this->config[$key] === null) {
+                throw new \InvalidArgumentException("Empty param '$key'");
+            }
         }
     }
 
@@ -71,7 +71,7 @@ class Ftp
         return $this->cid;
     }
 
-    public function connect($pasv = false)
+    public function connect()
     {
         if ($this->cid) {
             return true;
@@ -89,7 +89,7 @@ class Ftp
         if ($this->cid) {
             $r = @ftp_login($this->cid, $this->config['username'], $this->config['password']);
             if ($r) {
-                $this->pasv($pasv);
+                $this->pasv($this->config['pasv']);
                 return true;
             } else {
                 $this->setError(self::FTP_ERR_USER_NO_LOGGIN);
@@ -110,8 +110,9 @@ class Ftp
 
         $current  = $this->pwd();
         $dirname  = dirname($target);
+
         $filename = basename($target);
-        if (!$this->chdir($dirname)) {
+        if ($dirname != '.' && $dirname != '..' && !$this->chdir($dirname)) {
             if ($this->mkdirs($dirname)) {
                 if (!$this->chdir($dirname)) {
                     $this->setError(self::FTP_ERR_CHDIR);
@@ -192,7 +193,10 @@ class Ftp
 
     public function close()
     {
-        return @ftp_close($this->getConnect());
+        if ($this->cid) {
+            return @ftp_close($this->getConnect());
+        }
+        return true;
     }
 
     public function delete($path)

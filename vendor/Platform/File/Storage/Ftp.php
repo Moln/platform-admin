@@ -7,6 +7,7 @@
 namespace Platform\File\Storage;
 
 use Platform\Client\Ftp as FtpClient;
+use Platform\Filter\File\RenameUpload;
 
 /**
  * Class Ftp
@@ -62,9 +63,20 @@ class Ftp extends AbstractStorage
         }
         $this->ftp->chdir($this->getDefaultPath());
 
-        /** @var \Platform\Filter\File\RenameUpload $filter */
-        $filter = $this->getFilter('renameupload');
-        $target = $filter->getFinalTarget($value);
+        $target = null;
+        foreach ($this->getFilterChain()->getFilters() as $filter) {
+            if ($filter instanceof RenameUpload) {
+                $target = $filter->getFinalTarget($value);
+                continue;
+            }
+            $value = call_user_func($filter, $value);
+        }
+
+        if (!$target) {
+            /** @var \Platform\Filter\File\RenameUpload $filter */
+            $filter = $this->getFilter('renameupload');
+            $target = $filter->getFinalTarget($value);
+        }
 
         if ($this->ftp->upload($value['tmp_name'], $target)) {
             $value['tmp_name'] = $target;
@@ -74,9 +86,39 @@ class Ftp extends AbstractStorage
         }
     }
 
+    public function __destruct()
+    {
+        $this->ftp->close();
+    }
+
     public function mkdirs($path, $mode = 0777)
     {
         $this->ftp->chdir($this->getDefaultPath());
         return $this->ftp->mkdirs($path, $mode);
+    }
+
+    /**
+     * Delete directory or file
+     * @param string $path
+     *
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public function delete($path)
+    {
+        $this->ftp->chdir($this->getDefaultPath());
+        $result = $this->ftp->delete($path);
+        if (!$result) {
+            $files = $this->ftp->nlist($path);
+            if ($files && is_array($files)) {
+                foreach ($files as $file) {
+                    $this->delete($file);
+                }
+
+                return $this->ftp->rmdir($path);
+            }
+
+            return false;
+        }
     }
 }

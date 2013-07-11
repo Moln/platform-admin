@@ -24,9 +24,6 @@ class Module
     {
         $eventManager = $e->getApplication()->getEventManager();
         $eventManager->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
-
-        $adapter = $e->getApplication()->getServiceManager()->get('Zend\Db\Adapter\Adapter');
-        GlobalAdapterFeature::setStaticAdapter($adapter);
     }
 
     /**
