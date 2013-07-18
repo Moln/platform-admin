@@ -50,17 +50,28 @@
 var Platform = {
     newWindow: function (params){
         var $win = $('<div></div>');
-        $win.kendoWindow($.extend({
-            width: 1000,
+        var kw = $win.kendoWindow($.extend({
+            width: document.body.offsetWidth*0.86,
+            minWidth: 1000,
             minHeight: 400,
-            actions: ["Refresh", "Custom", "Minimize", "Maximize", "Close"],
+            maxHeight: document.body.offsetHeight-70,
+            actions: ["Refresh", /*"Custom",*/ "Minimize", "Maximize", "Close"],
             close: function (){
                 this.destroy();
             },
             activate: function (e){
                 this.element.data("kendoWindow").center();
             }
-        }, params)).data("kendoWindow").center().open();
+        }, params)).data("kendoWindow").open().center();
+        $(window).resize(function (){
+            kw.center();
+        });
+        $win.parent().width('86%');
+
+        kw.wrapper.find(".k-i-minimize").click(function(e){
+//            alert("Custom action button clicked");
+            e.preventDefault();
+        });
         return $win;
     },
     toolbarClick: function (name, clickHandler){

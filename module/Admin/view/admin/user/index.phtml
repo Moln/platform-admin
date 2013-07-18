@@ -10,7 +10,7 @@
                     destroy: serviceUrl + "delete",
                     create: serviceUrl + "save"
                 },
-                pageSize: 20,
+                pageSize: <?=\Zend\Paginator\Paginator::getDefaultItemCountPerPage()?>,
                 schema: {
                     model: {
                         id: "user_id",
@@ -39,7 +39,8 @@
 
                         $('#admin-user-index-grid').data("kendoGrid").cancelChanges();
                     }
-                }
+                },
+                serverPaging: true
             });
 
         var statusData = [{name: '开启', value:'0'},{name: '禁用', value:'1'}];

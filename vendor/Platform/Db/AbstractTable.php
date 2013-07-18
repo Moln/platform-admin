@@ -87,30 +87,30 @@ abstract class AbstractTable extends AbstractTableGateway
     /**
      * Fetch Paginator
      *
-     * @param Select|Where|\Closure|string|array|\Zend\Db\Sql\Predicate\PredicateInterface $where
-     * @param string|array $order
-     * @param array        $columns
+     * @param DbSelect|Where|\Closure|string|array $where
      *
      * @return Paginator
      */
-    public function fetchPaginator($where = null, $order = null, $columns = null)
+    public function fetchPaginator($where = null)
     {
-        if ($where instanceof Select) {
-            $select = $where;
-        } else {
-            $select = $this->getSql()->select();
-            if ($where) {
-                $select->where($where);
-            }
-            if ($columns) {
-                $select->columns($columns);
-            }
-            if ($order) {
-                $select->order($order);
-            }
+        if (!$this->isInitialized) {
+            $this->initialize();
         }
 
-        $adapter = new DbSelect($select, $this->getAdapter());
+        if ($where instanceof DbSelect) {
+            $adapter = $where;
+        } else {
+            $select = $this->sql->select();
+
+            if ($where instanceof \Closure) {
+                $where($select);
+            } elseif ($where !== null) {
+                $select->where($where);
+            }
+
+            $adapter = new DbSelect($select, $this->getAdapter());
+        }
+
         return new Paginator($adapter);
     }
 

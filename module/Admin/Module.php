@@ -6,6 +6,7 @@ use Admin\Model\UserTable;
 use Zend\Authentication\Storage\Session;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\Mvc\MvcEvent;
+use Zend\Paginator\Paginator;
 use Zend\Permissions\Rbac\Rbac;
 use Zend\Permissions\Rbac\Role;
 use Zend\ServiceManager\ServiceManager;
@@ -17,19 +18,27 @@ class Module implements AutoloaderProviderInterface
         $em = $e->getApplication()->getEventManager();
         $em->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRouteAuth'), 0);
         $em->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($this, 'onError'));
+
+        //设置分页优先级要高于 controller dispatch
+        $em->attach(MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'), 100);
     }
 
     public function onError(MvcEvent $e)
     {
         if ($e->getError() == \Zend\Mvc\Application::ERROR_CONTROLLER_NOT_FOUND) {
             //todo 404 not found
-            $e->getViewModel()->setTemplate('layout/layout2');
+            //$e->getViewModel()->setTerminal(true);
+        } else {
+            //todo 500
+            $e->getViewModel()->setTerminal(true);
         }
     }
 
     /**
      * Login && RBAC
+     *
      * @todo permission rbac
+     *
      * @param MvcEvent $e
      */
     public function onRouteAuth(MvcEvent $e)
@@ -40,15 +49,15 @@ class Module implements AutoloaderProviderInterface
         $action     = $matches->getParam('action');
         $permission = "$module/$controller/$action";
 
-        $sm = $e->getApplication()->getServiceManager();
+        $sm               = $e->getApplication()->getServiceManager();
         $controllerLoader = $sm->get('ControllerLoader');
         if (!$controllerLoader->has($controller)) {
-            return ;
+            return;
         }
 
         /** @var \Zend\Authentication\AuthenticationService $auth */
         $auth  = $sm->get('auth');
-        $guest  = new Role('guest');
+        $guest = new Role('guest');
         $cache = $sm->get('cache');
 
         foreach ($this->getRolePermission('guest', $cache) as $r) {
@@ -73,7 +82,7 @@ class Module implements AutoloaderProviderInterface
             $guest->addPermission('admin/index/self');
 
             if ($guest->hasPermission($permission)) {
-                return ;
+                return;
             }
 
             foreach ($user->getRoles() as $role) {
@@ -92,14 +101,20 @@ class Module implements AutoloaderProviderInterface
         }
     }
 
+    public function onDispatch(MvcEvent $e)
+    {
+        Paginator::setDefaultItemCountPerPage(20);
+    }
+
     /**
-     * @param string $role
+     * @param string                                 $role
      * @param \Zend\Cache\Storage\Adapter\Filesystem $cache
+     *
      * @return array
      */
     public function getRolePermission($role, $cache)
     {
-        $key = str_replace(array('\\', '::'), '-', __METHOD__) . '_' . $role;
+        $key    = str_replace(array('\\', '::'), '-', __METHOD__) . '_' . $role;
         $result = $cache->getItem($key, $success);
 
         if (!$success) {
@@ -130,7 +145,7 @@ class Module implements AutoloaderProviderInterface
     public function getServiceConfig()
     {
         return array(
-            'factories'  => array(
+            'factories' => array(
                 'FileStorage' => '\Platform\File\Storage\StorageFactory'
             )
         );

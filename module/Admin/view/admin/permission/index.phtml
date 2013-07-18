@@ -2,7 +2,8 @@
 
 <script>
     $(document).ready(function () {
-        var serviceUrl = "/admin/permission/",
+        var $grid = $('.admin-permission-index-grid'),
+            serviceUrl = "/admin/permission/",
             dataSource = new kendo.data.DataSource({
                 transport: {
                     read: serviceUrl + "read",
@@ -31,12 +32,12 @@
                             break;
                         }
 
-                        $('.admin-permission-index-grid').data("kendoGrid").cancelChanges();
+                        $grid.data("kendoGrid").cancelChanges();
                     }
                 }
             });
 
-        $(".admin-permission-index-grid").kendoGrid({
+        $grid.kendoGrid({
             dataSource: dataSource,
             pageable: false,
             groupable: true,
@@ -70,7 +71,10 @@
                         }
                     }
                 ], title: "&nbsp;"}
-            ]
+            ],
+            dataBound: function(e) {
+                $grid.closest('.k-window-content').data('kendoWindow').center();
+            }
         });
 
         Platform.toolbarClick('admin-permission-init', serviceUrl + 'init');
