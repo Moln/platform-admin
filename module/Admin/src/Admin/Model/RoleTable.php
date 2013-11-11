@@ -27,7 +27,7 @@ class RoleTable extends AbstractTable
      *
      * @return null|\Zend\Db\ResultSet\ResultSetInterface
      */
-    public function getPermissions($role)
+    public function getPermissionsByRole($role)
     {
         $select = $this->sql->select();
         $select->columns(array());
@@ -43,6 +43,27 @@ class RoleTable extends AbstractTable
         );
 
         $select->where(array('name' => $role));
+        return $this->selectWith($select);
+    }
+
+    /**
+     * 获取所有角色关联权限
+     * @return null|\Zend\Db\ResultSet\ResultSetInterface
+     */
+    public function getPermissions()
+    {
+        $select = $this->sql->select();
+        $select->columns(array('name'));
+        $select->join(
+            'admin_assign_role_permission',
+            'admin_role.role_id=admin_assign_role_permission.role_id',
+            array()
+        );
+        $select->join(
+            'admin_permission',
+            'admin_assign_role_permission.per_id=admin_permission.per_id',
+            array('module', 'controller', 'action')
+        );
         return $this->selectWith($select);
     }
 }

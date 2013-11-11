@@ -30,4 +30,9 @@ return array(
 //        'shop',
 //        'payment',
     ),
+    'service_manager' => array(
+        'factories' => array(
+            'FileStorage' => '\Platform\File\Storage\StorageFactory'
+        )
+    ),
 );

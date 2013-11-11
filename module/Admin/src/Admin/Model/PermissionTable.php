@@ -7,6 +7,7 @@
 namespace Admin\Model;
 
 use Platform\Db\AbstractTable;
+use Zend\Db\Sql\Select;
 use Zend\Db\TableGateway\Feature\FeatureSet;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
@@ -25,5 +26,25 @@ class PermissionTable extends AbstractTable
     public function updateTitle($id, $title)
     {
         $this->update(array('title' => $title), array('per_id' => $id));
+    }
+
+    /**
+     * @param string $module
+     * @param string $ctrl
+     * @param string $action
+     * @return int
+     */
+    public function fetchByRule($module, $ctrl, $action)
+    {
+        $result = $this->select(function (Select $select) use ($module, $ctrl, $action) {
+            $select->columns(array('per_id'));
+            $select->where(array('module' => $module, 'controller' => $ctrl, 'action' => $action));
+        })->current();
+
+        if ($result) {
+            return (int) $result->per_id;
+        } else {
+            return 0;
+        }
     }
 }

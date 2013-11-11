@@ -124,6 +124,7 @@ class PermissionController extends AbstractActionController
             $pushRoles = $this->getRequest()->getPost('role_id');
             $assignTable->resetPermissionsById($permissionId, $pushRoles);
 
+            $this->getServiceLocator()->get('cache')->clearByTags(array('permission'));
             return new JsonModel(array(
                 'code' => 1
             ));
@@ -131,5 +132,19 @@ class PermissionController extends AbstractActionController
         return array(
             'roles' => $roles,
         );
+    }
+
+    public function queryAction()
+    {
+        $url = $this->getRequest()->getPost('url');
+        $url = parse_url($url);
+        $url = $url['path'];
+        $url = array_pad(explode('/', $url), 4, 'index');
+
+        array_shift($url);
+        list($module, $ctrl, $action) = $url;
+
+        $per_id = PermissionTable::getInstance()->fetchByRule($module, $ctrl, $action);
+        return new JsonModel(array('data' => implode('.', $url), 'code' => 1));
     }
 }

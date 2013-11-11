@@ -8,31 +8,34 @@
     <link rel="stylesheet" href="/styles/global.css"/>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/platform.js"></script>
-    <script src="/kendoui/js/kendo.web.min.js"></script>
+    <script src="/kendoui/src/js/kendo.web.js"></script>
     <!--[if lte IE 8]>
     <script src="https://github.com/douglascrockford/JSON-js/blob/master/json2.js"></script><![endif]-->
 
     <script>
         $.ajaxSetup({type: "POST", dataType: "json"});
         $(document).ready(function () {
-            $("#menu").kendoMenu({
-                select: function (e) {
-                    var $item = $(e.item);
-                    console.log($item, 'open:' + $item.data('url'));
+            var $menu = $("#menu").kendoMenu();
 
-                    if ($item.data('platformWindow')) {
-                        $item.data('platformWindow').data("kendoWindow").open();
-                    } else if ($item.data('url')) {
-                        var $win = Platform.newWindow({
-                            title: $item.text(),
-                            content: $item.data('url'),
-                            close: function () {
-                                this.destroy();
-                                $item.removeData('platformWindow');
-                            }
-                        });
-                        $item.data('platformWindow', $win);
-                    }
+            $menu.data('kendoMenu').append(<?=json_encode($menu)?>, $("#menu"));
+
+            $menu.on('click', 'a.k-link', function (e){
+                e.preventDefault();
+
+                var $item = $(this);
+
+                if ($item.data('platformWindow')) {
+                    $item.data('platformWindow').data("kendoWindow").open();
+                } else {
+                    var $win = Platform.newWindow({
+                        title: $item.text(),
+                        content: $item.attr('href'),
+                        close: function () {
+                            this.destroy();
+                            $item.removeData('platformWindow');
+                        }
+                    });
+                    $item.data('platformWindow', $win);
                 }
             });
         });
@@ -49,43 +52,26 @@
 <body>
 <div id="page">
     <ul id="menu">
-        <li>
-            系统
-            <ul>
-                <li data-url="/admin/user">
-                    用户管理
-                </li>
-                <li data-url="/admin/role">
-                    角色管理
-                </li>
-                <li data-url="/admin/permission">
-                    权限管理
-                </li>
-                <li data-url="/admin/index/self">
-                    个人信息
-                </li>
-            </ul>
-        </li>
-        <li>
-            积分商城
-            <ul>
-                <li data-url="/shop/goods">
-                    商品管理
-                </li>
-                <li data-url="/shop/category">
-                    商品类别管理
-                </li>
-                <li data-url="/shop/game-category">
-                    商品游戏分类
-                </li>
-                <li data-url="/shop/order">
-                    订单管理
-                </li>
-                <li data-url="/shop/express">
-                    快递地区管理
-                </li>
-            </ul>
-        </li>
+<!--        <li>-->
+<!--            积分商城-->
+<!--            <ul>-->
+<!--                <li data-url="/shop/goods">-->
+<!--                    商品管理-->
+<!--                </li>-->
+<!--                <li data-url="/shop/category">-->
+<!--                    商品类别管理-->
+<!--                </li>-->
+<!--                <li data-url="/shop/game-category">-->
+<!--                    商品游戏分类-->
+<!--                </li>-->
+<!--                <li data-url="/shop/order">-->
+<!--                    订单管理-->
+<!--                </li>-->
+<!--                <li data-url="/shop/express">-->
+<!--                    快递地区管理-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </li>-->
     </ul>
     <div id="window">
         <div class="p-block k-block k-shadow">Block with shadow</div>

@@ -31,10 +31,12 @@ class UserController extends AbstractActionController
             }
         );
         $paginator->setCurrentPageNumber($this->getRequest()->getPost('page', 1));
-        return new JsonModel(array(
-            'total' => $paginator->getTotalItemCount(),
-            'data'  => $paginator->getCurrentItems()->toArray()
-        ));
+        return new JsonModel(
+            array(
+                 'total' => $paginator->getTotalItemCount(),
+                 'data'  => $paginator->getCurrentItems()->toArray()
+            )
+        );
     }
 
     public function saveAction()
@@ -76,9 +78,11 @@ class UserController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $pushRoles = $this->getRequest()->getPost('role_id');
             $assignTable->resetUsersById($userId, $pushRoles);
-            return new JsonModel(array(
-                                      'code' => 1
-                                 ));
+            return new JsonModel(
+                array(
+                     'code' => 1
+                )
+            );
         }
         return array(
             'roles' => $roles,

@@ -50,15 +50,15 @@ return array(
         'invokables' => array(
             'uri' => 'Platform\View\Helper\Uri',
         ),
-        'factories'  => array(
-            'identity' => function (HelperPluginManager $hpm) {
-                $identity = new Identity();
-                $identity->setAuthenticationService(
-                    $hpm->getServiceLocator()->get('auth')
-                );
-                return $identity;
-            }
-        ),
+//        'factories'  => array(
+//            'identity' => function (HelperPluginManager $hpm) {
+//                $identity = new Identity();
+//                $identity->setAuthenticationService(
+//                    $hpm->getServiceLocator()->get('auth')
+//                );
+//                return $identity;
+//            }
+//        ),
     ),
     'router'             => array(
         'routes' => array(

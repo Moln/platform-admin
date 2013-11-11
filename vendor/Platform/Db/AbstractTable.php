@@ -136,7 +136,8 @@ abstract class AbstractTable extends AbstractTableGateway
     {
         $insert = false;
         $where  = array();
-        $temp   = $data;
+
+        $temp   = $this->columns ? array_intersect_key($data, array_flip($this->columns)) : $data;
         if (empty($this->primary)) {
             throw new \RuntimeException('Empty primary, can\'t use save() method.');
         }
@@ -149,6 +150,7 @@ abstract class AbstractTable extends AbstractTableGateway
             $where[$primary] = $temp[$primary];
             unset($temp[$primary]);
         }
+//        var_dump($this->());exit;
 
         if ($insert) {
             $result         = $this->insert($temp);

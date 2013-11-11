@@ -1,6 +1,7 @@
 <?php
 /**
  * platform-admin RoleController.php
+ *
  * @DateTime 13-4-26 下午5:18
  */
 
@@ -15,8 +16,9 @@ use Zend\View\Model\JsonModel;
 
 /**
  * Class RoleController
+ *
  * @package Admin\Controller
- * @author Moln Xie
+ * @author  Moln Xie
  * @version $Id: RoleController.php 1077 2013-07-03 07:47:44Z maomao $
  */
 class RoleController extends AbstractActionController
@@ -36,6 +38,8 @@ class RoleController extends AbstractActionController
         if ($form->isValid()) {
             $data = $form->getData();
             RoleTable::getInstance()->save($data);
+
+            $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
             return new JsonModel($data);
         } else {
             return new JsonModel(array('errors' => $form->getInputFilter()->getMessages()));
@@ -48,22 +52,25 @@ class RoleController extends AbstractActionController
         RoleTable::getInstance()->deletePrimary($roleId);
         AssignUserTable::getInstance()->removeRoleId($roleId);
         AssignPermissionTable::getInstance()->removeRoleId($roleId);
+
+        $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
         return new JsonModel(array());
     }
 
     public function assignPermissionAction()
     {
-        $roleId       = $this->params('id');
-        $assignTable  = new AssignPermissionTable();
-        $permissions  = $assignTable->getPermissionsByRoleId($roleId);
+        $roleId      = $this->params('id');
+        $assignTable = new AssignPermissionTable();
+        $permissions = $assignTable->getPermissionsByRoleId($roleId);
 
         if ($this->getRequest()->isPost()) {
             $pushPermissions = $this->getRequest()->getPost('per_id');
             $assignTable->resetPermissionsByRoleId($roleId, $pushPermissions);
 
+            $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
             return new JsonModel(array(
-                'code' => 1
-            ));
+                                      'code' => 1
+                                 ));
         }
         return array(
             'permissions' => $permissions,
@@ -80,9 +87,8 @@ class RoleController extends AbstractActionController
             $pushUsers = $this->getRequest()->getPost('user_id');
             $assignTable->resetUsersByRoleId($roleId, $pushUsers);
 
-            return new JsonModel(array(
-                'code' => 1
-            ));
+            $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
+            return new JsonModel(array('code' => 1));
         }
         return array(
             'users' => $users,

@@ -2,6 +2,7 @@
 namespace Admin\Model;
 
 use Zend\Db\RowGateway\RowGateway;
+use Zend\Permissions\Rbac\Rbac;
 
 /**
  * User.php
@@ -20,6 +21,7 @@ use Zend\Db\RowGateway\RowGateway;
 class User extends RowGateway
 {
     private $roles;
+    private $rbac;
 
     /**
      * @param mixed $user_id
@@ -157,5 +159,39 @@ class User extends RowGateway
         $this->table = UserTable::getInstance()->getTable();
         $this->sql = UserTable::getInstance()->getSql();
         $this->initialize();
+    }
+
+    /**
+     * @param $permission
+     * @return Rbac
+     */
+    public function isAllow($permission)
+    {
+
+        foreach ($this->getRoles() as $role) {
+            if ($this->getRbac()->isGranted($role, $permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return Rbac
+     */
+    public function getRbac()
+    {
+        return $this->rbac;
+    }
+
+    /**
+     * @param Rbac $rbac
+     * @return $this
+     */
+    public function setRbac(Rbac $rbac)
+    {
+        $this->rbac = $rbac;
+        return $this;
     }
 }
