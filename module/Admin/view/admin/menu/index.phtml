@@ -1,0 +1,183 @@
+<div>
+    <button class="k-button" id="admin-menu-index-tree-save"><span class="k-icon k-i-tick"></span>保 存</button>
+    <hr>
+</div>
+<div>
+    <div>root <span id="admin-menu-index-tree-add" class="admin-menu-index-tree-add k-icon k-i-plus"></span></div>
+    <div id="admin-menu-index-tree"></div>
+</div>
+
+<div class="admin-menu-index-tree-add-form pa-box">
+    <form class="form">
+        <ul>
+            <li>
+                <label>上级菜单:</label>
+                <span class="parent-name"></span>
+            </li>
+            <li>
+                <label for="text">名称:</label>
+                <input type="text" class="k-textbox" name="text" autofocus="autofocus" required />
+            </li>
+            <li>
+                <label for="url">URL:</label>
+                <input type="text" class="k-textbox" name="url" />
+            </li>
+            <li>
+                <label for="permission">关联权限ID:</label>
+                <input type="text" class="k-textbox" name="permission" />
+            </li>
+            <li class="form-row">
+                <button class="k-button" type="submit"><span class="k-icon k-i-tick"></span>提 交</button>
+            </li>
+        </ul>
+    </form>
+</div>
+
+<div class="admin-menu-index-tree-edit-form pa-box">
+    <form class="form">
+        <ul>
+            <li>
+                <label>上级菜单:</label>
+                <span class="parent-name"></span>
+            </li>
+            <li>
+                <label for="text">名称:</label>
+                <input type="text" class="k-textbox" name="text" autofocus="autofocus" required />
+            </li>
+            <li>
+                <label for="url">URL:</label>
+                <input type="text" class="k-textbox" name="url" />
+            </li>
+            <li>
+                <label for="permission">关联权限:</label>
+                <input type="text" class="k-textbox" name="permission" />
+            </li>
+            <li class="form-row">
+                <button class="k-button" type="submit"><span class="k-icon k-i-tick"></span>提 交</button>
+            </li>
+        </ul>
+    </form>
+</div>
+<style>
+    #admin-menu-index-tree {
+        width: 30em;
+        float: left;
+    }
+    .admin-menu-index-tree-add-form,
+    .admin-menu-index-tree-edit-form{
+        padding: 2em;
+        width: 460px;
+        display: none;
+    }
+    .admin-menu-index-tree-add:hover,
+    .admin-menu-index-tree-delete:hover
+    {
+        opacity: 0.5;
+    }
+</style>
+
+<script>
+    (function (){
+
+        var serviceUrl = '/admin/menu/';
+
+        var $tree = $("#admin-menu-index-tree").kendoTreeView({
+                dragAndDrop: true,
+                dataSource: <?=json_encode($menu)?>,
+                dataUrlField: "Null",
+                template: kendo.template($("#admin-menu-index-tree-template").html()),
+                select: function(e) {
+                    var dataItem = $treeView.dataItem(e.node);
+                    $editForm.parent().show().siblings('.pa-box').hide();
+                    $editForm.data('current', e.node);
+                    $editForm.find('input[name=text]').val(dataItem.text);
+                    $editForm.find('input[name=url]').val(dataItem.url);
+                    $editForm.find('input[name=permission]').val(dataItem.permission);
+                }
+            }),
+            $treeView = $tree.data('kendoTreeView'),
+
+            //添加菜单
+            $form = $('.admin-menu-index-tree-add-form form').submit(function (e){
+                e.preventDefault();
+
+                var parent = $form.data('appendParent') || undefined,
+                    data = {"text": this.text.value};
+                if (this.url.value) data.url = this.url.value;
+                if (this.permission.value) data.permission = this.permission.value;
+
+                $treeView.append(data, parent);
+                $form.find('input:text').val('');
+            }),
+
+            //编辑菜单
+            $editForm = $('.admin-menu-index-tree-edit-form form').submit(function (e){
+                e.preventDefault();
+
+                var item = $treeView.dataItem($editForm.data('current'));
+                item.set('text', this.text.value);
+                item.set('url', this.url.value);
+                item.set('permission', this.permission.value);
+                $treeView.text($editForm.data('current'), this.text.value);
+            });
+
+        $treeView.select($());
+
+        //Root节点添加
+        $('#admin-menu-index-tree-add').click(function (){
+            $form.parent().show().siblings('.pa-box').hide();
+            $form.find('input:text').val('');
+            $form.find('span.parent-name').html('根菜单');
+            $form.find('input:first').focus();
+            return false;
+        });
+
+        //节点添加
+        $tree.on("click", ".admin-menu-index-tree-add", function(e) {
+            var dataItem = $treeView.dataItem($(this).closest(".k-item"));
+
+            $form.parent().show().siblings('.pa-box').hide();
+            $form.find('input:text').val('');
+            $form.find('span.parent-name').html(dataItem.text);
+            $form.data('appendParent', $(this).closest(".k-item"));
+            $form.find('input:first').focus();
+            return false;
+        });
+
+        //节点删除
+        $tree.on("click", ".admin-menu-index-tree-delete", function(e) {
+            e.preventDefault();
+            $treeView.remove($(this).closest(".k-item"));
+            return false;
+        });
+
+        //点击保存
+        $('#admin-menu-index-tree-save').click(function (e){
+            e.preventDefault();
+        }).paRemoteClick(function (e){
+            e.preventDefault();
+            return {
+                url: '/admin/menu/save',
+                data: {data: JSON.stringify($treeView.dataSource.view())},
+                message: '更新成功'
+            };
+        });
+
+        $form.add($editForm).on('blur', 'input[name=url]', function (){
+            var self = this, $input = $(this).closest('form').find('input[name=permission]');
+
+            $.post('/admin/permission/query', 'url='+this.value, function (result){
+                if (result.code) {
+                    $input.val(result.data);
+                }
+            });
+        });
+    })();
+
+</script>
+
+<script id="admin-menu-index-tree-template" type="text/kendo-ui-template">
+    #: item.text #
+    <span class="admin-menu-index-tree-add k-icon k-i-plus"></span>
+    <span class="admin-menu-index-tree-delete k-icon k-i-close"></span>
+</script>
