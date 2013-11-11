@@ -70,8 +70,6 @@ class IndexController extends AbstractActionController
             }
         }
 
-        (new ViewModel());
-
         return array();
     }
 }
