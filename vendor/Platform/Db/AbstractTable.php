@@ -19,7 +19,7 @@ use Zend\Paginator\Paginator;
  * Class AbstractTable
  * @package Platform\Db
  * @author Moln Xie
- * @version $Id: AbstractTable.php 1077 2013-07-03 07:47:44Z maomao $
+ * @version $Id: AbstractTable.php 1361 2014-04-09 19:38:47Z maomao $
  */
 abstract class AbstractTable extends AbstractTableGateway
 {

@@ -2,13 +2,11 @@
 namespace Admin\Controller;
 
 use Admin\Form\SelfForm;
-use Admin\Model\AssignPermissionTable;
 use Admin\Model\MenuTable;
 use Admin\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Version\Version;
 use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {

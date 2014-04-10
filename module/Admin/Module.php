@@ -1,15 +1,10 @@
 <?php
 namespace Admin;
 
-use Admin\Model\RoleTable;
-use Admin\Model\UserTable;
-use Zend\Authentication\Storage\Session;
+use Exception;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\Mvc\MvcEvent;
 use Zend\Paginator\Paginator;
-use Zend\Permissions\Rbac\Rbac;
-use Zend\Permissions\Rbac\Role;
-use Zend\ServiceManager\ServiceManager;
 
 class Module implements AutoloaderProviderInterface
 {

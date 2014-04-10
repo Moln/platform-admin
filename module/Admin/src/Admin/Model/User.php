@@ -8,7 +8,7 @@ use Zend\Permissions\Rbac\Rbac;
  * User.php
  * @author Administrator
  * @DateTime 12-12-29 上午11:43
- * @version $Id: User.php 1077 2013-07-03 07:47:44Z maomao $
+ * @version $Id: User.php 1361 2014-04-09 19:38:47Z maomao $
  *
  * @property $user_id
  * @property $account

@@ -19,7 +19,7 @@ use Zend\View\Model\JsonModel;
  *
  * @package Admin\Controller
  * @author  Moln Xie
- * @version $Id: RoleController.php 1077 2013-07-03 07:47:44Z maomao $
+ * @version $Id: RoleController.php 1361 2014-04-09 19:38:47Z maomao $
  */
 class RoleController extends AbstractActionController
 {

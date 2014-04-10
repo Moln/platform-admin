@@ -17,7 +17,7 @@ use Zend\View\Model\JsonModel;
  * Class Permission
  * @package Admin\Controller
  * @author Moln Xie
- * @version $Id: PermissionController.php 1077 2013-07-03 07:47:44Z maomao $
+ * @version $Id: PermissionController.php 1361 2014-04-09 19:38:47Z maomao $
  */
 class PermissionController extends AbstractActionController
 {

@@ -23,6 +23,7 @@ class MenuForm extends Form
         $inputFilter = new InputFilter();
         $factory     = new Factory();
 
+
         $inputFilter->add(
             $factory->createInput(
                 array(
