@@ -68,6 +68,7 @@
         padding: 2em;
         width: 460px;
         display: none;
+        float: left;
     }
     .admin-menu-index-tree-add:hover,
     .admin-menu-index-tree-delete:hover
@@ -163,9 +164,11 @@
             };
         });
 
+        console.log($form.add($editForm).find('input[name=url]'));
         $form.add($editForm).on('blur', 'input[name=url]', function (){
             var self = this, $input = $(this).closest('form').find('input[name=permission]');
 
+            console.log(this.value);
             $.post('/admin/permission/query', 'url='+this.value, function (result){
                 if (result.code) {
                     $input.val(result.data);

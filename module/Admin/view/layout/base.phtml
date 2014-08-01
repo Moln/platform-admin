@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Admin framework</title>
+    <link href="/kendoui/styles/kendo.common.min.css" rel="stylesheet"/>
+    <link href="/kendoui/styles/kendo.default.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/styles/global.css"/>
+    <!--[if lte IE 8]>
+    <script src="https://github.com/douglascrockford/JSON-js/blob/master/json2.js"></script>
+    <![endif]-->
+
+    <!-- Scripts -->
+    <?php echo $this->headScript()
+        ->prependFile($this->basePath() . '/js/jquery.min.js')
+        ->prependFile($this->basePath() . '/kendoui/js/kendo.web.min.js')
+    ; ?>
+
+    <script>
+        $.ajaxSetup({type: "POST", dataType: "json"});
+        $(document).ready(function () {
+            var $menu = $("#nav").kendoMenu();
+
+            $menu.data('kendoMenu').append(<?=json_encode($menu)?>, $("#nav"));
+
+            $menu.on('click', 'a.k-link', function (e){
+                e.preventDefault();
+
+                var $item = $(this);
+
+                if ($item.data('platformWindow')) {
+                    $item.data('platformWindow').data("kendoWindow").open();
+                } else {
+                    var $win = Platform.newWindow({
+                        title: $item.text(),
+                        content: $item.attr('href'),
+                        close: function () {
+                            this.destroy();
+                            $item.removeData('platformWindow');
+                        }
+                    });
+                    $item.data('platformWindow', $win);
+                }
+            });
+        });
+    </script>
+    <style>
+        #window {
+            margin-top: 1em;
+        }
+        .p-block {
+            width: 150px;
+        }
+
+        #nav {
+            position: relative;
+        }
+
+        #setting {
+            position: absolute;
+            right: 0;
+            height: 28px;
+            line-height: 30px;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+<header></header>
+<div class="container">
+    <aside>
+        <nav id="nav"></nav>
+    </aside>
+</div>
+<footer></footer>
+<div id="page">
+    <div id="nav">
+        <ul id="menu">
+        </ul>
+        <div id="setting">
+            dfssdfsdf
+        </div>
+    </div>
+    <div id="window">
+        <div class="p-block k-block k-shadow">Block with shadow</div>
+    </div>
+</div>
+<div class="tasks"></div>
+</body>
+</html>

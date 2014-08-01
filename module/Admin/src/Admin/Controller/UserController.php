@@ -23,6 +23,11 @@ use Zend\View\Model\JsonModel;
  */
 class UserController extends AbstractActionController
 {
+
+    public function indexAction()
+    {
+
+    }
     public function readAction()
     {
         $paginator = UserTable::getInstance()->fetchPaginator(

@@ -20,7 +20,7 @@ use Zend\View\HelperPluginManager;
 return array(
     'db'                 => array(
         'driver'         => 'Pdo',
-        'dsn'            => 'mysql:dbname=platform;host=localhost',
+        'dsn'            => 'mysql:dbname=platform-admin;host=localhost',
         'driver_options' => array(
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
         ),

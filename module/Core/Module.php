@@ -24,6 +24,7 @@ class Module
     {
         $eventManager = $e->getApplication()->getEventManager();
         $eventManager->attach(MvcEvent::EVENT_ROUTE, array($this, 'onRoute'));
+        $e->getApplication()->getServiceManager()->get('db');
     }
 
     /**
@@ -47,11 +48,6 @@ class Module
                 $controllerLoader->setInvokableClass($controller, $ctrlClass);
             }
         }
-    }
-
-    public function getConfig()
-    {
-        return include __DIR__ . '/config/module.config.php';
     }
 
     public function getAutoloaderConfig()

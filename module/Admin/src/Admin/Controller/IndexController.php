@@ -27,7 +27,6 @@ class IndexController extends AbstractActionController
                         continue;
                     }
                 }
-
                 if (isset($item['items'])) {
                     $menu[$key]['items'] = array_values($menuFilter($item['items'], $user));
                 }
@@ -69,5 +68,10 @@ class IndexController extends AbstractActionController
         }
 
         return array();
+    }
+
+    public function mainAction()
+    {
+
     }
 }

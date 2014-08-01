@@ -51,9 +51,9 @@ var Platform = {
     newWindow: function (params){
         var $win = $('<div></div>');
         var kw = $win.kendoWindow($.extend({
-            width: document.body.offsetWidth*0.86,
-            minWidth: 1000,
-            minHeight: 400,
+            width: '50%',
+//            minWidth: '100%',
+//            minHeight: 400,
             maxHeight: document.body.offsetHeight-70,
             actions: ["Refresh", /*"Custom",*/ "Minimize", "Maximize", "Close"],
             close: function (){

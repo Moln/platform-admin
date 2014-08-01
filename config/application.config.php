@@ -4,9 +4,9 @@ return array(
     'modules' => array(
         'Core',
         'Admin',
-        'Shop',
-        'User',
-        'Payment',
+//        'Shop',
+//        'User',
+//        'Payment',
     ),
 
     // These are various options for the listeners attached to the ModuleManager
@@ -17,7 +17,7 @@ return array(
         // Module class.
         'module_paths' => array(
            './module',
-            './vendor',
+           './vendor',
         ),
 
         // An array of paths from which to glob configuration files after
@@ -25,6 +25,7 @@ return array(
         // provided by modules themselves. Paths may use GLOB_BRACE notation.
         'config_glob_paths' => array(
             'config/autoload/{,*.}{global,local}.php',
+            'module/*/config/module.config.php',
         ),
 
         // Whether or not to enable a configuration cache.

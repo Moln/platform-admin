@@ -163,9 +163,9 @@ INSERT INTO `admin_permission` VALUES ('1', 'core', 'auth', 'index', 'core.auth.
 INSERT INTO `admin_permission` VALUES ('2', 'core', 'auth', 'login', 'core.auth.login');
 INSERT INTO `admin_permission` VALUES ('3', 'core', 'index', 'index', 'core.index.index');
 INSERT INTO `admin_permission` VALUES ('4', 'core', 'index', 'application', 'core.index.application');
-INSERT INTO `admin_permission` VALUES ('5', 'admin', 'image-browser', 'read', '图片上传-列表图片');
-INSERT INTO `admin_permission` VALUES ('6', 'admin', 'image-browser', 'delete', '图片上传-删除图片');
-INSERT INTO `admin_permission` VALUES ('7', 'admin', 'image-browser', 'create', '图片上传-创建文件夹');
+INSERT INTO `admin_permission` VALUES ('5', 'admin', 'image-browser', 'read', 'ͼƬ�ϴ�-�б�ͼƬ');
+INSERT INTO `admin_permission` VALUES ('6', 'admin', 'image-browser', 'delete', 'ͼƬ�ϴ�-ɾ��ͼƬ');
+INSERT INTO `admin_permission` VALUES ('7', 'admin', 'image-browser', 'create', 'ͼƬ�ϴ�-�����ļ���');
 INSERT INTO `admin_permission` VALUES ('8', 'admin', 'image-browser', 'thumbnail', 'admin.image-browser.thumbnail');
 INSERT INTO `admin_permission` VALUES ('9', 'admin', 'image-browser', 'upload', 'admin.image-browser.upload');
 INSERT INTO `admin_permission` VALUES ('10', 'admin', 'image-browser', 'index', 'Default action if none provided');
@@ -173,8 +173,8 @@ INSERT INTO `admin_permission` VALUES ('11', 'admin', 'index', 'self', 'admin.in
 INSERT INTO `admin_permission` VALUES ('12', 'admin', 'index', 'index', 'Default action if none provided');
 INSERT INTO `admin_permission` VALUES ('13', 'admin', 'permission', 'read', 'admin.permission.read');
 INSERT INTO `admin_permission` VALUES ('14', 'admin', 'permission', 'save', 'admin.permission.save');
-INSERT INTO `admin_permission` VALUES ('15', 'admin', 'permission', 'init', '初始化权限');
-INSERT INTO `admin_permission` VALUES ('16', 'admin', 'permission', 'assign', '角色权限分配');
+INSERT INTO `admin_permission` VALUES ('15', 'admin', 'permission', 'init', '��ʼ��Ȩ��');
+INSERT INTO `admin_permission` VALUES ('16', 'admin', 'permission', 'assign', '��ɫȨ�޷���');
 INSERT INTO `admin_permission` VALUES ('17', 'admin', 'permission', 'index', 'Default action if none provided');
 INSERT INTO `admin_permission` VALUES ('18', 'admin', 'role', 'read', 'admin.role.read');
 INSERT INTO `admin_permission` VALUES ('19', 'admin', 'role', 'save', 'admin.role.save');
@@ -260,14 +260,3 @@ CREATE TABLE `admin_user` (
 -- Records of admin_user
 -- ----------------------------
 INSERT INTO `admin_user` VALUES ('1', 'admin', '96e79218965eb72c92a549dd5a330112', '1', 'administrator', 'admin@admin.com');
-INSERT INTO `admin_user` VALUES ('2', 'test', '111111', '0', 'test', 'test@test.com');
-INSERT INTO `admin_user` VALUES ('16', 'test3', '4297f44b13955235245b2497399d7a93', '0', '张三', 'xiemaomao520@163.com');
-INSERT INTO `admin_user` VALUES ('17', 'dfsdfs', '96e79218965eb72c92a549dd5a330112', '0', '张三', 'xiemaomao520@163.com');
-INSERT INTO `admin_user` VALUES ('21', 'test4', '96e79218965eb72c92a549dd5a330112', '0', '张三', 'xiemaomao520@163.com');
-INSERT INTO `admin_user` VALUES ('22', 'test5', 'e3ceb5881a0a1fdaad01296d7554868d', '0', '张三2', 'xiemaomao520@163.com');
-INSERT INTO `admin_user` VALUES ('23', 'test6', '96e79218965eb72c92a549dd5a330112', '0', '张三3', 'xiemaomao520@163.com');
-INSERT INTO `admin_user` VALUES ('24', 'test7', '96e79218965eb72c92a549dd5a330112', '0', 'test7', 'xiemaomao520@163.com');
-INSERT INTO `admin_user` VALUES ('25', 'test8', '96e79218965eb72c92a549dd5a330112', '0', '11212', '19177707182@qq.com');
-INSERT INTO `admin_user` VALUES ('26', 'maomao', '123123', '0', 'sdfsf', 'xiemaomao520@163.com');
-INSERT INTO `admin_user` VALUES ('27', 'oho', '96e79218965eb72c92a549dd5a330112', '0', 'yuiyiu', '19177707182@qq.com');
-INSERT INTO `admin_user` VALUES ('28', 'aa', 'e10adc3949ba59abbe56e057f20f883e', '0', 'aa', 'aa@aa.com');
