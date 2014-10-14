@@ -1,8 +1,4 @@
 <?php
-/**
- * platform-admin ImageBrowserController.php
- * @DateTime 13-5-23 下午5:21
- */
 namespace Admin\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
@@ -10,16 +6,16 @@ use Zend\View\Model\JsonModel;
 
 /**
  * Class ImageBrowserController
+ *
  * @package Admin\Controller
- * @author Xiemaomao
- * @version $Id$
+ * @author  Moln
  *
  * @method \Zend\Http\Request getRequest();
  */
 class ImageBrowserController extends AbstractActionController
 {
     /**
-     * @return \Platform\File\Storage\AbstractStorage
+     * @return \Gzfextra\File\Storage\AbstractStorage
      */
     public function getFileStorage()
     {
@@ -65,12 +61,12 @@ class ImageBrowserController extends AbstractActionController
 
     public function uploadAction()
     {
-        $name    = 'file';
+        $name = 'file';
 //        $urlPath = date('/Ym/d/');
 //        $this->mkdirs($path);
 
         $fileStorage = $this->getFileStorage();
-        $file = $this->getRequest()->getFiles('file');
+        $file        = $this->getRequest()->getFiles('file');
 
         if ($fileStorage->isValid($file)) {
             $file = $fileStorage->upload($file);

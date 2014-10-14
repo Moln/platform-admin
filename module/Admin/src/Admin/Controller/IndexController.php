@@ -3,9 +3,7 @@ namespace Admin\Controller;
 
 use Admin\Form\SelfForm;
 use Admin\Model\MenuTable;
-use Admin\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Version\Version;
 use Zend\View\Model\JsonModel;
 
 class IndexController extends AbstractActionController
@@ -37,7 +35,8 @@ class IndexController extends AbstractActionController
         $menu = $menuFilter($menu);
 
         return array(
-            'menu' => $menu
+            'realname' => $this->identity()->getRealName(),
+            'menu'     => $menu
         );
     }
 
@@ -49,7 +48,7 @@ class IndexController extends AbstractActionController
             $form->loadInputFilter();
             $form->setData($_POST);
             if ($form->isValid()) {
-                $data     = $form->getData();
+                $data = $form->getData();
                 /** @var \Admin\Model\User $identity */
                 $identity = $this->identity();
                 if ($data['password']) {
@@ -68,10 +67,5 @@ class IndexController extends AbstractActionController
         }
 
         return array();
-    }
-
-    public function mainAction()
-    {
-
     }
 }

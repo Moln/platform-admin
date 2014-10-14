@@ -4,23 +4,27 @@
         padding: 10px 20px 20px 0;
     }
 </style>
-<form class="form k-content admin-self" action="<?=$this->uri()->getPath()?>">
+<form class="form k-content admin-self" action="<?= $this->uri()->getPath() ?>">
     <ul>
         <li>
             <label for="password">密码:</label>
-            <input type="password" placeholder="不修改密码无需输入" class="k-textbox" name="password" minlength="6" maxlength="20">
+            <input type="password" placeholder="不修改密码无需输入" class="k-textbox" name="password" minlength="6"
+                   maxlength="20">
         </li>
         <li>
             <label for="confirm_password">确认密码:</label>
-            <input type="password" placeholder="不修改密码无需输入" class="k-textbox" name="confirm_password" minlength="6" maxlength="20">
+            <input type="password" placeholder="不修改密码无需输入" class="k-textbox" name="confirm_password" minlength="6"
+                   maxlength="20">
         </li>
         <li>
             <label for="real_name" class="required">真实姓名:</label>
-            <input name="real_name" class="k-textbox" type="text" required value="<?=$this->identity()->getRealName()?>" />
+            <input name="real_name" class="k-textbox" type="text" required
+                   value="<?= $this->identity()->getRealName() ?>"/>
         </li>
         <li>
             <label for="email" class="required">Email:</label>
-            <input type="email" name="email" class="k-textbox" value="<?=$this->identity()->getEmail()?>" required data-email-msg="邮箱格式不正确" />
+            <input type="email" name="email" class="k-textbox" value="<?= $this->identity()->getEmail() ?>" required
+                   data-email-msg="邮箱格式不正确"/>
         </li>
         <li class="form-row">
             <button class="k-button" type="submit"><span class="k-icon k-i-tick"></span>提 交</button>
@@ -34,14 +38,14 @@
             confirm_password: "两次输入的密码不一致"
         },
         rules: {
-            confirm_password: function(input) {
+            confirm_password: function (input) {
                 if (input.is('[name=confirm_password]')) {
                     return input.val() == $(".admin-self input[name=password]").val();
                 }
                 return true;
             }
         }
-    }).submit(function (){
+    }).submit(function () {
         var $this = $(this), $submit = $this.find('.k-button > span');
         $submit.toggleClass('k-i-tick').toggleClass('k-loading');
         $.ajax({
@@ -56,7 +60,7 @@
                     }
                 }
             },
-            complete: function (){
+            complete: function () {
                 $submit.toggleClass('k-i-tick').toggleClass('k-loading');
             }
         });

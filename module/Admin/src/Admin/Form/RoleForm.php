@@ -1,9 +1,4 @@
 <?php
-/**
- * platform-admin RoleForm.php
- * @DateTime 13-4-18 上午10:12
- */
-
 namespace Admin\Form;
 
 use Admin\Model\RoleTable;
@@ -14,9 +9,9 @@ use Zend\InputFilter\InputFilter;
 
 /**
  * Class RoleForm
+ *
  * @package Admin\Form
- * @author Moln Xie
- * @version $Id: RoleForm.php 1077 2013-07-03 07:47:44Z maomao $
+ * @author  Moln Xie
  */
 class RoleForm extends Form
 {
@@ -45,20 +40,32 @@ class RoleForm extends Form
         $inputFilter->add(
             $factory->createInput(
                 array(
-                    'name'     => 'name',
-                    'required' => true,
-                    'filters'  => array(
+                    'name'       => 'name',
+                    'required'   => true,
+                    'filters'    => array(
                         array('name' => 'StringTrim'),
                     ),
                     'validators' => array(
                         array(
                             'name'    => 'Db\NoRecordExists',
-                            'options' =>     array(
+                            'options' => array(
                                 'table'   => RoleTable::getInstance()->getTable(),
                                 'field'   => 'name',
                                 'adapter' => RoleTable::getInstance()->getAdapter()
                             ),
                         ),
+                    ),
+                )
+            )
+        );
+
+        $inputFilter->add(
+            $factory->createInput(
+                array(
+                    'name'     => 'parent',
+                    'required' => false,
+                    'filters'  => array(
+                        array('name' => 'int'),
                     ),
                 )
             )

@@ -1,29 +1,32 @@
-<form class="admin-role-assign-grid"></form>
+<form class="admin-role-assign-grid<?= $role_id ?>"></form>
 <script>
     $(document).ready(function () {
         var permissions = <?=json_encode($permissions)?>;
         var dataSource = new kendo.data.DataSource({
-                transport: {
-                    read: "/admin/permission/read"
-                },
-                group: [{ field: "module" }, { field: "controller" }],
-                schema: {
-                    model: {
-                        id: "per_id",
-                        fields: {
-                            per_id: {type: "number", editable: false, nullable: true },
-                            module: {editable: false},
-                            controller: {editable: false},
-                            action: {editable: false},
-                            title: {validation: { required: true}}
-                        }
+            transport: {
+                read: "./admin/permission/read"
+            },
+            group: [
+                { field: "module" },
+                { field: "controller" }
+            ],
+            schema: {
+                model: {
+                    id: "per_id",
+                    fields: {
+                        per_id: {type: "number", editable: false, nullable: true },
+                        module: {editable: false},
+                        controller: {editable: false},
+                        action: {editable: false},
+                        title: {validation: { required: true}}
                     }
                 }
-            });
+            }
+        });
 
-        var $grid = $(".admin-role-assign-grid");
+        var $grid = $(".admin-role-assign-grid<?=$role_id?>");
 
-        var $selectAll = $("<input type='checkbox'>").click(function (){
+        var $selectAll = $("<input type='checkbox'>").click(function () {
             $grid.find('input:checkbox[name="per_id[]"]').prop('checked', this.checked);
         });
 
@@ -34,13 +37,13 @@
             toolbar: function () {
                 var grid = $grid.data('kendoGrid');
                 var $button = $(grid._createButton({
-                    text:"确认分配",
-                    name:"admin-role-assign",
-                    imageClass:"k-i-tick",
-                    iconClass:"k-icon"
+                    text: "确认分配",
+                    name: "admin-role-assign",
+                    imageClass: "k-i-tick",
+                    iconClass: "k-icon"
                 }));
 
-                Platform.toolbarClick($button, function (){
+                Platform.ui.toolbarClick($button, function () {
                     return {
                         url: '<?=$this->uri()->getPath()?>',
                         data: $grid.serialize(),
@@ -49,35 +52,35 @@
                 });
 
                 var $collapseAll = $(grid._createButton({
-                    text:"收缩",
-                    name:"collapse",
-                    imageClass:"k-i-collapse",
-                    iconClass:"k-icon"
-                })).click(function (){
+                    text: "收缩",
+                    name: "collapse",
+                    imageClass: "k-i-collapse",
+                    iconClass: "k-icon"
+                })).click(function () {
                     $grid.find('.k-i-collapse').click();
                 });
 
                 var $expandAll = $(grid._createButton({
-                    text:"展开",
-                    name:"expand",
-                    imageClass:"k-i-expand",
-                    iconClass:"k-icon"
-                })).click(function (){
-                        $grid.find('.k-i-expand').click();
-                    });
+                    text: "展开",
+                    name: "expand",
+                    imageClass: "k-i-expand",
+                    iconClass: "k-icon"
+                })).click(function () {
+                    $grid.find('.k-i-expand').click();
+                });
 
                 return $('<div />').append($button).append($expandAll).append($collapseAll);
             },
-            columns:[
-                { field: "per_id", title: "&nbsp;", template:'<input type="checkbox" name="per_id[]" value="#=per_id#">', width: 40},
+            columns: [
+                { field: "per_id", title: "&nbsp;", template: '<input type="checkbox" name="per_id[]" value="#=per_id#">', width: 40},
                 { field: "title", title: "权限名", width: "150px"},
                 { field: "module", hidden: true, title: "模块"},
                 { field: "controller", hidden: true, title: "控制器"},
                 { field: "action", title: "动作"}
             ],
-            dataBound: function(e) {
-                $.each(permissions, function (i, id){
-                    $grid.find('input:checkbox[value='+id+']').prop('checked', true);
+            dataBound: function (e) {
+                $.each(permissions, function (i, id) {
+                    $grid.find('input:checkbox[value=' + id + ']').prop('checked', true);
                 });
             }
         }).data('kendoGrid').thead.find('th:first').append($selectAll);

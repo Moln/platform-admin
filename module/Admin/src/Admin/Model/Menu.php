@@ -1,16 +1,12 @@
 <?php
-/**
- * platform-admin Menu.php
- * @DateTime 13-8-23 下午5:28
- */
-
 namespace Admin\Model;
 
 /**
  * Class Menu
+ *
  * @package Admin\Model
- * @author Xiemaomao
- * @version $Id$
+ * @author  Moln
+ * @version $Id: Menu.php 728 2014-09-11 02:55:35Z Moln $
  *
  * @property $menu_id
  * @property $parent_id
@@ -20,7 +16,7 @@ namespace Admin\Model;
  * @property $url
  *
  */
-class Menu 
+class Menu
 {
     /**
      * @param mixed $menu_id

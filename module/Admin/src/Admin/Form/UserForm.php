@@ -1,9 +1,4 @@
 <?php
-/**
- * platform-admin User.php
- * @DateTime 13-4-15 下午3:49
- */
-
 namespace Admin\Form;
 
 use Admin\Model\UserTable;
@@ -13,9 +8,9 @@ use Zend\InputFilter\InputFilter;
 
 /**
  * Class User
+ *
  * @package Admin\Form
- * @author Moln Xie
- * @version $Id: UserForm.php 1085 2013-07-03 10:34:40Z maomao $
+ * @author  Moln Xie
  */
 class UserForm extends Form
 {
@@ -41,22 +36,22 @@ class UserForm extends Form
         $inputFilter->add(
             $factory->createInput(
                 array(
-                    'name'     => 'account',
-                    'required' => true,
-                    'filters'  => array(
+                    'name'       => 'account',
+                    'required'   => true,
+                    'filters'    => array(
                         array('name' => 'StringTrim'),
                         array('name' => 'StringToLower'),
                     ),
                     'validators' => $edit ? array() : array(
-                        array(
-                            'name'    => 'Db\NoRecordExists',
-                            'options' =>     array(
-                                'table'   => UserTable::getInstance()->getTable(),
-                                'field'   => 'account',
-                                'adapter' => UserTable::getInstance()->getAdapter()
+                            array(
+                                'name'    => 'Db\NoRecordExists',
+                                'options' => array(
+                                    'table'   => UserTable::getInstance()->getTable(),
+                                    'field'   => 'account',
+                                    'adapter' => UserTable::getInstance()->getAdapter()
+                                ),
                             ),
                         ),
-                    ),
                 )
             )
         );

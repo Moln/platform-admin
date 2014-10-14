@@ -1,25 +1,18 @@
 <?php
-/**
- * platform-admin AssignPermissionTable.php
- * @DateTime 13-4-18 下午3:37
- */
-
 namespace Admin\Model;
 
-use Platform\Db\AbstractTable;
-use Zend\Db\TableGateway\Feature\FeatureSet;
-use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
+use Gzfextra\Db\TableGateway\AbstractTableGateway;
 
 /**
  * Class AssignPermissionTable
+ *
  * @package Admin\Model
- * @author Moln Xie
- * @version $Id: AssignPermissionTable.php 885 2013-05-22 03:08:41Z maomao $
+ * @author
+ * @version $Id: AssignPermissionTable.php 728 2014-09-11 02:55:35Z Moln $
+ *
  */
-class AssignPermissionTable extends AbstractTable
+class AssignPermissionTable extends AbstractTableGateway
 {
-    protected $primary = array('role_id', 'per_id');
-    protected $table = 'admin_assign_role_permission';
 
     public function getRolesByPermissionId($id)
     {
@@ -28,7 +21,7 @@ class AssignPermissionTable extends AbstractTable
         $select->where(array('per_id' => $id));
 
         $result = $this->selectWith($select);
-        $roles = array();
+        $roles  = array();
         foreach ($result as $row) {
             $roles[] = (int)$row['role_id'];
         }
@@ -41,7 +34,7 @@ class AssignPermissionTable extends AbstractTable
         $select->columns(array('per_id'));
         $select->where(array('role_id' => $id));
 
-        $result = $this->selectWith($select);
+        $result      = $this->selectWith($select);
         $permissions = array();
         foreach ($result as $row) {
             $permissions[] = (int)$row['per_id'];

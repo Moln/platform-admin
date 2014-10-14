@@ -1,23 +1,16 @@
 <?php
-/**
- * platform-admin Permission.php
- * @DateTime 13-4-18 下午3:22
- */
-
 namespace Admin\Controller;
 
 use Admin\Model\AssignPermissionTable;
 use Admin\Model\PermissionTable;
-use Admin\Model\UserTable;
 use Zend\Code\Reflection\FileReflection;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
 /**
  * Class Permission
+ *
  * @package Admin\Controller
- * @author Moln Xie
- * @version $Id: PermissionController.php 1361 2014-04-09 19:38:47Z maomao $
  */
 class PermissionController extends AbstractActionController
 {
@@ -81,8 +74,13 @@ class PermissionController extends AbstractActionController
         $permissions = $perTable->select();
 
         foreach ($permissions as $row) {
-            if (isset($actions["{$row['module']}.{$row['controller']}.{$row['action']}"])) {
-                unset($actions["{$row['module']}.{$row['controller']}.{$row['action']}"]);
+            $index = "{$row['module']}.{$row['controller']}.{$row['action']}";
+            if (isset($actions[$index])) {
+                if ($row->title == $index && $row->title != $actions[$index][3]) {
+                    $row->title = $actions[$index][3];
+                    $row->save();
+                }
+                unset($actions[$index]);
             } else {
                 $row->delete();
             }
@@ -118,7 +116,7 @@ class PermissionController extends AbstractActionController
     {
         $permissionId = $this->params('id');
         $assignTable  = AssignPermissionTable::getInstance();
-        $roles  = $assignTable->getRolesByPermissionId($permissionId);
+        $roles        = $assignTable->getRolesByPermissionId($permissionId);
 
         if ($this->getRequest()->isPost()) {
             $pushRoles = $this->getRequest()->getPost('role_id');

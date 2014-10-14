@@ -1,19 +1,16 @@
 <?php
-/**
- * platform-admin MenuForm.php
- * @DateTime 13-9-6 下午5:20
- */
-
 namespace Admin\Form;
+
 use Zend\Form\Form;
 use Zend\InputFilter\Factory;
 use Zend\InputFilter\InputFilter;
 
 /**
  * Class MenuForm
+ *
  * @package Admin\Form
- * @author Xiemaomao
- * @version $Id$
+ * @author  Moln
+ * @version $Id: MenuForm.php 728 2014-09-11 02:55:35Z Moln $
  */
 class MenuForm extends Form
 {
@@ -27,8 +24,8 @@ class MenuForm extends Form
         $inputFilter->add(
             $factory->createInput(
                 array(
-                    'name'     => 'menu_id',
-                    'filters'  => array(
+                    'name'    => 'menu_id',
+                    'filters' => array(
                         array('name' => 'int')
                     ),
                 )
@@ -38,8 +35,8 @@ class MenuForm extends Form
         $inputFilter->add(
             $factory->createInput(
                 array(
-                    'name'     => 'parent_id',
-                    'filters'  => array(
+                    'name'    => 'parent_id',
+                    'filters' => array(
                         array('name' => 'int')
                     ),
                 )
@@ -72,8 +69,8 @@ class MenuForm extends Form
         $inputFilter->add(
             $factory->createInput(
                 array(
-                    'name'     => 'per_id',
-                    'filters'  => array(
+                    'name'    => 'per_id',
+                    'filters' => array(
                         array('name' => 'int')
                     ),
                 )

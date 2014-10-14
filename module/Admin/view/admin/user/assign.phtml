@@ -4,7 +4,7 @@
         var roles = <?=json_encode($roles)?>;
         var dataSource = new kendo.data.DataSource({
             transport: {
-                read: "/admin/role/read"
+                read: "./admin/role/read"
             },
             schema: {
                 model: {
@@ -19,7 +19,7 @@
 
         var $grid = $(".admin-user-assign-grid");
 
-        var $selectAll = $("<input type='checkbox'>").click(function (){
+        var $selectAll = $("<input type='checkbox'>").click(function () {
             $grid.find('input:checkbox[name="role_id[]"]').prop('checked', this.checked);
         });
 
@@ -28,13 +28,13 @@
             toolbar: function () {
                 var grid = $grid.data('kendoGrid');
                 var $button = $(grid._createButton({
-                    text:"确认分配",
-                    name:"admin-user-assign",
-                    imageClass:"k-i-tick",
-                    iconClass:"k-icon"
+                    text: "确认分配",
+                    name: "admin-user-assign",
+                    imageClass: "k-i-tick",
+                    iconClass: "k-icon"
                 }));
 
-                Platform.toolbarClick($button, function (){
+                Platform.ui.toolbarClick($button, function () {
                     return {
                         url: '<?=$this->uri()->getPath()?>',
                         data: $grid.serialize(),
@@ -43,13 +43,13 @@
                 });
                 return $button;
             },
-            columns:[
-                { field: "role_id", sortable:false, title: "&nbsp;", template:'<input type="checkbox" name="role_id[]" value="#=role_id#">', width: 40},
+            columns: [
+                { field: "role_id", sortable: false, title: "&nbsp;", template: '<input type="checkbox" name="role_id[]" value="#=role_id#">', width: 40},
                 { field: "name", title: "角色名"}
             ],
-            dataBound: function(e) {
-                $.each(roles, function (i, id){
-                    $grid.find('input:checkbox[value='+id+']').prop('checked', true);
+            dataBound: function (e) {
+                $.each(roles, function (i, id) {
+                    $grid.find('input:checkbox[value=' + id + ']').prop('checked', true);
                 });
             }
         }).data('kendoGrid').thead.find('th:first').append($selectAll);

@@ -1,13 +1,11 @@
 <?php
 return array(
     // This should be an array of module namespaces used in the application.
-    'modules' => array(
-        'Core',
+    'modules' => [
+        'Gzfextra',
         'Admin',
-//        'Shop',
-//        'User',
-//        'Payment',
-    ),
+        'Product',
+    ],
 
     // These are various options for the listeners attached to the ModuleManager
     'module_listener_options' => array(
@@ -17,15 +15,15 @@ return array(
         // Module class.
         'module_paths' => array(
            './module',
-           './vendor',
+//           './vendor',
         ),
 
         // An array of paths from which to glob configuration files after
         // modules are loaded. These effectively overide configuration
         // provided by modules themselves. Paths may use GLOB_BRACE notation.
         'config_glob_paths' => array(
-            'config/autoload/{,*.}{global,local}.php',
-            'module/*/config/module.config.php',
+            'module/*/config/{module,table}.config.php',
+            'config/autoload/{,*.}{global,local,' . (getenv('APPLICATION_ENV') ?: 'production'). '}.php',
         ),
 
         // Whether or not to enable a configuration cache.

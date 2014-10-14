@@ -1,18 +1,21 @@
 {
-    "name": "giant/ooxx",
-    "description": "Platform administrator manager",
+    "name": "moln/platform-admin",
+    "keywords": ["admin","zendframework"],
+    "description": "Global management system.",
     "require": {
-        "zendframework/zendframework": "2.3.*"
+        "zendframework/zendframework": "2.*",
+        "moln/gzfextra": "dev-master"
     },
     "authors": [
         {
-            "name": "Moln",
+            "name": "moln",
             "email": "xiemaomao520@163.com"
         }
     ],
     "autoload":{
         "psr-0":{
-            "Platform\\":"vendor/"
+            "Admin\\":"module/Admin/src",
+            "Product\\":"module/Product/src"
         }
     }
 }

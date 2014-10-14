@@ -2,24 +2,22 @@
 
 <script>
     $(document).ready(function () {
-        var serviceUrl = "/admin/role/",
+        var serviceUrl = "./admin/role/",
             dataSource = new kendo.data.DataSource({
                 transport: {
-                    read: serviceUrl + "read",
-                    update: serviceUrl + "save",
-                    destroy: serviceUrl + "delete",
-                    create: serviceUrl + "save"
+                    read: serviceUrl + "read"
                 },
                 schema: {
                     model: {
                         id: "role_id",
                         fields: {
                             role_id: {type: "number", editable: false, nullable: true },
-                            name: {validation: { required: true} }
+                            name: {validation: { required: true}},
+                            parent: {validation: { required: true}}
                         }
                     }
                 },
-                error: function (e){
+                error: function (e) {
                     if (e.status == "customerror") {
                         for (var i in e.errors) {
                             for (var j in e.errors[i]) {
@@ -36,30 +34,50 @@
 
         $("#admin-role-index-grid").kendoGrid({
             dataSource: dataSource,
-            toolbar: ["create"],
-            columns:[
+            columns: [
                 { field: "name", title: "角色名", width: "150px"},
-                { command: ["edit", "destroy",
+                { command: [
                     {
-                        name:"分配角色权限",
-                        click: function (e){
+                        name: "分配角色权限",
+                        click: function (e) {
                             var tr = $(e.target).closest("tr");
                             var data = this.dataItem(tr);
-                            Platform.newWindow({
-                                title: data.name + '::角色权限分配::角色管理',
-                                content: '/admin/role/assign-permission/id/'+data.role_id
-                            });
+                            var target = $(e.target);
+                            var $win;
+                            if (target.data('win') && target.data('win').data('kendoWindow')) {
+                                $win = target.data('win');
+                            } else {
+                                $win = Platform.ui.newWindow({
+                                    title: data.name + '::角色权限分配::角色管理',
+                                    content: './admin/role/assign-permission/id/' + data.role_id
+                                });
+
+                                target.data('win', $win);
+                            }
+                            $win.data('kendoWindow').open();
+
+
                         }
                     },
                     {
-                        name:"用户角色分配",
-                        click: function (e){
+                        name: "用户角色分配",
+                        click: function (e) {
                             var tr = $(e.target).closest("tr");
                             var data = this.dataItem(tr);
-                            Platform.newWindow({
-                                title: data.name + '::用户角色分配::角色管理',
-                                content: '/admin/role/assign-user/id/'+data.role_id
-                            });
+                            var target = $(e.target);
+                            var $win;
+                            if (target.data('win') && target.data('win').data('kendoWindow')) {
+                                $win = target.data('win');
+                            } else {
+                                $win = Platform.ui.newWindow({
+                                    title: data.name + '::用户角色分配::角色管理',
+                                    content: './admin/role/assign-user/id/' + data.role_id
+                                });
+
+                                target.data('win', $win);
+                            }
+                            $win.data('kendoWindow').open();
+
                         }
                     }
                 ], title: "&nbsp;"}

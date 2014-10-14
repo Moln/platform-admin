@@ -1,0 +1,72 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <?php echo $this->headTitle('Platform admin')->setSeparator(' - ')->setAutoEscape(false) ?>
+
+    <?php echo $this->headMeta()
+        ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+        ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ?>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./scripts/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="./scripts/jquery/jquery/jquery-2.1.1.min.js"></script>
+    <!--<script src="bootstrap/js/bootstrap.min.js"></script>-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style type="text/css">
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #eee;
+            font-family: "微软雅黑";
+        }
+
+        #welcome {
+            margin: 0 auto;
+            float: none;
+        }
+        .glyphicon {
+            position: static;
+        }
+    </style>
+
+    <script>
+        $.ajaxSetup({type: "POST", dataType: "json", error: function () {
+            console.error('数据格式错误');
+        }});
+        $(function () {
+            $('#login').submit(function () {
+                $.post(location.href, $(this).serialize(), function (result) {
+                    if (result.code == 1) {
+                        location.href = './admin';
+                    } else {
+                        alert('Login error!');
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <?php echo $this->content; ?>
+    <hr>
+    <footer>
+        <!--        <p>&copy; 2014 巨人移动版权所有</p>-->
+    </footer>
+</div>
+<!-- /container -->
+<?php echo $this->inlineScript() ?>
+</body>
+</html>
+
+

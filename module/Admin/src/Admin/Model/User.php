@@ -5,28 +5,31 @@ use Zend\Db\RowGateway\RowGateway;
 use Zend\Permissions\Rbac\Rbac;
 
 /**
- * User.php
- * @author Administrator
- * @DateTime 12-12-29 上午11:43
- * @version $Id: User.php 1361 2014-04-09 19:38:47Z maomao $
+ * Model User
  *
- * @property $user_id
- * @property $account
- * @property $real_name
- * @property $email
- * @property $password
- * @property $status
- * @property UserTable $table
+ * @property string $user_id
+ * @property int $account
+ * @property int $password
+ * @property string $status
+ * @property int $real_name
+ * @property int $email
+ *
  */
 class User extends RowGateway
 {
-    private $roles;
-    private $rbac;
+
+    protected $data = [
+        'user_id'   => null,
+        'account'   => null,
+        'password'  => null,
+        'status'    => null,
+        'real_name' => null,
+        'email'     => null,
+    ];
 
     /**
-     * @param mixed $user_id
-     *
-     * @return User
+     * @param string $user_id
+     * @return self
      */
     public function setUserId($user_id)
     {
@@ -35,7 +38,8 @@ class User extends RowGateway
     }
 
     /**
-     * @return mixed
+     *
+     * @return string
      */
     public function getUserId()
     {
@@ -43,9 +47,8 @@ class User extends RowGateway
     }
 
     /**
-     * @param mixed $account
-     *
-     * @return User
+     * @param int $account
+     * @return self
      */
     public function setAccount($account)
     {
@@ -54,36 +57,17 @@ class User extends RowGateway
     }
 
     /**
-     * @return mixed
+     *
+     * @return int
      */
-    public function egetAccount()
+    public function getAccount()
     {
         return $this->account;
     }
 
     /**
-     * @param mixed $email
-     *
-     * @return User
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param mixed $password
-     *
-     * @return User
+     * @param int $password
+     * @return self
      */
     public function setPassword($password)
     {
@@ -92,7 +76,8 @@ class User extends RowGateway
     }
 
     /**
-     * @return mixed
+     *
+     * @return int
      */
     public function getPassword()
     {
@@ -100,28 +85,8 @@ class User extends RowGateway
     }
 
     /**
-     * @param mixed $real_name
-     *
-     * @return User
-     */
-    public function setRealName($real_name)
-    {
-        $this->real_name = $real_name;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRealName()
-    {
-        return $this->real_name;
-    }
-
-    /**
-     * @param mixed $status
-     *
-     * @return User
+     * @param string $status
+     * @return self
      */
     public function setStatus($status)
     {
@@ -130,7 +95,8 @@ class User extends RowGateway
     }
 
     /**
-     * @return mixed
+     *
+     * @return string
      */
     public function getStatus()
     {
@@ -138,7 +104,51 @@ class User extends RowGateway
     }
 
     /**
+     * @param int $real_name
+     * @return self
+     */
+    public function setRealName($real_name)
+    {
+        $this->real_name = $real_name;
+        return $this;
+    }
+
+    /**
+     *
+     * @return int
+     */
+    public function getRealName()
+    {
+        return $this->real_name;
+    }
+
+    /**
+     * @param int $email
+     * @return self
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     *
+     * @return int
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+
+    private $roles;
+    private $roleIds;
+    private $rbac;
+
+    /**
      * Get user roles
+     *
      * @return array
      */
     public function getRoles()
@@ -149,6 +159,19 @@ class User extends RowGateway
         return $this->roles;
     }
 
+    /**
+     * Get user roleId
+     *
+     * @return array
+     */
+    public function getRoleIds()
+    {
+        if (!$this->roleIds) {
+            $this->roleIds = AssignUserTable::getInstance()->getRoleIdsByUserId($this->getUserId());
+        }
+        return $this->roleIds;
+    }
+
     public function __sleep()
     {
         return array('data', 'primaryKeyColumn', 'primaryKeyData');
@@ -157,7 +180,7 @@ class User extends RowGateway
     public function __wakeup()
     {
         $this->table = UserTable::getInstance()->getTable();
-        $this->sql = UserTable::getInstance()->getSql();
+        $this->sql   = UserTable::getInstance()->getSql();
         $this->initialize();
     }
 
@@ -167,13 +190,12 @@ class User extends RowGateway
      */
     public function isAllow($permission)
     {
-        return true;
+        if ($this->getUserId() == 1) return true;
         foreach ($this->getRoles() as $role) {
             if ($this->getRbac()->isGranted($role, $permission)) {
                 return true;
             }
         }
-
         return false;
     }
 

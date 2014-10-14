@@ -2,7 +2,7 @@
 
 <script>
     $(document).ready(function () {
-        var serviceUrl = "/admin/user/",
+        var serviceUrl = "./admin/user/",
             dataSource = new kendo.data.DataSource({
                 transport: {
                     read: serviceUrl + "read",
@@ -26,7 +26,7 @@
                     "data": "data",
                     "total": "total"
                 },
-                error: function (e){
+                error: function (e) {
                     console.log("err", e);
                     if (e.status == "customerror") {
                         for (var i in e.errors) {
@@ -43,36 +43,44 @@
                 serverPaging: true
             });
 
-        var statusData = [{name: '开启', value:'0'},{name: '禁用', value:'1'}];
+        var statusData = [
+            {name: '开启', value: '0'},
+            {name: '禁用', value: '1'}
+        ];
         $("#admin-user-index-grid").kendoGrid({
             dataSource: dataSource,
             pageable: true,
-            toolbar: ["create"],
-            columns:[
+            toolbar: [
+                {'name': 'create', 'text': '增加'}
+            ],
+            columns: [
                 { field: "account", title: "用户名", width: "100px"  },
-                { field: "real_name", title:"真实姓名", width: "120px" },
-                { field: "email", title:"Email", width: "200px", editor: emailEditor },
-                { field: "status", title: "状态", editor: statusEditor, width: "100px", template: function (item){
+                { field: "real_name", title: "真实姓名", width: "120px" },
+                { field: "email", title: "Email", width: "200px", editor: emailEditor },
+                { field: "status", title: "状态", editor: statusEditor, width: "100px", template: function (item) {
                     return statusData[item.status].name;
                 }},
-                { field: "password", title: "密码", template: ''},
-                { command: ["edit", "destroy",
+                { field: "password", title: "密码", template: '', hidden: true},
+                { command: [
+                    {'name': 'edit', 'text': '编辑'},
+                    {'name': 'destroy', 'text': '删除'},
                     {
-                        name:"用户角色分配",
-                        click: function (e){
+                        name: "用户角色分配",
+                        click: function (e) {
                             var tr = $(e.target).closest("tr");
                             var data = this.dataItem(tr);
-                            Platform.newWindow({
+                            Platform.ui.newWindow({
                                 title: data.account + '::用户角色分配::用户管理',
-                                content: '/admin/user/assign/id/'+data.user_id
+                                content: './admin/user/assign/id/' + data.user_id
                             });
                         }
                     }
-                ], title: "&nbsp;" }
+                ], title: "&nbsp;", width: 260 }
             ],
-            editable: "inline",
+            selectable: true,
+            editable: "popup",
             sortable: true,
-            edit: function(e) {
+            edit: function (e) {
                 if (!e.model.isNew()) {
                     e.container.find("input[name=account]").attr('disabled', true);
                 }
@@ -97,7 +105,7 @@
 //            saveChanges: function (e) { console.log('saveChanges', arguments); },
         });
 
-        function emailEditor(container, options){
+        function emailEditor(container, options) {
             $('<input required class="k-textbox k-invalid" name="' + options.field +
                 '" data-bind="value:' + options.field + '" type="email" />')
                 .appendTo(container);

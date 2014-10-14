@@ -1,25 +1,20 @@
 <?php
 namespace Admin\Model;
 
-use Platform\Db\AbstractTable;
+use Gzfextra\Db\TableGateway\AbstractTableGateway;
 use Zend\Authentication\Adapter\DbTable;
-use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
-use Zend\Paginator\Paginator;
 
 /**
  * Class UserTable
- * @package Admin\Model
- * @author Xiemaomao
- * @version $Id$
  *
- * @method User create()
+ * @package Admin\Model
+ * @author
+ * @version $Id: UserTable.php 728 2014-09-11 02:55:35Z Moln $
+ *
+ * @method User create(array $row = null)
  */
-class UserTable extends AbstractTable
+class UserTable extends AbstractTableGateway
 {
-    protected $primary = 'user_id';
-    protected $table = 'admin_user';
-
-    protected $rowGateway = true;
 
     public static function encrypt($password)
     {
@@ -46,6 +41,7 @@ class UserTable extends AbstractTable
 
     /**
      * 更新不允许修改账号
+     *
      * @param $data
      *
      * @return int

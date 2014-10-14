@@ -1,10 +1,4 @@
 <?php
-/**
- * platform-admin RoleController.php
- *
- * @DateTime 13-4-26 下午5:18
- */
-
 namespace Admin\Controller;
 
 use Admin\Form\RoleForm;
@@ -18,19 +12,31 @@ use Zend\View\Model\JsonModel;
  * Class RoleController
  *
  * @package Admin\Controller
- * @author  Moln Xie
- * @version $Id: RoleController.php 1361 2014-04-09 19:38:47Z maomao $
  */
 class RoleController extends AbstractActionController
 {
 
     public function readAction()
     {
-        return new JsonModel(RoleTable::getInstance()->select()->toArray());
+        $roles = $this->identity()->getRoleIds();
+
+        $children = array();
+
+        $children = RoleTable::getInstance()->showChildren($roles, $children);
+
+        return new JsonModel($children);
     }
 
     public function saveAction()
     {
+        $parent = $this->getRequest()->getPost('parent');
+
+        $roles = $this->identity()->getRoleIds();
+
+        $flag = RoleTable::getInstance()->validChildren($roles, $parent);
+
+        if (!$flag) return new JsonModel(array('errors' => "无权修改"));
+
         $data = $this->getRequest()->getPost();
         $form = new RoleForm();
         $form->loadInputFilter();
@@ -39,40 +45,57 @@ class RoleController extends AbstractActionController
             $data = $form->getData();
             RoleTable::getInstance()->save($data);
 
-            $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
             return new JsonModel($data);
         } else {
             return new JsonModel(array('errors' => $form->getInputFilter()->getMessages()));
         }
     }
 
+    public function updateAction()
+    {
+        $parent  = $this->getRequest()->getPost('parent');
+        $role_id = $this->getRequest()->getPost('role_id');
+
+        $roles = $this->identity()->getRoleIds();
+
+        $flag = RoleTable::getInstance()->validChildren($roles, $parent);
+
+        if (!$flag) return new JsonModel(array('errors' => "无权移动"));
+
+        RoleTable::getInstance()->update(array("parent" => $parent), array('role_id' => $role_id));
+
+        return new JsonModel(array('code' => 1));
+    }
+
     public function deleteAction()
     {
-        $roleId = $this->getRequest()->getPost('role_id');
-        RoleTable::getInstance()->deletePrimary($roleId);
-        AssignUserTable::getInstance()->removeRoleId($roleId);
-        AssignPermissionTable::getInstance()->removeRoleId($roleId);
+        $datas = $this->getRequest()->getPost('data');
 
-        $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
-        return new JsonModel(array());
+        foreach ($datas as $data) {
+            RoleTable::getInstance()->deletePrimary($data);
+            AssignUserTable::getInstance()->removeRoleId($data);
+            AssignPermissionTable::getInstance()->removeRoleId($data);
+        }
+        return new JsonModel(array('code' => 1));
     }
 
     public function assignPermissionAction()
     {
         $roleId      = $this->params('id');
-        $assignTable = new AssignPermissionTable();
+        $assignTable = AssignPermissionTable::getInstance();
         $permissions = $assignTable->getPermissionsByRoleId($roleId);
 
         if ($this->getRequest()->isPost()) {
             $pushPermissions = $this->getRequest()->getPost('per_id');
+            if (!$pushPermissions) return new JsonModel(array('code' => -1, 'msg' => '更新失败'));
             $assignTable->resetPermissionsByRoleId($roleId, $pushPermissions);
 
-            $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
             return new JsonModel(array(
-                                      'code' => 1
-                                 ));
+                'code' => 1
+            ));
         }
         return array(
+            'role_id'     => $roleId,
             'permissions' => $permissions,
         );
     }
@@ -80,18 +103,27 @@ class RoleController extends AbstractActionController
     public function assignUserAction()
     {
         $roleId      = $this->params('id');
-        $assignTable = new AssignUserTable();
+        $assignTable = AssignUserTable::getInstance();
         $users       = $assignTable->getUsersByRoleId($roleId);
 
         if ($this->getRequest()->isPost()) {
             $pushUsers = $this->getRequest()->getPost('user_id');
+
+            if (!$pushUsers) return new JsonModel(array('code' => -1, 'msg' => '更新失败'));
             $assignTable->resetUsersByRoleId($roleId, $pushUsers);
 
-            $this->getServiceLocator()->get('cache')->clearByTags(array('role')); //清除角色数据缓存
             return new JsonModel(array('code' => 1));
         }
         return array(
-            'users' => $users,
+            'role_id' => $roleId,
+            'users'   => $users,
+        );
+    }
+
+    public function treesAction()
+    {
+        return array(
+            'trees' => RoleTable::getInstance()->getTreesByRoleId(),
         );
     }
 }

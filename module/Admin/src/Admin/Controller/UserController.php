@@ -1,10 +1,4 @@
 <?php
-/**
- * platform-admin UserController.php
- *
- * @DateTime 13-4-10 下午5:58
- */
-
 namespace Admin\Controller;
 
 use Admin\Form\UserForm;
@@ -18,28 +12,26 @@ use Zend\View\Model\JsonModel;
  * Class UserController
  *
  * @package Admin\Controller
- * @author  Moln Xie
- * @version $Id: UserController.php 1361 2014-04-09 19:38:47Z maomao $
  */
 class UserController extends AbstractActionController
 {
-
-    public function indexAction()
-    {
-
-    }
     public function readAction()
     {
+        $userId    = $this->identity()->getUserId();
         $paginator = UserTable::getInstance()->fetchPaginator(
-            function (Select $select) {
+            function (Select $select) use ($userId) {
                 $select->columns(array('user_id', 'account', 'real_name', 'email', 'status'));
+
+                if ($userId != 1) {
+                    $select->where->notIn("user_id", array(1));
+                }
             }
         );
         $paginator->setCurrentPageNumber($this->getRequest()->getPost('page', 1));
         return new JsonModel(
             array(
-                 'total' => $paginator->getTotalItemCount(),
-                 'data'  => $paginator->getCurrentItems()->toArray()
+                'total' => $paginator->getTotalItemCount(),
+                'data'  => $paginator->getCurrentItems()->toArray()
             )
         );
     }
@@ -59,7 +51,7 @@ class UserController extends AbstractActionController
                 $data['password'] = UserTable::encrypt($data['password']);
             }
             UserTable::getInstance()->save($data);
-            unset($data['password']);
+            if (isset($data['password'])) unset($data['password']);
             return new JsonModel(array('data' => $data));
         } else {
             return new JsonModel(array('errors' => $form->getInputFilter()->getMessages()));
@@ -85,7 +77,7 @@ class UserController extends AbstractActionController
             $assignTable->resetUsersById($userId, $pushRoles);
             return new JsonModel(
                 array(
-                     'code' => 1
+                    'code' => 1
                 )
             );
         }

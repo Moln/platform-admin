@@ -1,20 +1,15 @@
 <?php
-/**
- * platform-admin MenuController.php
- * @DateTime 13-8-22 下午4:17
- */
-
 namespace Admin\Controller;
-use Admin\Form\MenuForm;
+
 use Admin\Model\MenuTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
 /**
  * Class MenuController
+ *
  * @package Admin\Controller
- * @author Xiemaomao
- * @version $Id$
+ * @author  Moln
  */
 class MenuController extends AbstractActionController
 {

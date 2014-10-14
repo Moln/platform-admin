@@ -1,4 +1,65 @@
-<div id="product"></div>
-<script>
+<div id="product-index-index-grid"></div>
 
+<script>
+    $(document).ready(function () {
+        var $grid = $("#product-index-index-grid"),
+            serviceUrl = "./product/index/",
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: serviceUrl + "read",
+                    update: serviceUrl + "save",
+                    destroy: serviceUrl + "delete",
+                    create: serviceUrl + "save"
+                },
+                pageSize: 20,
+                schema: {
+                    model: {
+                        id: "id",
+                        fields: {
+                            id: {type: "number", editable: false, nullable: true },
+                            name: {validation: { required: true} },
+                            price: {type: "number", validation: { required: true} },
+                            desc: { validation: {required: true} }
+                        }
+                    },
+                    "data": "data",
+                    "total": "total"
+                },
+                error: function (e) {
+                    if (e.status == "customerror") {
+                        for (var i in e.errors) {
+                            for (var j in e.errors[i]) {
+                                alert(e.errors[i][j]);
+                                break;
+                            }
+                            break;
+                        }
+
+                        $grid.data("kendoGrid").cancelChanges();
+                    }
+                },
+                serverSorting: true,
+                serverPaging: true
+            });
+
+        $grid.kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            sortable: true,
+            toolbar: [
+                {'name': 'create', 'text': '增加'}
+            ],
+            columns: [
+                { field: "id", title: "商品ID", width: "100px"  },
+                { field: "name", title: "商品名称", width: "100px"  },
+                { field: "price", title: "价格", width: "120px" },
+                { field: "desc", title: "描述", width: "200px"},
+                { command: [
+                    {'name': 'edit', 'text': '编辑'},
+                    {'name': 'destroy', 'text': '删除'}
+                ], title: "&nbsp;" }
+            ],
+            editable: "popup"
+        });
+    });
 </script>

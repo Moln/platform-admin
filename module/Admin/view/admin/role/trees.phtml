@@ -1,0 +1,262 @@
+<div>
+    <div>root <span id="admin-trees-index-tree-add" class="admin-trees-index-tree-add k-icon k-i-plus"></span></div>
+    <div id="admin-trees-index-tree"></div>
+</div>
+
+<div class="admin-trees-index-tree-add-form pa-box">
+    <form class="form">
+        <ul>
+            <li>
+                <label>上级菜单:</label>
+                <span class="parent-name"></span>
+            </li>
+            <li>
+                <label for="role_name">角色名称:</label>
+                <input type="text" class="k-textbox" name="role_name" autofocus="autofocus" required/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="role_id"/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="parent_id"/>
+            </li>
+            <li class="form-row">
+                <button class="k-button" id="add_submit"><span class="k-icon k-i-tick"></span>提 交</button>
+                <button type="button" class="closeButton">返回</button>
+            </li>
+        </ul>
+    </form>
+</div>
+
+<div class="admin-trees-index-tree-edit-form pa-box">
+    <form class="form">
+        <ul>
+            <li>
+                <label for="role_name">角色名称:</label>
+                <input type="text" class="k-textbox" name="role_name" autofocus="autofocus" required/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="role_id"/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="parent_id"/>
+            </li>
+            <li class="form-row">
+                <button class="k-button" id="edit_submit"><span class="k-icon k-i-tick"></span>提 交
+                </button>
+                <button type="button" class="closeButton">返回</button>
+            </li>
+        </ul>
+    </form>
+</div>
+<style>
+    #admin-trees-index-tree {
+        float: left;
+    }
+
+    .admin-trees-index-tree-add-form,
+    .admin-trees-index-tree-edit-form {
+        padding: 2em;
+        width: 460px;
+        display: none;
+    }
+
+    .admin-trees-index-tree-add:hover,
+    .admin-trees-index-tree-delete:hover {
+        opacity: 0.5;
+    }
+</style>
+
+<script>
+    (function () {
+
+        var serviceUrl = './role/trees/';
+
+        var $tree = $("#admin-trees-index-tree").kendoTreeView({
+                dragAndDrop: true,
+                dataSource: <?=json_encode($trees)?>,
+                dataUrlField: "Null",
+                template: kendo.template($("#admin-trees-index-tree-template").html()),
+                select: function (e) {
+                    var dataItem = $treeView.dataItem(e.node);
+                    $editForm.parent().fadeIn(200).siblings('.pa-box').hide();
+
+                    $editForm.data('current', e.node);
+                    $editForm.find('input[name=role_name]').val(dataItem.text);
+                    $editForm.find('input[name=role_id]').val(dataItem.role_id);
+                    $editForm.find('input[name=parent_id]').val(dataItem.parent_id);
+                },
+                drop: function (e) {
+
+                    var roles = <?=json_encode($this->identity()->getRoleIds())?>;
+
+                    if (!e.destinationNode || !e.valid) {
+                        e.setValid(false);
+                        return;
+                    }
+
+                    $addform.parent().fadeOut(200);
+                    $editForm.parent().fadeOut(200);
+
+                    var sourceNode = $treeView.dataItem(e.sourceNode),
+                        destinationNode = $treeView.dataItem(e.destinationNode);
+
+                    e.setValid(function () {
+                        if (e.dropPosition != 'over') return false;
+                        if (destinationNode.text == 'root') return false;
+                        return true;
+                    }());
+
+                    var $targetNode = $(e.destinationNode), allow = false;
+                    $targetNode.parents('.k-item').andSelf().each(function () {
+                        var parentItem = $treeView.dataItem(this);
+                        if ($.inArray(parseInt(parentItem.role_id), roles) > -1) {
+                            allow = true;
+                        }
+                    });
+
+                    if (!allow) {
+                        e.setValid(false);
+                        return;
+                    }
+                },
+                dragend: function (e) {
+                    var sourceNode = $treeView.dataItem(e.sourceNode),
+                        destinationNode = $treeView.dataItem(e.destinationNode),
+                        data = {"role_id": sourceNode.role_id, "name": sourceNode.text, "parent": destinationNode.role_id};
+
+                    if (e.dropPosition == 'over') {
+                        $.post('./admin/role/update', data, function (e) {
+
+                            if (e.status == "customerror") {
+                                alert(e.errors);
+                            }
+                            sourceNode.set('parent_id', destinationNode.role_id);
+                        });
+                    }
+                }
+            }),
+            $treeView = $tree.data('kendoTreeView'),
+        //添加菜单
+            $addform = $('.admin-trees-index-tree-add-form form'),
+
+        //编辑菜单
+            $editForm = $('.admin-trees-index-tree-edit-form form');
+
+        $treeView.select($());
+        $treeView.expand(".k-item");
+
+        //Root节点添加
+        $('#admin-trees-index-tree-add').click(function () {
+
+            $addform.parent().fadeIn(200).siblings('.pa-box').hide();
+            $addform.find('input:role_name').val('');
+            $addform.find('span.parent-name').html('根菜单');
+            $addform.find('input:first').focus();
+            return false;
+        });
+
+        $(".closeButton").kendoButton({
+            icon: "cancel"
+        }).on('click', function (e) {
+            $addform.parent().fadeOut(200);
+            $editForm.parent().fadeOut(200);
+        });
+        //节点添加
+        $tree.on("click", ".admin-trees-index-tree-add", function (e) {
+
+            var dataItem = $treeView.dataItem($(this).closest(".k-item"));
+
+            $addform.parent().fadeIn(200).siblings('.pa-box').hide();
+
+            $addform.find('input:text').val('');
+            $addform.find('span.parent-name').html(dataItem.text);
+            $addform.find('input[name=role_id]').val(dataItem.role_id);
+            $addform.find('input[name=parent]').val(dataItem.parent);
+            $addform.data('appendParent', $(this).closest(".k-item"));
+            $addform.find('input:first').focus();
+
+            return false;
+        });
+
+        //节点删除
+        $tree.on("click", ".admin-trees-index-tree-delete", function (e) {
+
+            e.preventDefault();
+
+            var node = $(this).closest(".k-item"),
+                dataItem = $treeView.dataItem(node),
+                nodes = node.find('.k-item').andSelf(),
+                data = new Array();
+
+            nodes.each(function () {
+                var nodeData = $treeView.dataItem(this);
+                data.push(nodeData.role_id);
+
+            });
+
+            $.post('./admin/role/delete', {'data': data}, function () {
+                $treeView.remove(node);
+            });
+
+            return false;
+        });
+
+        $('#add_submit').paRemoteClick(function (e) {
+
+            e.preventDefault();
+
+            var parent = $addform.data('appendParent') || undefined,
+                data = {"name": $addform.get(0).role_name.value, "parent": $addform.get(0).role_id.value};
+
+            return {
+                url: './admin/role/save',
+                data: data,
+                success: function (result) {
+                    if (result.errors) {
+                        alert(result.errors);
+                    } else {
+                        result = {"text": $addform.get(0).role_name.value, "role_id": result.role_id, "parent_id": result.parent};
+                        $treeView.append(result, parent);
+                        $addform.parent().fadeOut(200);
+                    }
+                }
+            };
+        });
+
+        $('#edit_submit').paRemoteClick(function (e) {
+
+            e.preventDefault();
+
+            var current = $editForm.data('current') || undefined,
+                data = {"role_id": $editForm.get(0).role_id.value, "name": $editForm.get(0).role_name.value, "parent": $editForm.get(0).parent_id.value};
+
+            return {
+                url: './admin/role/save',
+                data: data,
+                success: function (result) {
+
+                    if (result.errors) {
+                        alert(result.errors);
+                    } else {
+
+                        var item = $treeView.dataItem(current);
+                        item.set('role_name', result.name);
+                        item.set('role_id', result.role_id);
+                        item.set('parent_id', result.parent);
+                        $treeView.text($editForm.data('current'), result.name);
+
+                        $editForm.parent().fadeOut(200);
+                    }
+                }
+            };
+        });
+    })();
+
+</script>
+
+<script id="admin-trees-index-tree-template" type="text/kendo-ui-template">
+    #: item.text #
+    <span class="admin-trees-index-tree-add k-icon k-i-plus"></span>
+    <span class="admin-trees-index-tree-delete k-icon k-i-close"></span>
+</script>

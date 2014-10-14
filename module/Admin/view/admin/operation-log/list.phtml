@@ -1,0 +1,90 @@
+<div id="admin-operation-log-grid"></div>
+
+<script>
+    $(document).ready(function () {
+        var grid = $("#admin-operation-log-grid"),
+            serviceUrl = "./admin/operation-log/",
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: serviceUrl + "read"
+                },
+                pageSize: 15,
+                schema: {
+                    model: {
+                        id: "id",
+                        fields: {
+                            id: {type: "number", editable: false, nullable: true},
+                            uri: {  type: "string"  },
+                            param: {  type: "string"  },
+                            method: {  type: "string"  },
+                            ip: {  type: "string"  },
+                            time: {type: "date"},
+                            account: {  type: "string"  }
+                        }
+                    },
+                    "data": "data",
+                    "total": "total"
+                },
+                error: function (e) {
+                    if (e.status == "customerror") {
+                        for (var i in e.errors) {
+                            for (var j in e.errors[i]) {
+                                alert(e.errors[i][j]);
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                },
+                serverPaging: true
+            });
+
+        grid.kendoGrid({
+            pageable: true,
+            dataSource: dataSource,
+            sortable: true,
+            filterable: {
+                extra: false,
+                messages: {
+                    info: "查找: ",
+                    filter: "提交",
+                    clear: "清除",
+                    selectValue: "------选择------",
+                    and: "并且",
+                    or: "或者"
+                },
+                operators: {
+                    string: {
+                        contains: "模糊查找"
+                    },
+                    number: {
+                        eq: "等于"
+                    },
+                    date: {
+                        ge: "大于等于",
+                        le: "小于",
+                        gt: "大于",
+                        lt: "小于"
+                    },
+                    enums: {
+                        eq: "满足条件"
+                    }
+                }
+            },
+            columns: [
+                { field: "account", title: "账号", width: "15px"},
+                { field: "uri", title: "URI", width: "35px"},
+                { field: "method", title: "请求类型", width: "15px"},
+                { field: "time", title: "时间", width: "30px",
+                    format: "{0:yyyy/MM/dd HH:mm:ss}",
+                    filterable: {
+                        extra: true
+                    }},
+                { field: "ip", title: "IP", width: "15px"},
+                { field: "param", title: "参数", width: "100px"}
+            ],
+            resizable: "true",
+            selectable: true
+        }).data("kendoGrid");
+    });
+</script>

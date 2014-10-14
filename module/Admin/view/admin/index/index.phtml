@@ -1,138 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Platform admin</title>
+    <link href="./scripts/kendoui/styles/kendo.common.min.css" rel="stylesheet"/>
+    <link href="./scripts/kendoui/styles/kendo.default.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="./styles/default/global.css"/>
 
-    <title>Dashboard Template for Bootstrap</title>
+    <script src="./scripts/kendoui/js/jquery.min.js"></script>
+    <script src="./scripts/kendoui/js/kendo.web.min.js"></script>
+    <script src="./scripts/platform-admin/platform.js"></script>
 
-
-    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"/>
-    <link href="/kendoui/styles/kendo.common-bootstrap.min.css" rel="stylesheet"/>
-    <link href="/kendoui/styles/kendo.bootstrap.min.css" rel="stylesheet"/>
-    <link href="/styles/base-global.css" rel="stylesheet">
-
-
-
-    <!-- Scripts -->
-    <?php echo $this->headScript()
-        ->prependFile($this->basePath() . '/kendoui/js/kendo.web.min.js')
-        ->prependFile($this->basePath() . '/js/jquery.min.js');
-    ?>
-
-    <!-- Custom styles for this template -->
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/js/platform.js"></script>
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]>
-    <script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <!--[if lte IE 8]>
+    <script src="https://github.com/douglascrockford/JSON-js/blob/master/json2.js"></script>
     <![endif]-->
 
     <script>
-        $(function () {
-            var inlineDefault = new kendo.data.HierarchicalDataSource({
-                data: <?=json_encode($menu)?>
-            });
-
-            var $menu = $("#menu").kendoTreeView({
-                dataSource: inlineDefault,
-                select: function (e) {
-                    var $item = $(e.node).find('a'), $win;
-
-                    if ($item.data('platformWindow')) {
-                        $win = $item.data('platformWindow');
-                    } else {
-                        console.log($item.attr('href'));
-                        $win = $('<div></div>').load($item.attr('href'));
-                        $win.appendTo('#main');
-                        $item.data('platformWindow', $win);
-                    }
-                    console.log(this);
-                    $win.show().siblings().hide();
-                }
-            });
-
-            $menu.on('click', 'a', function () {return false;});
-
-            $('<div></div>').load("/admin/index/main").appendTo('#main');
-        });
+        Platform.ui.config({menu: <?=json_encode($menu)?>});
+        Platform.ui.init();
     </script>
 </head>
-
 <body>
-
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-        <div class="navbar-header">
-<!--            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">-->
-<!--                <span class="sr-only">Toggle navigation</span>-->
-<!--                <span class="icon-bar"></span>-->
-<!--                <span class="icon-bar"></span>-->
-<!--                <span class="icon-bar"></span>-->
-<!--            </button>-->
-            <a class="navbar-brand" href="#">Project name</a>
-        </div>
-
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav pull-right">
-                <!-- END INBOX DROPDOWN
-                        <li class="dropdown dropdown-extended dropdown-tasks" id="header_task_bar">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                                <i class="icon-calendar"></i>
-                                    <span class="badge badge-default">
-                                    3 </span>
-                            </a>
-                        </li>
-                        BEGIN QUICK SIDEBAR TOGGLER -->
-                <li><a href="#" class="glyphicon glyphicon-bell"></a></li>
-                <li><a href="#" class="glyphicon glyphicon-envelope"></a></li>
-                <li><a href="#" class="glyphicon glyphicon-user" title="账号设置"></a></li>
-                <li><a href="/logout" class="glyphicon glyphicon-log-out" title="退出"></a></li>
-            </ul>
-            <form class="navbar-form navbar-right">
-                <input type="text" class="form-control" placeholder="Search...">
-            </form>
-        </div>
+<div id="g-top">
+    <div id="g-setting">
+        当前用户：<?= $realname ?>&nbsp&nbsp
+        <a href="./logout" id="logout">注销</a>
     </div>
+    <ul id="g-nav">
+        <!--        <li>-->
+        <!--            积分商城-->
+        <!--            <ul>-->
+        <!--                <li data-url="/shop/goods">-->
+        <!--                    商品管理-->
+        <!--                </li>-->
+        <!--                <li data-url="/shop/category">-->
+        <!--                    商品类别管理-->
+        <!--                </li>-->
+        <!--                <li data-url="/shop/game-category">-->
+        <!--                    商品游戏分类-->
+        <!--                </li>-->
+        <!--                <li data-url="/shop/order">-->
+        <!--                    订单管理-->
+        <!--                </li>-->
+        <!--                <li data-url="/shop/express">-->
+        <!--                    快递地区管理-->
+        <!--                </li>-->
+        <!--            </ul>-->
+        <!--        </li>-->
+    </ul>
 </div>
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-
-            <div id="menu"></div>
-            <!--
-            <ul class="nav nav-sidebar">
-                <li class="active"><a href="#">Overview</a></li>
-                <li><a href="#">Reports</a></li>
-                <li><a href="#">Analytics</a></li>
-                <li><a href="#">Export</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-                <li><a href="">Nav item</a></li>
-                <li><a href="">Nav item again</a></li>
-                <li><a href="">One more nav</a></li>
-                <li><a href="">Another nav item</a></li>
-                <li><a href="">More navigation</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-                <li><a href="">Nav item again</a></li>
-                <li><a href="">One more nav</a></li>
-                <li><a href="">Another nav item</a></li>
-            </ul>
-            -->
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="main">
-        </div>
-    </div>
+<div id="g-window">
+    <!--        <div class="p-block k-block k-shadow">留空</div>-->
 </div>
-
+<div id="g-tasks">
+</div>
 </body>
 </html>

@@ -1,0 +1,175 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+ul, li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    font: 76% '微软雅黑';
+    background: #fff url("flowers-right.png") no-repeat fixed 100% -174px;
+    height: 100%;
+    line-height: 1.5;
+}
+
+body {
+    background: url("flowers-left.png") no-repeat fixed 0 400px transparent;
+    min-height: 100%;
+    min-width: 1180px;
+    position: relative;
+    overflow: hidden;
+}
+.hide {
+    display: none;
+}
+.show {
+    display: block;
+}
+
+.form {
+}
+
+.form h3 {
+    font-weight: normal;
+    font-size: 1.4em;
+    border-bottom: 1px solid #ccc;
+}
+
+.form ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.form li {
+    margin: 10px 0 0 0;
+}
+
+.form label {
+    display: inline-block;
+    width: 90px;
+    text-align: right;
+}
+
+.form .required:before {
+    content: "* ";
+    color: red;
+}
+
+.form .form-row {
+    padding-left: 90px;
+}
+
+.form .valid {
+    color: green;
+}
+
+.form .invalid {
+    color: red;
+}
+
+span.k-tooltip {
+    margin-left: 6px;
+}
+
+.pa-box {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.01) 0%, rgba(0, 0, 0, 0.07) 100%) repeat scroll 0 0 transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    margin: 0 auto 15px;
+}
+
+#g-tasks {
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+    z-index: 20000;
+    overflow: visible;
+}
+
+#g-window {
+    position: absolute;
+    bottom: 38px;
+    top: 30px;
+    left: 0;
+    right: 0;
+}
+
+#g-top {
+    position: relative;
+    margin: 0;
+    padding: 0 7%;
+    width: 86%;
+}
+
+#g-setting {
+    float:right;
+    right: 0;
+    height: 28px;
+    line-height: 30px;
+    top: 0;
+}
+
+#logout {
+    color: #000000;
+    display: inline;
+    margin-right: 10px;
+    text-decoration: underline;
+}
+
+#logout:hover {
+    color: blue;
+}
+#g-menu {
+    background: #FFF url(logo-menu.png) 10px center no-repeat;
+    transform: scale(0.5);
+    transform-origin: 0 100%;
+    -webkit-transform: scale(0.5);
+    -webkit-transform-origin: 0 100%;
+    width: 80px;
+    height: 80px;
+    margin: 0 10px 5px 5px;
+    position: absolute;
+    bottom: 0;
+    border-radius: 40px;
+    box-shadow: 0 0 20px #eee inset,0 0 10px #000;
+    -webkit-box-shadow: 0 0 40px #eee inset,0 0 15px #000;
+    text-indent: -1000px;
+}
+.g-menu-wrap {
+    width: 60px;
+}
+
+.g-tool-close {
+    position: absolute;
+    margin-top: -10px;
+    border-radius: 8px;
+    padding: 0 !important;
+}
+
+.p-block {
+    width: 150px;
+}
+
+
+
+.k-tabstrip-wrapper > .k-header {
+    background-color: transparent;
+    border: none;
+}
+
+.g-fieldset {
+    border: none;
+    border-top: 1px solid #999ea9;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.g-fieldset legend {
+    font-size: 16px;
+    margin: 0 5px;
+    padding: 0 5px;
+}
