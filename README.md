@@ -6,6 +6,8 @@ Zend Framework 2 开发管理后台, 开源项目
 Admin 为管理模块
 Product 写的Demo.
 
+*QQ讨论群: 248887117*
+
 ##安装说明
 
 前提软件:
