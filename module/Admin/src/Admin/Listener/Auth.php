@@ -94,7 +94,7 @@ class Auth implements ListenerAggregateInterface, SharedListenerAggregateInterfa
 
         /** @var \Zend\Authentication\AuthenticationService $auth */
         $auth  = $sm->get('auth');
-        $cache = $sm->get('cache');
+        $cache = $sm->get('cache.permission');
         $rbac  = self::loadRbac($cache);
         $guest = $rbac->hasRole('Guest') ? $rbac->getRole('Guest') : new Role('Guest');
 

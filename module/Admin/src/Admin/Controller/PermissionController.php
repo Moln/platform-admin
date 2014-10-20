@@ -98,7 +98,7 @@ class PermissionController extends AbstractActionController
             );
         }
         /** @var \Zend\Cache\Storage\Adapter\Filesystem $cache */
-        $cache = $this->getServiceLocator()->get('cache');
+        $cache = $this->getServiceLocator()->get('cache.permission');
         $cache->clearByTags(array('permission'));
 
         return new JsonModel(array('code' => true));
@@ -122,7 +122,7 @@ class PermissionController extends AbstractActionController
             $pushRoles = $this->getRequest()->getPost('role_id');
             $assignTable->resetPermissionsById($permissionId, $pushRoles);
 
-            $this->getServiceLocator()->get('cache')->clearByTags(array('permission'));
+            $this->getServiceLocator()->get('cache.permission')->clearByTags(array('permission'));
             return new JsonModel(array(
                 'code' => 1
             ));

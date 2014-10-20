@@ -78,4 +78,13 @@ return array(
             'FileStorage' => '\Gzfextra\File\Storage\StorageFactory'
         )
     ),
+    'caches'             => array(
+        'cache.permission'          => array(
+            'adapter' => 'filesystem',
+            'options' => array(
+                'cacheDir' => './data/cache'
+            ),
+            'plugins' => array('serializer'),
+        ),
+    ),
 );
