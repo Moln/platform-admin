@@ -3,7 +3,12 @@
 Zend Framework 2 开发管理后台, 开源项目
 前端使用 kendoUI (Javascript ui framework)
 
-## 安装说明
+Admin 为管理模块
+Product 写的Demo.
+
+*QQ讨论群: 248887117*
+
+##安装说明
 
 前提软件:
 - [Composer](https://getcomposer.org/).
@@ -31,7 +36,7 @@ Zend Framework 2 开发管理后台, 开源项目
 ```
 5. 浏览器进入 `public` 目录, 默认账号密码都是 `admin`
 
-## LICENSE
+##LICENSE
 MIT
 
 
