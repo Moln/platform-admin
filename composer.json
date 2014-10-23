@@ -1,6 +1,6 @@
 {
     "name": "moln/platform-admin",
-    "keywords": ["admin","zendframework"],
+    "keywords": ["admin","zendframework2", "zf2"],
     "description": "Global management system.",
     "require": {
         "zendframework/zendframework": "2.*",
