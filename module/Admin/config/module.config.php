@@ -60,7 +60,7 @@ return array(
             'filters'      => array(
                 'LowerCaseName',
                 'RenameUpload' => array(
-                    'target'               => 'shop',
+                    'target'               => date('Y/m') . '/shop',
                     'use_upload_extension' => true,
                     'randomize'            => true,
                 ),
@@ -68,18 +68,21 @@ return array(
         ),
     ),
 
+
     'auth_module'     => array(
         'admin',
 //        'shop',
 //        'payment',
     ),
     'service_manager' => array(
-        'factories' => array(
-            'FileStorage' => '\Gzfextra\File\Storage\StorageFactory'
+        'factories'          => array(
+            'FileStorage' => '\Gzfextra\FileStorage\StorageFactory'
+        ),
+        'abstract_factories' => array(//            'Gzfextra\FileStorage\StorageAbstractFactory',
         )
     ),
-    'caches'             => array(
-        'cache.permission'          => array(
+    'caches'          => array(
+        'cache.permission' => array(
             'adapter' => 'filesystem',
             'options' => array(
                 'cacheDir' => './data/cache'

@@ -4,7 +4,7 @@
     "description": "Global management system.",
     "require": {
         "zendframework/zendframework": "2.*",
-        "moln/gzfextra": "dev-master"
+        "moln/gzfextra": "1.*"
     },
     "authors": [
         {

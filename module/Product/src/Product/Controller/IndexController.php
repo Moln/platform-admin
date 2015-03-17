@@ -13,7 +13,7 @@ use Zend\View\Model\JsonModel;
  *
  * @package Product\Controller
  *
- * @method \Gzfextra\Mvc\Controller\Plugin\Ui ui();
+ * @method \Gzfextra\UiFramework\Controller\Plugin\Ui ui();
  */
 class IndexController extends AbstractActionController
 {

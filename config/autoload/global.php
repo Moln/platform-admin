@@ -55,9 +55,7 @@ return array(
     ),
     'controller_plugins' => array(
         'invokables' => array(
-            'ui'     => 'Gzfextra\Mvc\Controller\Plugin\Ui',
-            'page'   => 'Gzfextra\Mvc\Controller\Plugin\Page',
-            'result' => 'Gzfextra\Mvc\Controller\Plugin\Result',
+            'ui'     => 'Gzfextra\UiFramework\Controller\Plugin\Ui',
         )
     ),
     'caches'             => array(

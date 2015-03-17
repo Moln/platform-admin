@@ -3,6 +3,7 @@ namespace Admin;
 
 use Admin\Listener\Operation;
 use Gzfextra\Db\TableGateway\AbstractTableGateway;
+use Gzfextra\Mvc\GlobalModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
@@ -22,12 +23,18 @@ class Module
         $em->attach(MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'));
 //        $em->attach(MvcEvent::EVENT_RENDER, array($this, 'onRender'));
 
+        $em->attach(new GlobalModuleRouteListener());
         AbstractTableGateway::setServiceLocator($e->getApplication()->getServiceManager());
 
         $se = $e->getApplication()->getEventManager()->getSharedManager();
 
         //在 injectViewModelListener 之前, createViewModel 之后,变更 ViewModel 的 terminal 属性
         $se->attach('Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'), -99);
+    }
+
+    public function getConfig()
+    {
+        return GlobalModuleRouteListener::getDefaultRouterConfig();
     }
 
     public function onDispatch100(MvcEvent $event)
