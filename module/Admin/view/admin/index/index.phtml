@@ -4,55 +4,81 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Platform admin</title>
     <link href="./scripts/kendoui/styles/kendo.common.min.css" rel="stylesheet"/>
-    <link href="./scripts/kendoui/styles/kendo.default.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="./styles/default/global.css"/>
+    <link href="./scripts/kendoui/styles/kendo.uniform.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="./styles/a/global.css"/>
 
-    <script src="./scripts/kendoui/js/jquery.min.js"></script>
+    <script src="./scripts/jquery/jquery/jquery-2.1.1.min.js"></script>
     <script src="./scripts/kendoui/js/kendo.web.min.js"></script>
     <script src="./scripts/platform-admin/platform.js"></script>
-
-    <!--[if lte IE 8]>
-    <script src="https://github.com/douglascrockford/JSON-js/blob/master/json2.js"></script>
-    <![endif]-->
-
-    <script>
-        Platform.ui.config({menu: <?=json_encode($menu)?>});
-        Platform.ui.init();
-    </script>
 </head>
 <body>
-<div id="g-top">
-    <div id="g-setting">
-        当前用户：<?= $realname ?>&nbsp&nbsp
-        <a href="./logout" id="logout">注销</a>
+    <div>
+        <div class="k-header" id="g-top">
+            Zf Admin
+        </div>
     </div>
-    <ul id="g-nav">
-        <!--        <li>-->
-        <!--            积分商城-->
-        <!--            <ul>-->
-        <!--                <li data-url="/shop/goods">-->
-        <!--                    商品管理-->
-        <!--                </li>-->
-        <!--                <li data-url="/shop/category">-->
-        <!--                    商品类别管理-->
-        <!--                </li>-->
-        <!--                <li data-url="/shop/game-category">-->
-        <!--                    商品游戏分类-->
-        <!--                </li>-->
-        <!--                <li data-url="/shop/order">-->
-        <!--                    订单管理-->
-        <!--                </li>-->
-        <!--                <li data-url="/shop/express">-->
-        <!--                    快递地区管理-->
-        <!--                </li>-->
-        <!--            </ul>-->
-        <!--        </li>-->
-    </ul>
-</div>
-<div id="g-window">
-    <!--        <div class="p-block k-block k-shadow">留空</div>-->
-</div>
-<div id="g-tasks">
-</div>
+    <div id="horizontal">
+        <div id="left-pane">
+        </div>
+        <div id="main">
+                <H1>Hello world!</H1>
+        </div>
+    </div>
 </body>
+
+<script>
+    $(document).ready(function() {
+        $("body").kendoSplitter({
+            orientation: "vertical",
+            panes: [
+                { collapsible: false, resizable: false, size: "60px"},
+                { collapsible: false, resizable: false }
+            ]
+        });
+
+        $("#horizontal").kendoSplitter({
+            panes: [
+                { collapsible: true, resizable: false, size: "220px", collapsedSize: "50px" },
+                { collapsible: false }
+            ]
+        });
+
+        $("#left-pane").kendoPanelBar({
+            dataSource: [
+                {
+                    text: "Baseball",
+                    items: [
+                        { text: "Top News" },
+                        { text: "Photo Galleries" },
+                        { text: "Videos Records" },
+                        { text: "Radio Records" }
+                    ]
+                },
+                {
+                    text: "Golf",
+                    items: [
+                        { text: "Top News" },
+                        { text: "Photo Galleries" },
+                        { text: "Videos Records" },
+                        { text: "Radio Records" }
+                    ]
+                },
+                {
+                    text: "Swimming",
+                    items: [
+                        { text: "Top News" },
+                        { text: "Photo Galleries" }
+                    ]
+                },
+                {
+                    text: "Snowboarding",
+                    items: [
+                        { text: "Photo Galleries" },
+                        { text: "Videos Records" }
+                    ]
+                }
+            ]
+        });
+    });
+</script>
 </html>

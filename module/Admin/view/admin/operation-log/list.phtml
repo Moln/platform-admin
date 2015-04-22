@@ -29,7 +29,7 @@
                     if (e.status == "customerror") {
                         for (var i in e.errors) {
                             for (var j in e.errors[i]) {
-                                alert(e.errors[i][j]);
+                                Platform.ui.alert(e.errors[i][j]);
                                 break;
                             }
                             break;

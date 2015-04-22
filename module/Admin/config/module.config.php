@@ -1,4 +1,8 @@
 <?php
+use Admin\Listener\OperationListener;
+use Admin\Listener\PermissionListener;
+use Gzfextra\Mvc\GlobalModuleRouteListener;
+
 return array(
     'router'          => array(
         'routes' => array(
@@ -48,46 +52,32 @@ return array(
             __DIR__ . '/../view',
         ),
     ),
-    'file_storage'    => array(
-        'type'    => 'fileSystem',
-        'options' => array(
-            'default_path' => realpath('./public/uploads'),
-            'validators'   => array(
-                'Extension' => array('gif', 'jpg', 'jpeg', 'png'),
-                'Size'      => array('max' => 1024 * 1024),
-                'IsImage',
-            ),
-            'filters'      => array(
-                'LowerCaseName',
-                'RenameUpload' => array(
-                    'target'               => date('Y/m') . '/shop',
-                    'use_upload_extension' => true,
-                    'randomize'            => true,
-                ),
-            ),
-        ),
-    ),
 
-
-    'auth_module'     => array(
-        'admin',
-//        'shop',
-//        'payment',
-    ),
     'service_manager' => array(
-        'factories'          => array(
-            'FileStorage' => '\Gzfextra\FileStorage\StorageFactory'
+        'factories'  => array(
+            'FileStorage' => '\Gzfextra\File\Storage\StorageFactory'
         ),
-        'abstract_factories' => array(//            'Gzfextra\FileStorage\StorageAbstractFactory',
-        )
-    ),
-    'caches'          => array(
-        'cache.permission' => array(
-            'adapter' => 'filesystem',
-            'options' => array(
-                'cacheDir' => './data/cache'
-            ),
-            'plugins' => array('serializer'),
+        'invokables' => array(
+            'GlobalModuleRouteListener' => GlobalModuleRouteListener::class,
+            'PermissionListener'        => PermissionListener::class,
+            'OperationListener'         => OperationListener::class,
         ),
     ),
+
+    'listeners'       => array(
+        'GlobalModuleRouteListener',
+        'PermissionListener',
+        'OperationListener',
+    ),
+
+//    'caches'             => array(
+//        'cache.permission' => array(
+//            'adapter' => 'filesystem',
+//            'ttl'     => 60,
+//            'options' => array(
+//                'cacheDir' => './data/cache'
+//            ),
+//            'plugins' => array('serializer'),
+//        ),
+//    ),
 );

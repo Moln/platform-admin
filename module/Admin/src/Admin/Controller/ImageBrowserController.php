@@ -15,7 +15,7 @@ use Zend\View\Model\JsonModel;
 class ImageBrowserController extends AbstractActionController
 {
     /**
-     * @return \Gzfextra\FileStorage\Adapter\AbstractStorageAdapter
+     * @return \Gzfextra\File\Storage\AbstractStorage
      */
     public function getFileStorage()
     {
