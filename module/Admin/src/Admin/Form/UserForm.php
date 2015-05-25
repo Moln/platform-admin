@@ -46,9 +46,9 @@ class UserForm extends Form
                             array(
                                 'name'    => 'Db\NoRecordExists',
                                 'options' => array(
-                                    'table'   => UserTable::getInstance()->getTable(),
+                                    'table'   => $this->get('UserTable')->getTable(),
                                     'field'   => 'account',
-                                    'adapter' => UserTable::getInstance()->getAdapter()
+                                    'adapter' => $this->get('UserTable')->getAdapter()
                                 ),
                             ),
                         ),

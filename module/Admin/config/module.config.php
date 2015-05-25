@@ -1,7 +1,7 @@
 <?php
 use Admin\Listener\OperationListener;
 use Admin\Listener\PermissionListener;
-use Gzfextra\Mvc\GlobalModuleRouteListener;
+use Gzfextra\Router\GlobalModuleRouteListener;
 
 return array(
     'router'          => array(
@@ -66,18 +66,20 @@ return array(
 
     'listeners'       => array(
         'GlobalModuleRouteListener',
-        'PermissionListener',
+//        'PermissionListener',
         'OperationListener',
+
+        'ZfcRbac\View\Strategy\RedirectStrategy',
     ),
 
-//    'caches'             => array(
-//        'cache.permission' => array(
-//            'adapter' => 'filesystem',
-//            'ttl'     => 60,
-//            'options' => array(
-//                'cacheDir' => './data/cache'
-//            ),
-//            'plugins' => array('serializer'),
-//        ),
-//    ),
-);
+    'caches'             => array(
+        'cache.permission' => array(
+            'adapter' => 'filesystem',
+            'ttl'     => 60,
+            'options' => array(
+                'cacheDir' => './data/cache'
+            ),
+            'plugins' => array('serializer'),
+        ),
+    ),
+) + include 'table.config.php';

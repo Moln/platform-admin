@@ -154,7 +154,7 @@ class User extends RowGateway
     public function getRoles()
     {
         if (!$this->roles) {
-            $this->roles = AssignUserTable::getInstance()->getRoleNamesByUserId($this->getUserId());
+            $this->roles = $this->get('AssignUserTable')->getRoleNamesByUserId($this->getUserId());
         }
         return $this->roles;
     }
@@ -167,7 +167,7 @@ class User extends RowGateway
     public function getRoleIds()
     {
         if (!$this->roleIds) {
-            $this->roleIds = AssignUserTable::getInstance()->getRoleIdsByUserId($this->getUserId());
+            $this->roleIds = $this->get('AssignUserTable')->getRoleIdsByUserId($this->getUserId());
         }
         return $this->roleIds;
     }
@@ -179,8 +179,8 @@ class User extends RowGateway
 
     public function __wakeup()
     {
-        $this->table = UserTable::getInstance()->getTable();
-        $this->sql   = UserTable::getInstance()->getSql();
+        $this->table = $this->get('UserTable')->getTable();
+        $this->sql   = $this->get('UserTable')->getSql();
         $this->initialize();
     }
 

@@ -4,7 +4,8 @@
     "description": "Global management system.",
     "require": {
         "zendframework/zendframework": "2.*",
-        "moln/gzfextra": "1.*"
+        "moln/gzfextra": "dev-master",
+        "zf-commons/zfc-rbac": "2.5.1"
     },
     "authors": [
         {
@@ -13,9 +14,9 @@
         }
     ],
     "autoload":{
-        "psr-0":{
-            "Admin\\":"module/Admin/src",
-            "Product\\":"module/Product/src"
+        "psr-4":{
+            "Admin\\":"module/Admin/src/Admin",
+            "Product\\":"module/Product/src/Product"
         }
     }
 }

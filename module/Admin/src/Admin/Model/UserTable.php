@@ -1,8 +1,8 @@
 <?php
 namespace Admin\Model;
 
-use Gzfextra\Db\TableGateway\AbstractTableGateway;
 use Zend\Authentication\Adapter\DbTable;
+use Zend\Db\TableGateway\TableGateway;
 
 /**
  * Class UserTable
@@ -13,7 +13,7 @@ use Zend\Authentication\Adapter\DbTable;
  *
  * @method User create(array $row = null)
  */
-class UserTable extends AbstractTableGateway
+class UserTable extends TableGateway
 {
 
     public static function encrypt($password)

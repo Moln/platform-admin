@@ -18,7 +18,7 @@ class PermissionController extends AbstractActionController
 
     public function readAction()
     {
-        return new JsonModel(PermissionTable::getInstance()->select()->toArray());
+        return new JsonModel($this->get('PermissionTable')->select()->toArray());
     }
 
     public function saveAction()
@@ -26,7 +26,7 @@ class PermissionController extends AbstractActionController
         $id    = (int)$this->getRequest()->getPost('per_id');
         $title = $this->getRequest()->getPost('title');
 
-        PermissionTable::getInstance()->updateTitle($id, $title);
+        $this->get('PermissionTable')->updateTitle($id, $title);
         return new JsonModel($this->getRequest()->getPost());
     }
 
@@ -70,7 +70,7 @@ class PermissionController extends AbstractActionController
             }
         }
 
-        $perTable    = PermissionTable::getInstance();
+        $perTable    = $this->get('PermissionTable');
         $permissions = $perTable->select();
 
         foreach ($permissions as $row) {
@@ -115,7 +115,7 @@ class PermissionController extends AbstractActionController
     public function assignAction()
     {
         $permissionId = $this->params('id');
-        $assignTable  = AssignPermissionTable::getInstance();
+        $assignTable  = $this->get('AssignPermissionTable');
         $roles        = $assignTable->getRolesByPermissionId($permissionId);
 
         if ($this->getRequest()->isPost()) {
@@ -142,7 +142,7 @@ class PermissionController extends AbstractActionController
         array_shift($url);
         list($module, $ctrl, $action) = $url;
 
-        $per_id = PermissionTable::getInstance()->fetchByRule($module, $ctrl, $action);
+        $per_id = $this->get('PermissionTable')->fetchByRule($module, $ctrl, $action);
         return new JsonModel(array('data' => implode('.', $url), 'code' => 1));
     }
 }

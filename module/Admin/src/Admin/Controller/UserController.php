@@ -18,7 +18,7 @@ class UserController extends AbstractActionController
     public function readAction()
     {
         $userId    = $this->identity()->getUserId();
-        $paginator = UserTable::getInstance()->fetchPaginator(
+        $paginator = $this->get('UserTable')->fetchPaginator(
             function (Select $select) use ($userId) {
                 $select->columns(array('user_id', 'account', 'real_name', 'email', 'status'));
 
@@ -50,7 +50,7 @@ class UserController extends AbstractActionController
             } else {
                 $data['password'] = UserTable::encrypt($data['password']);
             }
-            UserTable::getInstance()->save($data);
+            $this->get('UserTable')->save($data);
             if (isset($data['password'])) unset($data['password']);
             return new JsonModel(array('data' => $data));
         } else {
@@ -61,15 +61,15 @@ class UserController extends AbstractActionController
     public function deleteAction()
     {
         $userId = $this->getRequest()->getPost('user_id');
-        UserTable::getInstance()->deletePrimary($userId);
-        AssignUserTable::getInstance()->removeUserId($userId);
+        $this->get('UserTable')->deletePrimary($userId);
+        $this->get('AssignUserTable')->removeUserId($userId);
         return new JsonModel(array());
     }
 
     public function assignAction()
     {
         $userId      = $this->params('id');
-        $assignTable = AssignUserTable::getInstance();
+        $assignTable = $this->get('AssignUserTable');
         $roles       = $assignTable->getRolesByUserId($userId);
 
         if ($this->getRequest()->isPost()) {

@@ -56,6 +56,7 @@ return array(
     'controller_plugins' => array(
         'invokables' => array(
             'ui'     => 'Gzfextra\UiFramework\Controller\Plugin\Ui',
+            'get'     => 'Gzfextra\Mvc\Controller\Plugin\Get',
         )
     ),
     'caches'             => array(
@@ -86,4 +87,5 @@ return array(
 //            'plugins' => array('serializer'),
 //        ),
     ),
+
 );

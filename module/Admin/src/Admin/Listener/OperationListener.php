@@ -75,7 +75,7 @@ class OperationListener implements ListenerAggregateInterface
         );
 
         if ($uri != 'payment.order.no-notify' && $uri != 'payment2.order.no-notify') {
-            OperationLogTable::getInstance()->insert(
+            $this->get('OperationLogTable')->insert(
                 array(
                     'uri'     => $uri,
                     'method'  => $method,

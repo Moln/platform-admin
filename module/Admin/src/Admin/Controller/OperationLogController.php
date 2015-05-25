@@ -24,7 +24,7 @@ class OperationLogController extends AbstractActionController
 
     public function readAction()
     {
-        $paginator = OperationLogTable::getInstance()->fetchPaginator(
+        $paginator = $this->get('OperationLogTable')->fetchPaginator(
             function (Select $select) {
                 $select->columns(
                     array(

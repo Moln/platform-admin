@@ -9,7 +9,7 @@ use Zend\View\Model\JsonModel;
 class IndexController extends AbstractActionController
 {
     public function indexAction()
-    {
+    {var_dump($this->isGranted('delete'));exit;
         $menu = MenuTable::getData();
 
         /** @var \Admin\Model\User $user */
@@ -34,12 +34,17 @@ class IndexController extends AbstractActionController
 
         $menu = $menuFilter($menu);
 
+
+        $this->layout('layout.admin');
         return array(
             'realname' => $this->identity()->getRealName(),
             'menu'     => $menu
         );
     }
 
+    /**
+     * 个人设置
+     */
     public function selfAction()
     {
 

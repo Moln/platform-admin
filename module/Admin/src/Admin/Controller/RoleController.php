@@ -22,7 +22,7 @@ class RoleController extends AbstractActionController
 
         $children = array();
 
-        $children = RoleTable::getInstance()->showChildren($roles, $children);
+        $children = $this->get('RoleTable')->showChildren($roles, $children);
 
         return new JsonModel($children);
     }
@@ -33,7 +33,7 @@ class RoleController extends AbstractActionController
 
         $roles = $this->identity()->getRoleIds();
 
-        $flag = RoleTable::getInstance()->validChildren($roles, $parent);
+        $flag = $this->get('RoleTable')->validChildren($roles, $parent);
 
         if (!$flag) return new JsonModel(array('errors' => "无权修改"));
 
@@ -43,7 +43,7 @@ class RoleController extends AbstractActionController
         $form->setData($data);
         if ($form->isValid()) {
             $data = $form->getData();
-            RoleTable::getInstance()->save($data);
+            $this->get('RoleTable')->save($data);
 
             return new JsonModel($data);
         } else {
@@ -58,11 +58,11 @@ class RoleController extends AbstractActionController
 
         $roles = $this->identity()->getRoleIds();
 
-        $flag = RoleTable::getInstance()->validChildren($roles, $parent);
+        $flag = $this->get('RoleTable')->validChildren($roles, $parent);
 
         if (!$flag) return new JsonModel(array('errors' => "无权移动"));
 
-        RoleTable::getInstance()->update(array("parent" => $parent), array('role_id' => $role_id));
+        $this->get('RoleTable')->update(array("parent" => $parent), array('role_id' => $role_id));
 
         return new JsonModel(array('code' => 1));
     }
@@ -72,9 +72,9 @@ class RoleController extends AbstractActionController
         $datas = $this->getRequest()->getPost('data');
 
         foreach ($datas as $data) {
-            RoleTable::getInstance()->deletePrimary($data);
-            AssignUserTable::getInstance()->removeRoleId($data);
-            AssignPermissionTable::getInstance()->removeRoleId($data);
+            $this->get('RoleTable')->deletePrimary($data);
+            $this->get('AssignUserTable')->removeRoleId($data);
+            $this->get('AssignPermissionTable')->removeRoleId($data);
         }
         return new JsonModel(array('code' => 1));
     }
@@ -82,7 +82,7 @@ class RoleController extends AbstractActionController
     public function assignPermissionAction()
     {
         $roleId      = $this->params('id');
-        $assignTable = AssignPermissionTable::getInstance();
+        $assignTable = $this->get('AssignPermissionTable');
         $permissions = $assignTable->getPermissionsByRoleId($roleId);
 
         if ($this->getRequest()->isPost()) {
@@ -103,7 +103,7 @@ class RoleController extends AbstractActionController
     public function assignUserAction()
     {
         $roleId      = $this->params('id');
-        $assignTable = AssignUserTable::getInstance();
+        $assignTable = $this->get('AssignUserTable');
         $users       = $assignTable->getUsersByRoleId($roleId);
 
         if ($this->getRequest()->isPost()) {
@@ -123,7 +123,7 @@ class RoleController extends AbstractActionController
     public function treesAction()
     {
         return array(
-            'trees' => RoleTable::getInstance()->getTreesByRoleId(),
+            'trees' => $this->get('RoleTable')->getTreesByRoleId(),
         );
     }
 }

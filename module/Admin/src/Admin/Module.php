@@ -1,36 +1,40 @@
 <?php
 namespace Admin;
 
-use Admin\Listener\OperationListener;
 use Gzfextra\Db\TableGateway\AbstractTableGateway;
-use Gzfextra\Mvc\GlobalModuleRouteListener;
+use Gzfextra\Router\GlobalModuleRouteListener;
 use Zend\ModuleManager\ModuleEvent;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\MvcEvent;
 use Zend\Paginator\Paginator;
+use Zend\Stdlib\ArrayUtils;
 use Zend\View\Model\ViewModel;
 
 class Module
 {
     public function init(ModuleManager $manager)
     {
-        $manager->getEventManager()->attach(ModuleEvent::EVENT_MERGE_CONFIG, function (ModuleEvent $event) {
+        $manager->getEventManager()->attach(
+            ModuleEvent::EVENT_MERGE_CONFIG, function (ModuleEvent $event) {
             /** @var \Zend\ModuleManager\Listener\ConfigListener $configListener */
-            $configListener =$event->getParam('configListener');
-            $configs = $configListener->getMergedConfig(false);
+            $configListener = $event->getParam('configListener');
+            $configs        = $configListener->getMergedConfig(false);
 
             $configs['service_manager']['abstract_factories'] =
                 array_unique($configs['service_manager']['abstract_factories']);
 
             $configListener->setMergedConfig($configs);
-        });
+        }
+        );
     }
 
 
     public function onBootstrap(MvcEvent $e)
     {
-        $sm = $e->getApplication()->getServiceManager();
-        foreach ($sm->get('config')['ini_set'] as $key => $val) {
+        $sm      = $e->getApplication()->getServiceManager();
+        $configs = $sm->get('config');
+
+        if (isset($configs['ini_set'])) foreach ($configs['ini_set'] as $key => $val) {
             $val !== null && ini_set($key, $val);
         }
 
@@ -47,6 +51,7 @@ class Module
 
         //在 injectViewModelListener 之前, createViewModel 之后,变更 ViewModel 的 terminal 属性
         $se->attach('Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH, array($this, 'onDispatch'), -99);
+
     }
 
     public function onDispatch100(MvcEvent $event)
@@ -82,12 +87,13 @@ class Module
             //todo 404 not found
             //$e->getViewModel()->setTerminal(true);
         } else {
-            //todo 500
+            error_log($e->getParam('exception'), 3, 'data/exception.log');
         }
     }
 
     public function getConfig()
     {
-        return GlobalModuleRouteListener::getDefaultRouterConfig();
+        $config = include __DIR__ . '/../../config/module.config.php';
+        return ArrayUtils::merge(GlobalModuleRouteListener::getDefaultRouterConfig(), $config);
     }
 }

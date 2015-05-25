@@ -38,13 +38,6 @@ class PermissionListener extends AbstractListenerAggregate
         $events->attach(MvcEvent::EVENT_ROUTE, [$this, 'onRouteAuth']);
     }
 
-    /**
-     * Login && RBAC
-     *
-     * @todo permission rbac
-     *
-     * @param MvcEvent $e
-     */
     public function onRouteAuth(MvcEvent $e)
     {
         $rm = $e->getRouteMatch();
@@ -105,7 +98,7 @@ class PermissionListener extends AbstractListenerAggregate
 
         $rbac = new Rbac();
 
-        $data  = RoleTable::getInstance()->getPermissions();
+        $data  = $this->get('RoleTable')->getPermissions();
         $roles = array();
         foreach ($data as $row) {
             if (isset($roles[$row['name']])) {

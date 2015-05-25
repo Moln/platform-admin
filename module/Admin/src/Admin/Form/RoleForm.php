@@ -49,9 +49,9 @@ class RoleForm extends Form
                         array(
                             'name'    => 'Db\NoRecordExists',
                             'options' => array(
-                                'table'   => RoleTable::getInstance()->getTable(),
+                                'table'   => $this->get('RoleTable')->getTable(),
                                 'field'   => 'name',
-                                'adapter' => RoleTable::getInstance()->getAdapter()
+                                'adapter' => $this->get('RoleTable')->getAdapter()
                             ),
                         ),
                     ),

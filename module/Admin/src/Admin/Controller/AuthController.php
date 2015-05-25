@@ -23,23 +23,25 @@ class AuthController extends AbstractActionController
 
     public function loginAction()
     {
+
+        var_dump($this->isGranted('delete'));exit;
         if ($this->getRequest()->isPost()) {
+            /** @var \Admin\Model\UserTable $userTable */
+            $userTable = $this->get('UserTable');
             $form = new LoginForm();
             $form->loadInputFilter();
             $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
                 $formData    = $form->getData();
-                $authAdapter = UserTable::getInstance()->getAuthAdapter(
-                    $formData['account'], $formData['password']
-                );
+                $authAdapter = $userTable->getAuthAdapter($formData['account'], $formData['password']);
                 /** @var \Zend\Authentication\AuthenticationService $auth */
-                $auth = $this->getServiceLocator()->get('auth');
+                $auth = $this->get('auth');
                 $auth->setAdapter($authAdapter);
 
                 $result = $auth->authenticate();
                 if ($result->isValid()) {
-                    $user = UserTable::getInstance()->create((array)$authAdapter->getResultRowObject());
+                    $user = $userTable->create((array)$authAdapter->getResultRowObject());
                     $auth->getStorage()->write($user);
                     $return = array('code' => 1);
                 } else {
