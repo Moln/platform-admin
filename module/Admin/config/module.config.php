@@ -67,7 +67,7 @@ return array(
     'listeners'       => array(
         'GlobalModuleRouteListener',
 //        'PermissionListener',
-        'OperationListener',
+//        'OperationListener',
 
         'ZfcRbac\View\Strategy\RedirectStrategy',
     ),
@@ -82,4 +82,28 @@ return array(
             'plugins' => array('serializer'),
         ),
     ),
+
+
+
+    'zfc_rbac' => [
+        'guards' => [
+            'Admin\Rbac\PermissionsGuard' => ['cache' => 'cache.permission'],
+        ],
+
+        'role_provider' => [
+            'Admin\Rbac\RoleProvider' => ['cache' => 'cache.permission'],
+        ],
+//        'identity_provider' => 'MyCustomIdentityProvider',
+
+        'guard_manager' => [
+            'invokables' => [
+                'Admin\Rbac\PermissionsGuard' => 'Admin\Rbac\PermissionsGuard',
+            ]
+        ],
+        'role_provider_manager' => [
+            'invokables' => [
+                'Admin\Rbac\RoleProvider' => 'Admin\Rbac\RoleProvider',
+            ]
+        ],
+    ],
 ) + include 'table.config.php';

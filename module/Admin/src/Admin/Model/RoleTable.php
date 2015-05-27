@@ -13,6 +13,7 @@ use Gzfextra\Db\TableGateway\AbstractTableGateway;
  */
 class RoleTable extends AbstractTableGateway
 {
+    protected $treeRoles;
 
     /**
      * 查询角色权限
@@ -43,7 +44,7 @@ class RoleTable extends AbstractTableGateway
     /**
      * 获取所有角色关联权限
      *
-     * @return null|\Zend\Db\ResultSet\ResultSetInterface
+     * @return null|\Zend\Db\ResultSet\ResultSet
      */
     public function getPermissions()
     {
@@ -57,29 +58,56 @@ class RoleTable extends AbstractTableGateway
         $select->join(
             'admin_permission',
             'admin_assign_role_permission.per_id=admin_permission.per_id',
-            array('module', 'controller', 'action')
+            array('module', 'controller', 'permission')
         );
         $result = $this->selectWith($select);
         $result->setArrayObjectPrototype(new \ArrayObject());
+
         return $result;
     }
 
-    public function getTreesByRoleId()
+    public function getTreeRole($childKey = 'items', callable $dataMapCallable = null)
     {
         $select = $this->sql->select();
-        $select->columns(array('role_id', 'name', 'parent'));
-
         $result = $this->selectWith($select)->toArray();
 
-        return $this->toTreeData($result, 0);
+        $dataMapCallable = $dataMapCallable ?: function ($row) {
+            return array(
+                'role_id'   => $row['role_id'],
+                'text'      => $row['name'],
+                'parent_id' => $row['parent'],
+            );
+        };
+
+        return $this->toTreeData($result, $childKey, $dataMapCallable);
     }
 
-    public function showChildren($role_ids)
+    public function getTreeRoot()
+    {
+        return $this->getTreeRole()[0];
+    }
+
+    private function toTreeData($rows, $childKey = 'items', callable $dataMapCallable = null)
+    {
+        $rootId = 0;
+        $data   = array($rootId => array($childKey => array()));
+        foreach ($rows as $row) {
+            if (!isset($data[$row['role_id']])) {
+                $data[$row['role_id']] = $dataMapCallable($row);
+            }
+
+            $data[$row['parent']][$childKey][] = &$data[$row['role_id']];
+        }
+
+        return $data;
+    }
+
+    public function showChildren($roleIds)
     {
         $children = array();
 
         $select = $this->sql->select();
-        $select->columns(array('role_id', 'name', 'parent'))->where(array('role_id' => $role_ids));
+        $select->columns(array('role_id', 'name', 'parent'))->where(array('role_id' => $roleIds));
 
         $roles = $this->selectWith($select)->toArray();
 
@@ -108,23 +136,6 @@ class RoleTable extends AbstractTableGateway
                 $this->getChildrenByRoles($children, $array);
             }
         }
-    }
-
-    private function toTreeData($rows, $rootId)
-    {
-        $data = array($rootId => array('items' => array()));
-        foreach ($rows as $row) {
-            $data[$row['role_id']] = (isset($data[$row['role_id']]) ? $data[$row['role_id']] : array())
-                + array(
-                    'role_id'   => $row['role_id'],
-                    'text'      => $row['name'],
-                    'parent_id' => $row['parent'],
-                );
-
-            $data[$row['parent']]['items'][] = & $data[$row['role_id']];
-        }
-
-        return $data[$rootId]['items'];
     }
 
     public function validChildren($roles, $targetNode)
