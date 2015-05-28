@@ -12,6 +12,8 @@ use Zend\View\Model\ViewModel;
 
 class Module
 {
+    const CONFIG_KEY = 'moln_admin';
+
     public function init(ModuleManager $manager)
     {
         $manager->getEventManager()->attach(

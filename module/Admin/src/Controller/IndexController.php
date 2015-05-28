@@ -9,7 +9,8 @@ use Zend\View\Model\JsonModel;
 class IndexController extends AbstractActionController
 {
     public function indexAction()
-    {var_dump($this->isGranted('delete'));exit;
+    {
+
         $menu = MenuTable::getData();
 
         /** @var \Admin\Model\User $user */

@@ -15,6 +15,8 @@ class RoleTable extends AbstractTableGateway
 {
     protected $treeRoles;
 
+    protected $permissions;
+
     /**
      * 查询角色权限
      *
@@ -48,28 +50,36 @@ class RoleTable extends AbstractTableGateway
      */
     public function getPermissions()
     {
-        $select = $this->sql->select();
-        $select->columns(array('name'));
-        $select->join(
-            'admin_assign_role_permission',
-            'admin_role.role_id=admin_assign_role_permission.role_id',
-            array()
-        );
-        $select->join(
-            'admin_permission',
-            'admin_assign_role_permission.per_id=admin_permission.per_id',
-            array('module', 'controller', 'permission')
-        );
-        $result = $this->selectWith($select);
-        $result->setArrayObjectPrototype(new \ArrayObject());
+        if (empty($this->permissions)) {
+            $select = $this->sql->select();
+            $select->columns(array('name'));
+            $select->join(
+                'admin_assign_role_permission',
+                'admin_role.role_id=admin_assign_role_permission.role_id',
+                array()
+            );
+            $select->join(
+                'admin_permission',
+                'admin_assign_role_permission.per_id=admin_permission.per_id',
+                array('module', 'controller', 'action', 'permission')
+            );
+            $result = $this->selectWith($select);
+            $result->setArrayObjectPrototype(new \ArrayObject());
+            $this->permissions = $result->toArray();
+        }
 
-        return $result;
+        return $this->permissions;
+    }
+
+    public function setPermissions(array $permissions)
+    {
+        $this->permissions = $permissions;
+        return $this;
     }
 
     public function getTreeRole($childKey = 'items', callable $dataMapCallable = null)
     {
-        $select = $this->sql->select();
-        $result = $this->selectWith($select)->toArray();
+        $result = $this->select()->toArray();
 
         $dataMapCallable = $dataMapCallable ?: function ($row) {
             return array(

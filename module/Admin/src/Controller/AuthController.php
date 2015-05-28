@@ -3,6 +3,7 @@
 namespace Admin\Controller;
 
 use Admin\Form\LoginForm;
+use Admin\InputFilter\LoginInputFilter;
 use Admin\Model\UserTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
@@ -23,17 +24,14 @@ class AuthController extends AbstractActionController
 
     public function loginAction()
     {
-
-        var_dump($this->isGranted('delete'));exit;
         if ($this->getRequest()->isPost()) {
             /** @var \Admin\Model\UserTable $userTable */
             $userTable = $this->get('UserTable');
-            $form = new LoginForm();
-            $form->loadInputFilter();
+            $form = new LoginInputFilter();
             $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $formData    = $form->getData();
+                $formData    = $form->getValues();
                 $authAdapter = $userTable->getAuthAdapter($formData['account'], $formData['password']);
                 /** @var \Zend\Authentication\AuthenticationService $auth */
                 $auth = $this->get('auth');

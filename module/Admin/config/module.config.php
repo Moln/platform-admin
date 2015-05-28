@@ -1,7 +1,8 @@
 <?php
 use Admin\Listener\OperationListener;
-use Admin\Listener\PermissionListener;
+use Admin\Listener\PermissionGuardListener;
 use Gzfextra\Router\GlobalModuleRouteListener;
+use ZfcRbac\Guard\GuardInterface;
 
 return array(
     'router'          => array(
@@ -55,11 +56,13 @@ return array(
 
     'service_manager' => array(
         'factories'  => array(
-            'FileStorage' => '\Gzfextra\File\Storage\StorageFactory'
+            'FileStorage' => '\Gzfextra\File\Storage\StorageFactory',
+
+            'Admin\Rbac'  => 'Admin\Service\RbacFactory',
         ),
         'invokables' => array(
             'GlobalModuleRouteListener' => GlobalModuleRouteListener::class,
-            'PermissionListener'        => PermissionListener::class,
+            'PermissionListener'        => PermissionGuardListener::class,
             'OperationListener'         => OperationListener::class,
         ),
     ),
@@ -72,7 +75,7 @@ return array(
         'ZfcRbac\View\Strategy\RedirectStrategy',
     ),
 
-    'caches'             => array(
+    'caches'          => array(
         'cache.permission' => array(
             'adapter' => 'filesystem',
             'ttl'     => 60,
@@ -84,18 +87,25 @@ return array(
     ),
 
 
+    'zfc_rbac'        => [
+        'guards'                => [
+            'ZfcRbac\Guard\RouteGuard'    => [
+                'module*' => ['admin'],
+                'login'   => ['guest']
+            ],
+            'Admin\Rbac\PermissionsGuard' => [
 
-    'zfc_rbac' => [
-        'guards' => [
-            'Admin\Rbac\PermissionsGuard' => ['cache' => 'cache.permission'],
+                'protection_policy' => GuardInterface::POLICY_ALLOW,
+                'cache'             => 'cache.permission',
+            ],
         ],
 
-        'role_provider' => [
+        'role_provider'         => [
             'Admin\Rbac\RoleProvider' => ['cache' => 'cache.permission'],
         ],
 //        'identity_provider' => 'MyCustomIdentityProvider',
 
-        'guard_manager' => [
+        'guard_manager'         => [
             'invokables' => [
                 'Admin\Rbac\PermissionsGuard' => 'Admin\Rbac\PermissionsGuard',
             ]
@@ -106,4 +116,9 @@ return array(
             ]
         ],
     ],
+
+    'moln_admin'      => [
+        'permission_cache' => 'cache.permission',
+    ],
+
 ) + include 'table.config.php';

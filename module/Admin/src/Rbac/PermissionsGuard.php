@@ -1,20 +1,24 @@
 <?php
 
 namespace Admin\Rbac;
+
 use ZfcRbac\Guard\AbstractGuard;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use ZfcRbac\Guard\ProtectionPolicyTrait;
 
 
 /**
  * Class PermissionsGuard
+ *
  * @package Admin\Permission
- * @author Xiemaomao
+ * @author  Xiemaomao
  * @version $Id$
  */
 class PermissionsGuard extends AbstractGuard implements ServiceLocatorAwareInterface
 {
     use CacheTrait;
+    use ProtectionPolicyTrait;
 
     /**
      * @param  MvcEvent $event
@@ -31,20 +35,24 @@ class PermissionsGuard extends AbstractGuard implements ServiceLocatorAwareInter
 
             $permissions = [];
             foreach ($permissionResults as $row) {
-                $permissions[] = $row['permission'];
+                $permissions[$row['controller'] . '::' . $row['action']] = $row['permission'];
             }
 
             if ($this->hasCache()) {
                 $this->getCache()->setItem('permissions', $permissions);
             }
         } else {
-            $permission = $this->getCache()->getItem('roles');
+            $permissions = $this->getCache()->getItem('roles');
         }
 
-//            if (!$this->authorizationService->isGranted($permission)) {
-//                return false;
-//            }
+        if (!isset($permissions[$controller . '::' . $action])) {
+            return $this->protectionPolicy === self::POLICY_ALLOW;
+        }
 
-        return true;
+        $permission = $permissions[$controller . '::' . $action];
+
+        /** @var \ZfcRbac\Service\AuthorizationService $authorizationService */
+        $authorizationService = $this->getServiceManager()->get('ZfcRbac\Service\AuthorizationService');
+        return $authorizationService->isGranted($permission);
     }
 }

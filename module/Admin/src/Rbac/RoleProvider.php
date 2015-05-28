@@ -20,7 +20,7 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
 {
     use CacheTrait;
 
-    protected $rolesConfig = [];
+    protected $rolesConfig;
 
     /**
      * Get the roles from the provider
@@ -30,33 +30,7 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
      */
     public function getRoles(array $roleNames)
     {
-        if (!$this->hasCache() || !$this->getCache()->hasItem('roles')) {
-            $permissionResults = $this->getRoleTable()->getPermissions();
-
-            $rolePermissions = [];
-            $permissions = [];
-            foreach ($permissionResults as $row) {
-                $rolePermissions[$row['name']][] = $row['permission'];
-                $permissions[] = $row['permission'];
-            }
-
-            $this->rolesConfig = $this->getRoleTable()->getTreeRole(
-                'children',
-                function ($row) use ($rolePermissions) {
-                    return array(
-                        'name'        => $row['name'],
-                        'permissions' => $rolePermissions[$row['name']],
-                    );
-                }
-            );
-
-            if ($this->hasCache()) {
-                $this->getCache()->setItem('permissions', $permissions);
-                $this->getCache()->setItem('roles', $this->rolesConfig);
-            }
-        } else {
-            $this->rolesConfig = $this->getCache()->getItem('roles');
-        }
+        $rolesConfig = $this->getRolesConfig();
 
         $roles = [];
 
@@ -66,12 +40,12 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
                 continue;
             }
 
-            if (isset($this->rolesConfig[$roleName]['obj'])) {
-                $roles[] = $this->rolesConfig[$roleName]['obj'];
+            if (isset($rolesConfig[$roleName]['obj'])) {
+                $roles[] = $rolesConfig[$roleName]['obj'];
                 continue;
             }
 
-            if (!isset($this->rolesConfig[$roleName])) {
+            if (!isset($rolesConfig[$roleName])) {
                 throw new RoleNotFoundException(
                     sprintf(
                         'Some roles were asked but could not be loaded from database: %s',
@@ -80,7 +54,7 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
                 );
             }
 
-            $roleConfig = $this->rolesConfig[$roleName];
+            $roleConfig = $rolesConfig[$roleName];
 
             if (isset($roleConfig['children'])) {
                 $role       = new HierarchicalRole($roleName);
@@ -99,9 +73,44 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
                 $role->addPermission($permission);
             }
 
-            $roles[] = $this->rolesConfig[$roleName]['obj'] = $role;
+            $roles[] = $rolesConfig[$roleName]['obj'] = $role;
         }
 
         return $roles;
+    }
+
+    public function getRolesConfig()
+    {
+        if (!$this->rolesConfig) {
+            if (!$this->hasCache() || !$this->getCache()->hasItem('roles')) {
+                $permissionResults = $this->getRoleTable()->getPermissions()->toArray();
+
+                $rolePermissions = [];
+                $permissions = [];
+                foreach ($permissionResults as $row) {
+                    $rolePermissions[$row['name']][] = $row['permission'];
+                    $permissions[$row['controller'] . '::' . $row['action']] = $row['permission'];
+                }
+
+                $this->rolesConfig = $this->getRoleTable()->getTreeRole(
+                    'children',
+                    function ($row) use ($rolePermissions) {
+                        return array(
+                            'name'        => $row['name'],
+                            'permissions' => $rolePermissions[$row['name']],
+                        );
+                    }
+                );
+
+                if ($this->hasCache()) {
+                    $this->getCache()->setItem('permissions', $permissions);
+                    $this->getCache()->setItem('roles', $this->rolesConfig);
+                }
+            } else {
+                $this->rolesConfig = $this->getCache()->getItem('roles');
+            }
+        }
+
+        return $this->rolesConfig;
     }
 }
