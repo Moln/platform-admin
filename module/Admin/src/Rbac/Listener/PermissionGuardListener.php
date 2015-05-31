@@ -94,7 +94,7 @@ class PermissionGuardListener extends AbstractListenerAggregate
         $action     = $routeMatch->getParam('action');
 
         /** @var \Admin\Model\RoleTable $roleTable */
-        $roleTable = $sm->get('RoleTable');
+        $roleTable = $sm->get('Admin\RoleTable');
 
         $rolePermissionResults = $roleTable->getPermissions();
 

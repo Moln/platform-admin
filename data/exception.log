@@ -1,0 +1,8 @@
+exception 'ZfcRbac\Exception\UnauthorizedException' with message 'You are not authorized to access this resource' in D:\www\platform-admin\vendor\zf-commons\zfc-rbac\src\ZfcRbac\Guard\AbstractGuard.php:66
+Stack trace:
+#0 [internal function]: ZfcRbac\Guard\AbstractGuard->onResult(Object(Zend\Mvc\MvcEvent))
+#1 D:\www\platform-admin\vendor\zendframework\zendframework\library\Zend\EventManager\EventManager.php(444): call_user_func(Array, Object(Zend\Mvc\MvcEvent))
+#2 D:\www\platform-admin\vendor\zendframework\zendframework\library\Zend\EventManager\EventManager.php(205): Zend\EventManager\EventManager->triggerListeners('route', Object(Zend\Mvc\MvcEvent), Object(Closure))
+#3 D:\www\platform-admin\vendor\zendframework\zendframework\library\Zend\Mvc\Application.php(297): Zend\EventManager\EventManager->trigger('route', Object(Zend\Mvc\MvcEvent), Object(Closure))
+#4 D:\www\platform-admin\public\index.php(12): Zend\Mvc\Application->run()
+#5 {main}

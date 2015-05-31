@@ -58,6 +58,6 @@ trait CacheTrait
      */
     public function getRoleTable()
     {
-        return $this->getServiceManager()->get('RoleTable');
+        return $this->getServiceManager()->get('Admin\RoleTable');
     }
 }

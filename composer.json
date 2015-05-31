@@ -15,8 +15,11 @@
     ],
     "autoload":{
         "psr-4":{
-            "Admin\\":"module/Admin/src/Admin",
-            "Product\\":"module/Product/src/Product"
+            "Admin\\":"module/Admin/src",
+            "Product\\":"module/Product/src"
         }
+    },
+    "config": {
+        "github-protocols": ["https"]
     }
 }

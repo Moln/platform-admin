@@ -30,19 +30,11 @@ class PermissionsGuard extends AbstractGuard implements ServiceLocatorAwareInter
         $controller = strtolower($routeMatch->getParam('controller'));
         $action     = strtolower($routeMatch->getParam('action'));
 
-        if (!$this->hasCache() || !$this->getCache()->hasItem('roles')) {
-            $permissionResults = $this->getRoleTable()->getPermissions();
+        $permissionResults = $this->getRoleTable()->getPermissions();
 
-            $permissions = [];
-            foreach ($permissionResults as $row) {
-                $permissions[$row['controller'] . '::' . $row['action']] = $row['permission'];
-            }
-
-            if ($this->hasCache()) {
-                $this->getCache()->setItem('permissions', $permissions);
-            }
-        } else {
-            $permissions = $this->getCache()->getItem('roles');
+        $permissions = [];
+        foreach ($permissionResults as $row) {
+            $permissions[$row['controller'] . '::' . $row['action']] = $row['permission'];
         }
 
         if (!isset($permissions[$controller . '::' . $action])) {

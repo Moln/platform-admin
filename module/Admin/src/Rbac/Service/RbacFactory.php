@@ -30,7 +30,7 @@ class RbacFactory implements FactoryInterface
         $config = $serviceLocator->get('config');
 
         /** @var \Admin\Model\RoleTable $roleTable */
-        $roleTable = $serviceLocator->get('RoleTable');
+        $roleTable = $serviceLocator->get('Admin\RoleTable');
 
         if (isset($config[Module::CONFIG_KEY]['permission_cache'])) {
             $cacheConfig = $config[Module::CONFIG_KEY]['permission_cache'];

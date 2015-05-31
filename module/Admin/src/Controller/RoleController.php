@@ -22,7 +22,7 @@ class RoleController extends AbstractActionController
 
         $children = array();
 
-        $children = $this->get('RoleTable')->showChildren($roles, $children);
+        $children = $this->get('Admin\RoleTable')->showChildren($roles, $children);
 
         return new JsonModel($children);
     }
@@ -33,7 +33,7 @@ class RoleController extends AbstractActionController
 
         $roles = $this->identity()->getRoleIds();
 
-        $flag = $this->get('RoleTable')->validChildren($roles, $parent);
+        $flag = $this->get('Admin\RoleTable')->validChildren($roles, $parent);
 
         if (!$flag) return new JsonModel(array('errors' => "无权修改"));
 
@@ -43,7 +43,7 @@ class RoleController extends AbstractActionController
         $form->setData($data);
         if ($form->isValid()) {
             $data = $form->getData();
-            $this->get('RoleTable')->save($data);
+            $this->get('Admin\RoleTable')->save($data);
 
             return new JsonModel($data);
         } else {
@@ -58,11 +58,11 @@ class RoleController extends AbstractActionController
 
         $roles = $this->identity()->getRoleIds();
 
-        $flag = $this->get('RoleTable')->validChildren($roles, $parent);
+        $flag = $this->get('Admin\RoleTable')->validChildren($roles, $parent);
 
         if (!$flag) return new JsonModel(array('errors' => "无权移动"));
 
-        $this->get('RoleTable')->update(array("parent" => $parent), array('role_id' => $role_id));
+        $this->get('Admin\RoleTable')->update(array("parent" => $parent), array('role_id' => $role_id));
 
         return new JsonModel(array('code' => 1));
     }
@@ -72,7 +72,7 @@ class RoleController extends AbstractActionController
         $datas = $this->getRequest()->getPost('data');
 
         foreach ($datas as $data) {
-            $this->get('RoleTable')->deletePrimary($data);
+            $this->get('Admin\RoleTable')->deletePrimary($data);
             $this->get('AssignUserTable')->removeRoleId($data);
             $this->get('AssignPermissionTable')->removeRoleId($data);
         }
@@ -123,7 +123,7 @@ class RoleController extends AbstractActionController
     public function treesAction()
     {
         return array(
-            'trees' => $this->get('RoleTable')->getTreesByRoleId(),
+            'trees' => $this->get('Admin\RoleTable')->getTreesByRoleId(),
         );
     }
 }

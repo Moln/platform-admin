@@ -1,7 +1,9 @@
 <?php
 namespace Admin\Model;
 
-use Gzfextra\Db\TableGateway\AbstractTableGateway;
+use Zend\Db\TableGateway\TableGateway;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
 /**
  * Class RoleTable
@@ -11,11 +13,30 @@ use Gzfextra\Db\TableGateway\AbstractTableGateway;
  * @version $Id: RoleTable.php 728 2014-09-11 02:55:35Z Moln $
  *
  */
-class RoleTable extends AbstractTableGateway
+class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
 {
+    use ServiceLocatorAwareTrait;
     protected $treeRoles;
-
     protected $permissions;
+
+    const CACHE_NAME = 'Cache\Admin\RoleTable';
+
+
+    public function cache($callable, $key)
+    {
+        if ($this->getServiceLocator()->has(self::CACHE_NAME)) {
+            /** @var \Zend\Cache\Storage\Adapter\AbstractAdapter $cache */
+            $cache = $this->getServiceLocator()->get(self::CACHE_NAME);
+            $result = $cache->getItem($key, $success);
+            if (!$success) {
+                $result = $callable();
+                $cache->setItem($key, $result);
+            }
+            return $result;
+        } else {
+            return $callable();
+        }
+    }
 
     /**
      * 查询角色权限
@@ -36,7 +57,7 @@ class RoleTable extends AbstractTableGateway
         $select->join(
             'admin_permission',
             'admin_assign_role_permission.per_id=admin_permission.per_id',
-            array('module', 'controller', 'action')
+            array( 'controller', 'action')
         );
 
         $select->where(array('name' => $role));
@@ -51,35 +72,35 @@ class RoleTable extends AbstractTableGateway
     public function getPermissions()
     {
         if (empty($this->permissions)) {
-            $select = $this->sql->select();
-            $select->columns(array('name'));
-            $select->join(
-                'admin_assign_role_permission',
-                'admin_role.role_id=admin_assign_role_permission.role_id',
-                array()
-            );
-            $select->join(
-                'admin_permission',
-                'admin_assign_role_permission.per_id=admin_permission.per_id',
-                array('module', 'controller', 'action', 'permission')
-            );
-            $result = $this->selectWith($select);
-            $result->setArrayObjectPrototype(new \ArrayObject());
-            $this->permissions = $result->toArray();
+            $this->permissions = $this->cache(function () {
+                $select = $this->sql->select();
+                $select->columns(array('name'));
+                $select->join(
+                    'admin_assign_role_permission',
+                    'admin_role.role_id=admin_assign_role_permission.role_id',
+                    array()
+                );
+                $select->join(
+                    'admin_permission',
+                    'admin_assign_role_permission.per_id=admin_permission.per_id',
+                    array('controller', 'action', 'permission')
+                );
+                $result = $this->selectWith($select);
+                $result->setArrayObjectPrototype(new \ArrayObject());
+                return $result->toArray();
+            }, __CLASS__ . '.' . __FUNCTION__);
         }
 
         return $this->permissions;
     }
 
-    public function setPermissions(array $permissions)
-    {
-        $this->permissions = $permissions;
-        return $this;
-    }
-
     public function getTreeRole($childKey = 'items', callable $dataMapCallable = null)
     {
-        $result = $this->select()->toArray();
+        if (!$this->treeRoles) {
+            $this->treeRoles = $this->cache(function () {
+                return $this->select()->toArray();
+            }, __CLASS__ . '.' . __FUNCTION__);
+        }
 
         $dataMapCallable = $dataMapCallable ?: function ($row) {
             return array(
@@ -89,7 +110,7 @@ class RoleTable extends AbstractTableGateway
             );
         };
 
-        return $this->toTreeData($result, $childKey, $dataMapCallable);
+        return $this->toTreeData($this->treeRoles, $childKey, $dataMapCallable);
     }
 
     public function getTreeRoot()

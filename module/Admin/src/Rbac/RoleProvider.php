@@ -82,33 +82,22 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
     public function getRolesConfig()
     {
         if (!$this->rolesConfig) {
-            if (!$this->hasCache() || !$this->getCache()->hasItem('roles')) {
-                $permissionResults = $this->getRoleTable()->getPermissions()->toArray();
+            $permissionResults = $this->getRoleTable()->getPermissions();
 
-                $rolePermissions = [];
-                $permissions = [];
-                foreach ($permissionResults as $row) {
-                    $rolePermissions[$row['name']][] = $row['permission'];
-                    $permissions[$row['controller'] . '::' . $row['action']] = $row['permission'];
-                }
-
-                $this->rolesConfig = $this->getRoleTable()->getTreeRole(
-                    'children',
-                    function ($row) use ($rolePermissions) {
-                        return array(
-                            'name'        => $row['name'],
-                            'permissions' => $rolePermissions[$row['name']],
-                        );
-                    }
-                );
-
-                if ($this->hasCache()) {
-                    $this->getCache()->setItem('permissions', $permissions);
-                    $this->getCache()->setItem('roles', $this->rolesConfig);
-                }
-            } else {
-                $this->rolesConfig = $this->getCache()->getItem('roles');
+            $rolePermissions = [];
+            foreach ($permissionResults as $row) {
+                $rolePermissions[$row['name']][] = $row['permission'];
             }
+
+            $this->rolesConfig = $this->getRoleTable()->getTreeRole(
+                'children',
+                function ($row) use ($rolePermissions) {
+                    return array(
+                        'name'        => $row['name'],
+                        'permissions' => $rolePermissions[$row['name']],
+                    );
+                }
+            );
         }
 
         return $this->rolesConfig;

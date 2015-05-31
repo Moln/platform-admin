@@ -49,9 +49,9 @@ class RoleForm extends Form
                         array(
                             'name'    => 'Db\NoRecordExists',
                             'options' => array(
-                                'table'   => $this->get('RoleTable')->getTable(),
+                                'table'   => $this->get('Admin\RoleTable')->getTable(),
                                 'field'   => 'name',
-                                'adapter' => $this->get('RoleTable')->getAdapter()
+                                'adapter' => $this->get('Admin\RoleTable')->getAdapter()
                             ),
                         ),
                     ),
