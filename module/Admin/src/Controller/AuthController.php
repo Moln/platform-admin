@@ -33,14 +33,12 @@ class AuthController extends AbstractActionController
             if ($form->isValid()) {
                 $formData    = $form->getValues();
                 $authAdapter = $userTable->getAuthAdapter($formData['account'], $formData['password']);
+
                 /** @var \Zend\Authentication\AuthenticationService $auth */
-                $auth = $this->get('auth');
-                $auth->setAdapter($authAdapter);
+                $auth = $this->get('Admin\AuthenticationService');
 
                 $result = $auth->authenticate();
                 if ($result->isValid()) {
-                    $user = $userTable->create((array)$authAdapter->getResultRowObject());
-                    $auth->getStorage()->write($user);
                     $return = array('code' => 1);
                 } else {
                     $return = array(

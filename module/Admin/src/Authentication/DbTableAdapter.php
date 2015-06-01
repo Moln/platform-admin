@@ -19,10 +19,9 @@ use Zend\Db\Sql\Predicate\Operator as SqlOp;
  * @author Xiemaomao
  * @version $Id$
  */
-class UserDbAdapter extends AbstractAdapter implements ServiceLocatorAwareInterface
+class DbTableAdapter extends AbstractAdapter implements ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
-
 
     /**
      * Performs an authentication attempt

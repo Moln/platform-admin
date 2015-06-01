@@ -1,14 +1,10 @@
 <?php
 namespace Admin\Listener;
 
-use Admin\Identify\IdentityInterface;
-use Zend\Cache\Storage\Adapter\AbstractAdapter as Cache;
-use Zend\Cache\Storage\TaggableInterface;
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\EventManager\EventManagerInterface;
 use Zend\Mvc\MvcEvent;
-use Zend\Permissions\Rbac\Rbac;
-use Zend\Permissions\Rbac\Role;
+use ZfcRbac\Identity\IdentityInterface;
 
 /**
  * Class Auth

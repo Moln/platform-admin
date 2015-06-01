@@ -25,14 +25,8 @@ return array(
     ),
 
     'service_manager'    => array(
-        'invokables'         => array(
-            'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
-        ),
         'factories'          => array(
             'Zend\Cache\Storage' => 'Zend\Cache\Service\StorageCacheFactory',
-        ),
-        'aliases'            => array(
-            'auth' => 'Zend\Authentication\AuthenticationService',
         ),
         'abstract_factories' => array(
             'Zend\Db\Adapter\AdapterAbstractServiceFactory',

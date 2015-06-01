@@ -18,7 +18,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
  */
 class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterface
 {
-    use CacheTrait;
+    use ServiceLocator;
 
     protected $rolesConfig;
 
@@ -94,7 +94,7 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
                 function ($row) use ($rolePermissions) {
                     return array(
                         'name'        => $row['name'],
-                        'permissions' => $rolePermissions[$row['name']],
+                        'permissions' => isset($rolePermissions[$row['name']]) ? $rolePermissions[$row['name']] : [],
                     );
                 }
             );

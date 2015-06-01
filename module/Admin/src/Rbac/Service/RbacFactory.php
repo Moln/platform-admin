@@ -27,35 +27,8 @@ class RbacFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $config = $serviceLocator->get('config');
-
         /** @var \Admin\Model\RoleTable $roleTable */
         $roleTable = $serviceLocator->get('Admin\RoleTable');
-
-        if (isset($config[Module::CONFIG_KEY]['permission_cache'])) {
-            $cacheConfig = $config[Module::CONFIG_KEY]['permission_cache'];
-
-            if (is_string($cacheConfig)) {
-                $cache = $serviceLocator->get($cacheConfig);
-            } else if (is_array($cacheConfig)) {
-                $cache = StorageFactory::factory($cacheConfig);
-            }
-
-            if (!isset($cache) || !$cacheConfig instanceof StorageInterface) {
-                throw new \RuntimeException('RbacFactory config error.');
-            }
-
-            $rolePermissionResults = $cache->getItem('permissions');
-            if ($rolePermissionResults) {
-                $roleTable->setPermissions($rolePermissionResults);
-            }
-
-            $rbac = $cache->getItem('rbac');
-
-            if ($rbac instanceof Rbac) {
-                return $rbac;
-            }
-        }
 
         $rolePermissionResults = $roleTable->getPermissions();
         $rolePermissions = [];
@@ -97,11 +70,6 @@ class RbacFactory implements FactoryInterface
 
         if (!$rbac->hasRole('guest')) {
             $rbac->addRole('guest');
-        }
-
-        if (isset($cache)) {
-            $cache->setItem('rbac', $rbac);
-            $cache->setItem('permissions', $rolePermissionResults);
         }
 
         return $rbac;

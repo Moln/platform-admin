@@ -56,14 +56,15 @@ return array(
 
     'service_manager' => array(
         'factories'  => array(
-            'FileStorage' => '\Gzfextra\File\Storage\StorageFactory',
-
-            'Admin\Rbac'  => 'Admin\Service\RbacFactory',
+            'FileStorage'                       => '\Gzfextra\File\Storage\StorageFactory',
+            'Admin\AuthenticationPluginManager' => 'AuthenticationPluginManagerFactory',
+            'Admin\Rbac'                        => 'Admin\Service\RbacFactory',
         ),
         'invokables' => array(
             'GlobalModuleRouteListener' => GlobalModuleRouteListener::class,
             'PermissionListener'        => PermissionGuardListener::class,
             'OperationListener'         => OperationListener::class,
+            'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
         ),
     ),
 
@@ -89,14 +90,14 @@ return array(
 
     'zfc_rbac'        => [
         'guards'                => [
-            'ZfcRbac\Guard\RouteGuard'    => [
-                'module*' => ['admin'],
-                'login'   => ['guest']
-            ],
+//            'ZfcRbac\Guard\RouteGuard'    => [
+//                'module*' => ['admin'],
+//                'login'   => ['guest']
+//            ],
             'Admin\Rbac\PermissionsGuard' => [
-
-                'protection_policy' => GuardInterface::POLICY_ALLOW,
-                'cache'             => 'cache.permission',
+                'routes' => [
+                    'module*'
+                ]
             ],
         ],
 
@@ -118,7 +119,12 @@ return array(
     ],
 
     'moln_admin'      => [
-        'permission_cache' => 'cache.permission',
+        'db_cache' => '',
+        'authentication_manager' => array(
+            'factories'  => array(
+            ),
+        ),
+        'auth_adapter' => []
     ],
 
 ) + include 'table.config.php';
