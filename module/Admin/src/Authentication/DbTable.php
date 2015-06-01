@@ -4,6 +4,7 @@ namespace Admin\Authentication;
 
 use Admin\Identity\UserIdentity;
 use Zend\Authentication\Adapter\AbstractAdapter;
+use Zend\Authentication\Adapter\DbTable\CredentialTreatmentAdapter;
 use Zend\Authentication\Result;
 use Zend\Db\Sql\Select;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
@@ -19,7 +20,7 @@ use Zend\Db\Sql\Predicate\Operator as SqlOp;
  * @author Xiemaomao
  * @version $Id$
  */
-class DbTableAdapter extends AbstractAdapter implements ServiceLocatorAwareInterface
+class DbTable extends CredentialTreatmentAdapter implements ServiceLocatorAwareInterface, AuthenticationAdapterInterface
 {
     use ServiceLocatorAwareTrait;
 
@@ -31,25 +32,14 @@ class DbTableAdapter extends AbstractAdapter implements ServiceLocatorAwareInter
      */
     public function authenticate()
     {
-        /** @var \Admin\Model\UserTable $userTable */
-        $userTable = $this->getServiceLocator()->get('Admin\UserTable');
-        $user = $userTable->select(['account' => $this->getIdentity()])->current();
-
-        if (!$user) {
-            $code = Result::FAILURE_IDENTITY_NOT_FOUND;
-            $identify = null;
-        } else if ($user['password'] != $userTable::encrypt($this->getCredential())) {
-            $code = Result::FAILURE_CREDENTIAL_INVALID;
-            $identify = null;
-        } else {
-            $code = Result::SUCCESS;
-            $identify = new UserIdentity();
+        $result = parent::authenticate();
+        if ($result->isValid()) {
+            $result = new Result($result->getCode(), $this->convertIdentity(), $result->getMessages());
         }
+    }
 
-        return new Result(
-            $code,
-            $identify,
-            []
-        );
+    protected function getConvertIdentity($identify)
+    {
+        // TODO: Implement getConvertIdentity() method.
     }
 }
