@@ -1,14 +1,16 @@
 <?php
 
 namespace Admin\Authentication;
+
 use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\Exception;
 
 
 /**
- * Reset
+ * AuthenticationAdapterPluginManager
+ *
  * @package Admin\Authentication
- * @author Xiemaomao
+ * @author  Xiemaomao
  * @version $Id$
  */
 class AuthenticationAdapterPluginManager extends AbstractPluginManager
@@ -17,10 +19,9 @@ class AuthenticationAdapterPluginManager extends AbstractPluginManager
      * @var array
      */
     protected $invokableClasses = array(
-        ''
+        'dbtable' => 'Admin\Authentication\DbTable',
+        'ldap'    => 'Admin\Authentication\Ldap',
     );
-
-    protected $factories = array();
 
     /**
      * Validate the plugin
@@ -34,6 +35,8 @@ class AuthenticationAdapterPluginManager extends AbstractPluginManager
      */
     public function validatePlugin($plugin)
     {
-
+        if (!$plugin instanceof AuthenticationAdapterInterface) {
+            throw new \RuntimeException('Error authentication adapter "' . get_class($plugin) . '"');
+        }
     }
 }

@@ -26,16 +26,20 @@ class AuthController extends AbstractActionController
     {
         if ($this->getRequest()->isPost()) {
             /** @var \Admin\Model\UserTable $userTable */
-            $userTable = $this->get('UserTable');
             $form = new LoginInputFilter();
             $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
                 $formData    = $form->getValues();
-                $authAdapter = $userTable->getAuthAdapter($formData['account'], $formData['password']);
 
-                /** @var \Zend\Authentication\AuthenticationService $auth */
+                /**
+                 * @var \Zend\Authentication\AuthenticationService $auth
+                 * @var \Admin\Authentication\AuthenticationAdapterInterface $adapter
+                 */
                 $auth = $this->get('Admin\AuthenticationService');
+                $adapter = $auth->getAdapter();
+                $adapter->setIdentity($formData['account']);
+                $adapter->setCredential($formData['password']);
 
                 $result = $auth->authenticate();
                 if ($result->isValid()) {

@@ -2,6 +2,7 @@
 
 namespace Admin\Identity;
 
+use Zend\Stdlib\ArrayObject;
 use ZfcRbac\Identity\IdentityInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
@@ -12,7 +13,7 @@ use Zend\ServiceManager\ServiceLocatorAwareTrait;
  * @author Xiemaomao
  * @version $Id$
  */
-class UserIdentity implements IdentityInterface, ServiceLocatorAwareInterface
+class UserIdentity extends ArrayObject implements IdentityInterface, ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
 
@@ -164,5 +165,10 @@ class UserIdentity implements IdentityInterface, ServiceLocatorAwareInterface
             $this->roleIds = $this->getServiceLocator()->get('AssignUserTable')->getRoleIdsByUserId($this->getUserId());
         }
         return $this->roleIds;
+    }
+
+    public function __sleep()
+    {
+
     }
 }

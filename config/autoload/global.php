@@ -82,4 +82,15 @@ return array(
 //        ),
     ),
 
+    'moln_admin' => array(
+        'authentication_adapter' => array(
+            'DbTable' => array(
+                'db' => 'db',
+                'table_name' => 'admin_user',
+                'identity_column' => 'account',
+                'credential_column' => 'password',
+                'credential_treatment' => 'md5(?)',
+            ),
+        ),
+    ),
 );
