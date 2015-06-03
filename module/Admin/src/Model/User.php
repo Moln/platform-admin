@@ -1,5 +1,5 @@
 <?php
-namespace Admin\Model;
+namespace Moln\Admin\Model;
 
 use Zend\Db\RowGateway\RowGateway;
 use Zend\Permissions\Rbac\Rbac;

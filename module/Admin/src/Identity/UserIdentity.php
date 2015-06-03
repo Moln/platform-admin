@@ -1,11 +1,8 @@
 <?php
 
-namespace Admin\Identity;
+namespace Moln\Admin\Identity;
 
-use Zend\Stdlib\ArrayObject;
 use ZfcRbac\Identity\IdentityInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
 
 /**
@@ -13,9 +10,8 @@ use Zend\ServiceManager\ServiceLocatorAwareTrait;
  * @author Xiemaomao
  * @version $Id$
  */
-class UserIdentity extends ArrayObject implements IdentityInterface, ServiceLocatorAwareInterface
+class UserIdentity implements IdentityInterface
 {
-    use ServiceLocatorAwareTrait;
 
     protected $userId;
     protected $account;
@@ -138,8 +134,7 @@ class UserIdentity extends ArrayObject implements IdentityInterface, ServiceLoca
         return $this->email;
     }
 
-    private $roles;
-    private $roleIds;
+    private $roles = [];
 
     /**
      * Get user roles
@@ -148,27 +143,12 @@ class UserIdentity extends ArrayObject implements IdentityInterface, ServiceLoca
      */
     public function getRoles()
     {
-        if (!$this->roles) {
-            $this->roles = $this->getServiceLocator()->get('AssignUserTable')->getRoleNamesByUserId($this->getUserId());
-        }
         return $this->roles;
     }
 
-    /**
-     * Get user roleId
-     *
-     * @return array
-     */
-    public function getRoleIds()
+    public function setRoles(array $roles)
     {
-        if (!$this->roleIds) {
-            $this->roleIds = $this->getServiceLocator()->get('AssignUserTable')->getRoleIdsByUserId($this->getUserId());
-        }
-        return $this->roleIds;
-    }
-
-    public function __sleep()
-    {
-
+        $this->roles = $roles;
+        return $this;
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Admin\Model;
+namespace Moln\Admin\Model;
 
 use Gzfextra\Db\TableGateway\AbstractTableGateway;
 

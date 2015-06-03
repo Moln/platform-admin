@@ -1,5 +1,5 @@
 <?php
-namespace Admin\Listener;
+namespace Moln\Admin\Listener;
 
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\EventManager\EventManagerInterface;
@@ -89,7 +89,7 @@ class PermissionGuardListener extends AbstractListenerAggregate
         $controller = $routeMatch->getParam('controller');
         $action     = $routeMatch->getParam('action');
 
-        /** @var \Admin\Model\RoleTable $roleTable */
+        /** @var \Moln\Admin\Model\RoleTable $roleTable */
         $roleTable = $sm->get('Admin\RoleTable');
 
         $rolePermissionResults = $roleTable->getPermissions();

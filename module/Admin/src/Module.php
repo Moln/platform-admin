@@ -1,5 +1,5 @@
 <?php
-namespace Admin;
+namespace Moln\Admin;
 
 use Gzfextra\Db\TableGateway\AbstractTableGateway;
 use Gzfextra\Router\GlobalModuleRouteListener;
@@ -29,7 +29,6 @@ class Module
         }
         );
     }
-
 
     public function onBootstrap(MvcEvent $e)
     {
@@ -95,7 +94,6 @@ class Module
 
     public function getConfig()
     {
-        $config = include __DIR__ . '/../config/module.config.php';
-        return ArrayUtils::merge(GlobalModuleRouteListener::getDefaultRouterConfig(), $config);
+        return include __DIR__ . '/../config/module.config.php';
     }
 }

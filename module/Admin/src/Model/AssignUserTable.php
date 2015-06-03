@@ -1,5 +1,5 @@
 <?php
-namespace Admin\Model;
+namespace Moln\Admin\Model;
 
 use Gzfextra\Db\TableGateway\AbstractTableGateway;
 
@@ -33,7 +33,7 @@ class AssignUserTable extends AbstractTableGateway
         $select = $this->sql->select();
         $select->where(array('user_id' => $id));
         $select->join(
-            array('r' => $this->get('Admin\RoleTable')->getTable()),
+            array('r' => 'admin_role'),
             $this->table . '.role_id=r.role_id',
             array('name')
         );

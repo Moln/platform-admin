@@ -1,7 +1,6 @@
 <?php
-namespace Admin\Controller;
+namespace Moln\Admin\Controller;
 
-use Admin\Model\OperationLogTable;
 use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;

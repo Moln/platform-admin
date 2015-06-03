@@ -2,7 +2,7 @@
 return array(
     'modules' => [
         'ZfcRbac',
-        'Admin',
+        'Moln\Admin',
         'Product',
     ],
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace Admin\Factory;
+namespace Moln\Admin\Factory;
 
-use Admin\Authentication\AuthenticationAdapterPluginManager;
+use Moln\Admin\Authentication\AuthenticationAdapterPluginManager;
+use Moln\Admin\Module;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Admin\Module;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\Listener\Exception;
+namespace Moln\Admin\Listener\Exception;
 
 
 /**

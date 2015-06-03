@@ -1,13 +1,10 @@
 <?php
 
-namespace Admin\Rbac\Service;
-use Admin\Module;
-use Zend\Cache\Storage\StorageInterface;
-use Zend\Cache\StorageFactory;
+namespace Moln\Admin\Rbac\Service;
+use Zend\Permissions\Rbac\Rbac;
 use Zend\Permissions\Rbac\Role;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Permissions\Rbac\Rbac;
 
 
 /**
@@ -27,7 +24,7 @@ class RbacFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        /** @var \Admin\Model\RoleTable $roleTable */
+        /** @var \Moln\Admin\Model\RoleTable $roleTable */
         $roleTable = $serviceLocator->get('Admin\RoleTable');
 
         $rolePermissionResults = $roleTable->getPermissions();

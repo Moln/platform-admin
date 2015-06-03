@@ -1,8 +1,8 @@
 <?php
-namespace Admin\Controller;
+namespace Moln\Admin\Controller;
 
-use Admin\Form\SelfForm;
-use Admin\Model\MenuTable;
+use Moln\Admin\Form\SelfForm;
+use Moln\Admin\Module;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -11,9 +11,9 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
 
-        $menu = MenuTable::getData();
+        $menu = $this->getServiceLocator()->get('config')[Module::CONFIG_KEY]['menus'];
 
-        /** @var \Admin\Model\User $user */
+        /** @var \Moln\Admin\Identity\UserIdentity $user */
         $user = $this->identity();
 
         /** @var \Closure $menuFilter */
@@ -21,7 +21,7 @@ class IndexController extends AbstractActionController
         $menuFilter = function ($menu) use (&$menuFilter, $user) {
             foreach ($menu as $key => $item) {
                 if (isset($item['permission'])) {
-                    if (!$user->isAllow($item['permission'])) {
+                    if (!$this->isGranted($item['permission'])) {
                         unset($menu[$key]);
                         continue;
                     }
@@ -34,11 +34,9 @@ class IndexController extends AbstractActionController
         };
 
         $menu = $menuFilter($menu);
+        $this->layout('layout/layout.admin.phtml');
 
-
-        $this->layout('layout.admin');
         return array(
-            'realname' => $this->identity()->getRealName(),
             'menu'     => $menu
         );
     }
@@ -55,7 +53,7 @@ class IndexController extends AbstractActionController
             $form->setData($_POST);
             if ($form->isValid()) {
                 $data = $form->getData();
-                /** @var \Admin\Model\User $identity */
+                /** @var \Moln\Admin\Model\User $identity */
                 $identity = $this->identity();
                 if ($data['password']) {
                     $identity->setPassword($data['password']);

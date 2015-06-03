@@ -1,7 +1,6 @@
 <?php
-namespace Admin\Authentication;
+namespace Moln\Admin\Authentication;
 
-use Zend\Authentication\Result;
 use Zend\ServiceManager\ServiceManager;
 
 trait AuthenticationAdapterServiceTrait

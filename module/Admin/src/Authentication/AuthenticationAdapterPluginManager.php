@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\Authentication;
+namespace Moln\Admin\Authentication;
 
 use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\Exception;

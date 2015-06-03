@@ -1,12 +1,12 @@
 <?php
 
-namespace Admin\Authentication;
-use Admin\Identity\UserIdentity;
+namespace Moln\Admin\Authentication;
+
+use Moln\Admin\Identity\UserIdentity;
 use Zend\Authentication\Adapter\Ldap as ZendLdap;
 use Zend\Authentication\Result;
 use Zend\Stdlib\Hydrator\ClassMethods;
 use ZfcRbac\Identity\IdentityInterface;
-use ZfcRbac\Identity\IdentityProviderInterface;
 
 
 /**
@@ -22,7 +22,7 @@ class Ldap extends ZendLdap implements AuthenticationAdapterInterface
 
     public function findUser($account)
     {
-        /** @var \Admin\Model\UserTable $userTable */
+        /** @var \Moln\Admin\Model\UserTable $userTable */
         $userTable = $this->getServiceManager()->get('UserTable');
         return $userTable->select(['account' => $account])->current();
     }

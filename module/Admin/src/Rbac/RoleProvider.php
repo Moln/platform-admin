@@ -1,12 +1,12 @@
 <?php
 
-namespace Admin\Rbac;
+namespace Moln\Admin\Rbac;
 
 use Rbac\Role\HierarchicalRole;
 use Rbac\Role\Role;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use ZfcRbac\Exception\RoleNotFoundException;
 use ZfcRbac\Role\RoleProviderInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 
 /**
@@ -18,7 +18,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
  */
 class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterface
 {
-    use ServiceLocator;
+    use ServiceLocatorTrait;
 
     protected $rolesConfig;
 
@@ -90,6 +90,7 @@ class RoleProvider implements RoleProviderInterface, ServiceLocatorAwareInterfac
             }
 
             $this->rolesConfig = $this->getRoleTable()->getTreeRole(
+                'name',
                 'children',
                 function ($row) use ($rolePermissions) {
                     return array(

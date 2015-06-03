@@ -44,40 +44,7 @@
         });
 
         $("#left-pane").kendoPanelBar({
-            dataSource: [
-                {
-                    text: "Baseball",
-                    items: [
-                        { text: "Top News" },
-                        { text: "Photo Galleries" },
-                        { text: "Videos Records" },
-                        { text: "Radio Records" }
-                    ]
-                },
-                {
-                    text: "Golf",
-                    items: [
-                        { text: "Top News" },
-                        { text: "Photo Galleries" },
-                        { text: "Videos Records" },
-                        { text: "Radio Records" }
-                    ]
-                },
-                {
-                    text: "Swimming",
-                    items: [
-                        { text: "Top News" },
-                        { text: "Photo Galleries" }
-                    ]
-                },
-                {
-                    text: "Snowboarding",
-                    items: [
-                        { text: "Photo Galleries" },
-                        { text: "Videos Records" }
-                    ]
-                }
-            ]
+            dataSource: <?=json_encode($menu)?>
         });
     });
 </script>

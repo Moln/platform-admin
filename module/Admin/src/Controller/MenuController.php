@@ -1,7 +1,7 @@
 <?php
-namespace Admin\Controller;
+namespace Moln\Admin\Controller;
 
-use Admin\Model\MenuTable;
+use Moln\Admin\Model\MenuTable;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 

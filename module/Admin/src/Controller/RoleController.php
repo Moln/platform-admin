@@ -1,10 +1,7 @@
 <?php
-namespace Admin\Controller;
+namespace Moln\Admin\Controller;
 
-use Admin\Form\RoleForm;
-use Admin\Model\AssignPermissionTable;
-use Admin\Model\AssignUserTable;
-use Admin\Model\RoleTable;
+use Moln\Admin\Form\RoleForm;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 

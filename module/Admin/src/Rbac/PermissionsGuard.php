@@ -1,10 +1,10 @@
 <?php
 
-namespace Admin\Rbac;
+namespace Moln\Admin\Rbac;
 
-use ZfcRbac\Guard\AbstractGuard;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use ZfcRbac\Guard\AbstractGuard;
 use ZfcRbac\Guard\ProtectionPolicyTrait;
 
 
@@ -17,7 +17,8 @@ use ZfcRbac\Guard\ProtectionPolicyTrait;
  */
 class PermissionsGuard extends AbstractGuard implements ServiceLocatorAwareInterface
 {
-    use ServiceLocator;
+    use ServiceLocatorTrait;
+    use ProtectionPolicyTrait;
 
     protected $routes = [];
 
@@ -74,7 +75,7 @@ class PermissionsGuard extends AbstractGuard implements ServiceLocatorAwareInter
         }
 
         if (!isset($permissions[$controller . '::' . $action])) {
-            return false;
+            return $this->getProtectionPolicy() === self::POLICY_ALLOW;
         }
 
         $permission = $permissions[$controller . '::' . $action];

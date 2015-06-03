@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\Rbac;
+namespace Moln\Admin\Rbac;
 use Gzfextra\Stdlib\OptionsTrait;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
@@ -11,7 +11,7 @@ use Zend\ServiceManager\ServiceLocatorAwareTrait;
  * @author Xiemaomao
  * @version $Id$
  */
-trait ServiceLocator
+trait ServiceLocatorTrait
 {
     use ServiceLocatorAwareTrait;
     use OptionsTrait;
@@ -31,7 +31,7 @@ trait ServiceLocator
     }
 
     /**
-     * @return \Admin\Model\RoleTable
+     * @return \Moln\Admin\Model\RoleTable
      */
     public function getRoleTable()
     {

@@ -1,5 +1,5 @@
 <?php
-namespace Admin\Model;
+namespace Moln\Admin\Model;
 
 use Zend\Authentication\Adapter\DbTable;
 use Zend\Db\TableGateway\TableGateway;

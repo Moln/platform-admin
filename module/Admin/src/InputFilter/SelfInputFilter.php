@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\InputFilter;
+namespace Moln\Admin\InputFilter;
 
 use Zend\InputFilter\InputFilter;
 use Zend\Validator\Callback;

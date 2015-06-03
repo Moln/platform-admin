@@ -3,6 +3,7 @@
     "keywords": ["admin","zendframework2", "zf2"],
     "description": "Global management system.",
     "require": {
+        "php": ">=5.5",
         "zendframework/zendframework": "2.*",
         "moln/gzfextra": "dev-master",
         "zf-commons/zfc-rbac": "2.5.1"
@@ -15,7 +16,7 @@
     ],
     "autoload":{
         "psr-4":{
-            "Admin\\":"module/Admin/src",
+            "Moln\\Admin\\":"module/Admin/src",
             "Product\\":"module/Product/src"
         }
     },

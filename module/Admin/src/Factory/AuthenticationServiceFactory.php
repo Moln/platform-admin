@@ -1,8 +1,8 @@
 <?php
 
-namespace Admin\Factory;
+namespace Moln\Admin\Factory;
 
-use Admin\Module;
+use Moln\Admin\Module;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -26,7 +26,7 @@ class AuthenticationServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config   = $serviceLocator->get('config')[Module::CONFIG_KEY]['authentication_adapter'];
-        $adapters = $serviceLocator->get('Admin\AuthenticationAdapterPluginManager');
+        $adapters = $serviceLocator->get('Moln\Admin\AuthenticationAdapterPluginManager');
         $auth     = $serviceLocator->get('Zend\Authentication\AuthenticationService');
 
         /** @var \Zend\Authentication\AuthenticationService $auth */

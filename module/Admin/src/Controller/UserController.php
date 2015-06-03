@@ -1,9 +1,8 @@
 <?php
-namespace Admin\Controller;
+namespace Moln\Admin\Controller;
 
-use Admin\Form\UserForm;
-use Admin\Model\AssignUserTable;
-use Admin\Model\UserTable;
+use Moln\Admin\Form\UserForm;
+use Moln\Admin\Model\UserTable;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Admin\Controller\Plugin;
+namespace Moln\Admin\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\View\Model\JsonModel;
 

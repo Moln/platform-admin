@@ -1,14 +1,5 @@
 <?php
-/**
- * 
- * User: xiemaomao
- * Date: 2015/6/1
- * Time: 18:29
- */
-
-namespace Admin\Authentication;
-
-
+namespace Moln\Admin\Authentication;
 
 interface AuthenticationAdapterInterface
 {
@@ -20,7 +11,7 @@ interface AuthenticationAdapterInterface
     public function setIdentity($identity);
 
     /**
-     * @return \Admin\Identity\UserIdentity
+     * @return \Moln\Admin\Identity\UserIdentity
      */
     public function getUserIdentity();
 }

@@ -1,19 +1,12 @@
 <?php
 
-namespace Admin\Authentication;
+namespace Moln\Admin\Authentication;
 
-use Admin\Identity\UserIdentity;
-use Zend\Authentication\Adapter\AbstractAdapter;
+use Moln\Admin\Identity\UserIdentity;
 use Zend\Authentication\Adapter\DbTable\CredentialTreatmentAdapter;
 use Zend\Authentication\Result;
-use Zend\Db\Sql\Select;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Db\Adapter\Adapter as DbAdapter;
-use Zend\Db\Sql\Expression as SqlExpr;
-use Zend\Db\Sql\Predicate\Operator as SqlOp;
-use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 use Zend\Stdlib\Hydrator\ClassMethods;
 
@@ -67,7 +60,6 @@ class DbTable extends CredentialTreatmentAdapter
         $result       = parent::authenticate();
 
         if ($result->isValid()) {
-            var_dump($this->getUserIdentity());exit;
             $result = new Result($result->getCode(), $this->getUserIdentity(), $result->getMessages());
         }
 

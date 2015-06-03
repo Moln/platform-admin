@@ -1,5 +1,5 @@
 <?php
-namespace Admin\Model;
+namespace Moln\Admin\Model;
 
 use Zend\Db\TableGateway\TableGateway;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
@@ -19,7 +19,7 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
     protected $treeRoles;
     protected $permissions;
 
-    const CACHE_NAME = 'Cache\Admin\RoleTable';
+    const CACHE_NAME = 'Cache\Moln\Admin\RoleTable';
 
 
     public function cache($callable, $key)
@@ -94,7 +94,7 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
         return $this->permissions;
     }
 
-    public function getTreeRole($childKey = 'items', callable $dataMapCallable = null)
+    public function getTreeRole($key = 'role_id', $childKey = 'items', callable $dataMapCallable = null)
     {
         if (!$this->treeRoles) {
             $this->treeRoles = $this->cache(function () {
@@ -110,7 +110,7 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
             );
         };
 
-        return $this->toTreeData($this->treeRoles, $childKey, $dataMapCallable);
+        return $this->toTreeData($this->treeRoles, $key, $childKey, $dataMapCallable);
     }
 
     public function getTreeRoot()
@@ -118,16 +118,16 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
         return $this->getTreeRole()[0];
     }
 
-    private function toTreeData($rows, $childKey = 'items', callable $dataMapCallable = null)
+    private function toTreeData($rows, $key = 'role_id', $childKey = 'items', callable $dataMapCallable = null)
     {
         $rootId = 0;
         $data   = array($rootId => array($childKey => array()));
         foreach ($rows as $row) {
-            if (!isset($data[$row['role_id']])) {
-                $data[$row['role_id']] = $dataMapCallable($row);
+            if (!isset($data[$row[$key]])) {
+                $data[$row[$key]] = $dataMapCallable($row);
             }
 
-            $data[$row['parent']][$childKey][] = &$data[$row['role_id']];
+            $data[$row['parent']][$childKey][] = &$data[$row[$key]];
         }
 
         return $data;

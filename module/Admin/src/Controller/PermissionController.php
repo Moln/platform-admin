@@ -1,8 +1,6 @@
 <?php
-namespace Admin\Controller;
+namespace Moln\Admin\Controller;
 
-use Admin\Model\AssignPermissionTable;
-use Admin\Model\PermissionTable;
 use Zend\Code\Reflection\FileReflection;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;

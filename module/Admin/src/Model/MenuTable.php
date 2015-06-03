@@ -5,7 +5,7 @@
  * @DateTime 13-8-23 下午5:29
  */
 
-namespace Admin\Model;
+namespace Moln\Admin\Model;
 
 use Zend\Config\Factory as ConfigFactory;
 

@@ -1,10 +1,8 @@
 <?php
 
-namespace Admin\Controller;
+namespace Moln\Admin\Controller;
 
-use Admin\Form\LoginForm;
-use Admin\InputFilter\LoginInputFilter;
-use Admin\Model\UserTable;
+use Moln\Admin\InputFilter\LoginInputFilter;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
@@ -25,7 +23,7 @@ class AuthController extends AbstractActionController
     public function loginAction()
     {
         if ($this->getRequest()->isPost()) {
-            /** @var \Admin\Model\UserTable $userTable */
+            /** @var \Moln\Admin\Model\UserTable $userTable */
             $form = new LoginInputFilter();
             $form->setData($this->getRequest()->getPost());
 
@@ -34,7 +32,7 @@ class AuthController extends AbstractActionController
 
                 /**
                  * @var \Zend\Authentication\AuthenticationService $auth
-                 * @var \Admin\Authentication\AuthenticationAdapterInterface $adapter
+                 * @var \Moln\Admin\Authentication\AuthenticationAdapterInterface $adapter
                  */
                 $auth = $this->get('Admin\AuthenticationService');
                 $adapter = $auth->getAdapter();
@@ -43,6 +41,9 @@ class AuthController extends AbstractActionController
 
                 $result = $auth->authenticate();
                 if ($result->isValid()) {
+                    $identity = $result->getIdentity();
+                    $roles = $this->get('Admin\AssignUserTable')->getRoleNamesByUserId($identity->getUserId());
+                    $identity->setRoles($roles);
                     $return = array('code' => 1);
                 } else {
                     $return = array(
