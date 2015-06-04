@@ -4,7 +4,7 @@
         padding: 10px 20px 20px 0;
     }
 </style>
-<form class="form k-content admin-self" action="<?= $this->uri()->getPath() ?>">
+<form class="form k-content admin-self" action="./admin/index/self">
     <ul>
         <li>
             <label for="password">密码:</label>
@@ -49,7 +49,7 @@
         var $this = $(this), $submit = $this.find('.k-button > span');
         $submit.toggleClass('k-i-tick').toggleClass('k-loading');
         $.ajax({
-            url: '<?=$this->uri()->getPath()?>',
+            url: './admin/index/self',
             data: $(this).serialize(),
             success: function (result) {
                 if (!result.code) {

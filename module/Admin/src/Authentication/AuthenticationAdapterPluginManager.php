@@ -19,8 +19,8 @@ class AuthenticationAdapterPluginManager extends AbstractPluginManager
      * @var array
      */
     protected $invokableClasses = array(
-        'dbtable' => 'Admin\Authentication\DbTable',
-        'ldap'    => 'Admin\Authentication\Ldap',
+        'dbtable' => 'Moln\Admin\Authentication\DbTable',
+        'ldap'    => 'Moln\Admin\Authentication\Ldap',
     );
 
     /**

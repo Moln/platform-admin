@@ -5,6 +5,7 @@ use Moln\Admin\Form\UserForm;
 use Moln\Admin\Model\UserTable;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 
 /**
@@ -12,12 +13,12 @@ use Zend\View\Model\JsonModel;
  *
  * @package Admin\Controller
  */
-class UserController extends AbstractActionController
+class UserController extends AbstractRestfulController
 {
     public function readAction()
     {
         $userId    = $this->identity()->getUserId();
-        $paginator = $this->get('UserTable')->fetchPaginator(
+        $paginator = $this->get('Admin\UserTable')->fetchPaginator(
             function (Select $select) use ($userId) {
                 $select->columns(array('user_id', 'account', 'real_name', 'email', 'status'));
 

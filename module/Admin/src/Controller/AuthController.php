@@ -34,7 +34,7 @@ class AuthController extends AbstractActionController
                  * @var \Zend\Authentication\AuthenticationService $auth
                  * @var \Moln\Admin\Authentication\AuthenticationAdapterInterface $adapter
                  */
-                $auth = $this->get('Admin\AuthenticationService');
+                $auth = $this->get('Moln\Admin\AuthenticationService');
                 $adapter = $auth->getAdapter();
                 $adapter->setIdentity($formData['account']);
                 $adapter->setCredential($formData['password']);

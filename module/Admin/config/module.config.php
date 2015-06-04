@@ -1,6 +1,5 @@
 <?php
 
-use Zend\Mvc\ModuleRouteListener;
 use ZfcRbac\Guard\GuardInterface;
 
 return array(
@@ -11,9 +10,9 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'module'     => 'admin',
-                        'controller' => 'auth',
-                        'action'     => 'login',
+                        '__NAMESPACE__' => 'Moln\Admin',
+                        'controller'    => 'auth',
+                        'action'        => 'login',
                     ),
                 ),
             ),
@@ -22,9 +21,9 @@ return array(
                 'options' => array(
                     'route'    => '/login',
                     'defaults' => array(
-                        'module'     => 'admin',
-                        'controller' => 'auth',
-                        'action'     => 'login',
+                        '__NAMESPACE__' => 'Moln\Admin',
+                        'controller'    => 'auth',
+                        'action'        => 'login',
                     ),
                 ),
             ),
@@ -48,9 +47,29 @@ return array(
                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ),
                     'defaults'    => array(
-                        '__NAMESPACE__'     => 'Moln\Admin',
-                        'controller' => 'index',
-                        'action'     => 'index',
+                        '__NAMESPACE__' => 'Moln\Admin',
+                        'controller'    => 'index',
+                        'action'        => 'index',
+                    ),
+                ),
+                'child_routes' => array(
+                    'params' => array(
+                        'type' => 'Wildcard',
+                    ),
+                ),
+            ),
+            'admin-ui'  => array(
+                'type'         => 'segment',
+                'options'      => array(
+                    'route'       => '/ui/admin[/:ctrl[/:name]]',
+                    'constraints' => array(
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ),
+                    'defaults'    => array(
+                        '__NAMESPACE__' => 'Moln\Admin',
+                        'controller'    => 'index',
+                        'action'        => 'ui',
                     ),
                 ),
                 'child_routes' => array(
@@ -64,9 +83,10 @@ return array(
 
     'view_manager'    => array(
         'template_map'        => array(
-            'layout/layout' => __DIR__ . '/../view/layout/layout.phtml',
-            'error/404'     => __DIR__ . '/../view/error/404.phtml',
-            'error/index'   => __DIR__ . '/../view/error/index.phtml',
+            'moln-admin-layout/default' => __DIR__ . '/../view/layout/layout.admin.phtml',
+            'layout/layout'             => __DIR__ . '/../view/layout/layout.phtml',
+            'error/404'                 => __DIR__ . '/../view/error/404.phtml',
+            'error/index'               => __DIR__ . '/../view/error/index.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
@@ -75,16 +95,17 @@ return array(
 
     'service_manager' => array(
         'factories'  => array(
-            'Admin\AuthenticationAdapterPluginManager' => 'Moln\Admin\Factory\AuthenticationAdapterPluginManagerFactory',
-            'Admin\AuthenticationService'              => 'Moln\Admin\Factory\AuthenticationServiceFactory',
+            'Moln\Admin\AuthenticationAdapterPluginManager' => 'Moln\Admin\Factory\AuthenticationAdapterPluginManagerFactory',
+            'Moln\Admin\AuthenticationService'              => 'Moln\Admin\Factory\AuthenticationServiceFactory',
         ),
         'invokables' => array(
             'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
-            'Zend\ModuleRouteListener'                  => ModuleRouteListener::class,
+            'Zend\ModuleRouteListener'                  => 'Zend\Mvc\ModuleRouteListener',
+            'Moln\Admin\CreateJsonViewListener'         => 'Moln\Admin\Listener\CreateJsonViewListener',
         ),
     ),
 
-    'controllers' => array(
+    'controllers'     => array(
         'abstract_factories' => array(
             'Gzfextra\Mvc\Controller\ControllerLoaderAbstractFactory',
         ),
@@ -93,6 +114,7 @@ return array(
     'listeners'       => array(
         'Zend\ModuleRouteListener',
         'ZfcRbac\View\Strategy\RedirectStrategy',
+        'Moln\Admin\CreateJsonViewListener',
     ),
 
     'caches'          => array(),
@@ -124,7 +146,8 @@ return array(
     ],
 
     'moln_admin'      => array(
-        'menus' => array(
+        'layout' => 'moln-admin-layout/default',
+        'menus'  => array(
             0 => array(
                 'text'     => '系统',
                 'index'    => 0,
@@ -134,36 +157,30 @@ return array(
                         'text'       => '用户管理',
                         'index'      => 0,
                         'url'        => './admin/user',
-                        'permission' => 'admin.user.index',
+//                        'permission' => 'admin.user.index',
                     ),
                     1 => array(
                         'text'       => '角色管理',
                         'index'      => 1,
                         'url'        => './admin/role',
-                        'permission' => 'admin.role.index',
+//                        'permission' => 'admin.role.index',
                     ),
                     2 => array(
                         'text'       => '权限管理',
                         'index'      => 2,
                         'url'        => './admin/permission',
-                        'permission' => 'admin.permission.index',
+//                        'permission' => 'admin.permission.index',
                     ),
                     4 => array(
                         'text'  => '个人信息',
                         'index' => 4,
-                        'url'   => './admin/index/self',
+                        'url'   => './ui/admin/index/self',
                     ),
                     5 => array(
                         'text'       => '角色关系',
                         'index'      => 5,
                         'url'        => './admin/role/trees',
-                        'permission' => 'admin.role.trees',
-                    ),
-                    6 => array(
-                        'text'       => '操作日志',
-                        'index'      => 6,
-                        'url'        => './admin/operation-log/list',
-                        'permission' => 'admin.operation-log.list',
+//                        'permission' => 'admin.role.trees',
                     ),
                 ),
             ),
@@ -215,7 +232,6 @@ return array(
         'Admin\UserTable'             => array(
             'table'     => 'admin_user',
             'invokable' => 'Moln\Admin\Model\UserTable',
-            'row'       => 'Admin\Model\User',
             'primary'   => 'user_id',
         ),
     ),

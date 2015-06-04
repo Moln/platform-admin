@@ -151,4 +151,10 @@ class UserIdentity implements IdentityInterface
         $this->roles = $roles;
         return $this;
     }
+
+    public function toArray()
+    {
+        var_dump(get_object_vars($this));exit;
+        return get_object_vars($this);
+    }
 }

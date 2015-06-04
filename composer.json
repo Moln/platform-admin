@@ -6,7 +6,8 @@
         "php": ">=5.5",
         "zendframework/zendframework": "2.*",
         "moln/gzfextra": "dev-master",
-        "zf-commons/zfc-rbac": "2.5.1"
+        "zf-commons/zfc-rbac": "2.5.1",
+        "zfcampus/zf-hal":"~1.0"
     },
     "authors": [
         {

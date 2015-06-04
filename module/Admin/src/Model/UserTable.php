@@ -1,8 +1,10 @@
 <?php
 namespace Moln\Admin\Model;
 
+use Moln\Admin\Identity\UserIdentity;
 use Zend\Authentication\Adapter\DbTable;
 use Zend\Db\TableGateway\TableGateway;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 /**
  * Class UserTable
@@ -11,7 +13,6 @@ use Zend\Db\TableGateway\TableGateway;
  * @author
  * @version $Id: UserTable.php 728 2014-09-11 02:55:35Z Moln $
  *
- * @method User create(array $row = null)
  */
 class UserTable extends TableGateway
 {
@@ -22,41 +23,26 @@ class UserTable extends TableGateway
     }
 
     /**
-     * @param $account
-     * @param $password
-     *
-     * @return DbTable\CredentialTreatmentAdapter
-     */
-    public function getAuthAdapter($account, $password)
-    {
-        $authAdapter = new DbTable\CredentialTreatmentAdapter(
-            $this->getAdapter(), $this->getTable(), 'account',
-            'password'
-        );
-        $authAdapter->setIdentity($account);
-        $authAdapter->setCredential(self::encrypt($password));
-
-        return $authAdapter;
-    }
-
-    /**
      * 更新不允许修改账号
      *
-     * @param $data
+     * @param UserIdentity $user
      *
      * @return int
      */
-    public function save(&$data)
+    public function updateIdentity(UserIdentity $user)
     {
-        $account = null;
-        if (!empty($data['user_id'])) {
-            $account = $data['account'];
-            unset($data['account']);
-        }
-        $result = parent::save($data);
-        if ($account) {
-            $data['account'] = $account;
-        }
-        return $result;
+        $this->update($this->getIdentityModifyFields($user), ['user_id' => $user->getUserId()]);
+    }
+
+    /**
+     * @param UserIdentity $user
+     * @return array
+     */
+    private function getIdentityModifyFields(UserIdentity $user)
+    {
+        $data = (new ClassMethods)->extract($user);
+        unset($data['user_id'], $data['account'], $data['roles']);
+
+        return $data;
     }
 }

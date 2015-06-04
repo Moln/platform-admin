@@ -2,15 +2,21 @@
 namespace Moln\Admin\Controller;
 
 use Moln\Admin\Form\SelfForm;
+use Moln\Admin\InputFilter\SelfInputFilter;
 use Moln\Admin\Module;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
+        $this->layout($this->get('config')[Module::CONFIG_KEY]['layout']);
+    }
 
+    public function initAction()
+    {
         $menu = $this->getServiceLocator()->get('config')[Module::CONFIG_KEY]['menus'];
 
         /** @var \Moln\Admin\Identity\UserIdentity $user */
@@ -34,11 +40,17 @@ class IndexController extends AbstractActionController
         };
 
         $menu = $menuFilter($menu);
-        $this->layout('layout/layout.admin.phtml');
 
         return array(
-            'menu'     => $menu
+            'menu' => $menu
         );
+    }
+
+    public function uiAction()
+    {
+        $view = new ViewModel();
+        $view->setTemplate(sprintf('moln/%s/%s', $this->params('ctrl'), $this->params('name')));
+        return $view;
     }
 
     /**
@@ -46,30 +58,34 @@ class IndexController extends AbstractActionController
      */
     public function selfAction()
     {
-
-        if ($this->getRequest()->isPost()) {
-            $form = new SelfForm();
-            $form->loadInputFilter();
-            $form->setData($_POST);
-            if ($form->isValid()) {
-                $data = $form->getData();
-                /** @var \Moln\Admin\Model\User $identity */
-                $identity = $this->identity();
-                if ($data['password']) {
-                    $identity->setPassword($data['password']);
-                }
-                $identity->setRealName($data['real_name']);
-                $identity->setEmail($data['email']);
-                $identity->save();
-                return new JsonModel(array('code' => 1));
-            } else {
-                return new JsonModel(array(
-                    'code'   => 0,
-                    'errors' => $form->getInputFilter()->getMessages()
-                ));
-            }
+        if (!$this->getRequest()->isPost()) {
+            return new JsonModel(array('code' => 1));
         }
 
-        return array();
+        $filters = new SelfInputFilter();
+        $filters->setData($_POST);
+        if ($filters->isValid()) {
+            $data = $filters->getValues();
+
+            /** @var \Moln\Admin\Identity\UserIdentity $identity */
+            $identity = $this->identity();
+            if ($data['password']) {
+                $identity->setPassword($data['password']);
+            }
+
+            $identity->setRealName($data['real_name']);
+            $identity->setEmail($data['email']);
+
+            $this->get('Admin\UserTable')->updateIdentity($identity);
+            return new JsonModel(array('code' => 1));
+
+        } else {
+            return new JsonModel(
+                array(
+                    'code'   => 0,
+                    'errors' => $filters->getMessages()
+                )
+            );
+        }
     }
 }
