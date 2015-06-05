@@ -1,6 +1,7 @@
 <?php
 
 namespace Moln\Admin\InputFilter;
+use Moln\Admin\Model\UserTable;
 use Zend\InputFilter\InputFilter;
 
 
@@ -14,7 +15,7 @@ use Zend\InputFilter\InputFilter;
 class UserInputFilter extends InputFilter
 {
 
-    public function __construct($edit = true)
+    public function __construct($edit = true, UserTable $table)
     {
 
         if ($edit) {
@@ -27,28 +28,28 @@ class UserInputFilter extends InputFilter
                     ),
                 )
             );
-        }
-
-        $this->add(
-            array(
-                'name'       => 'account',
-                'required'   => true,
-                'filters'    => array(
-                    array('name' => 'StringTrim'),
-                    array('name' => 'StringToLower'),
-                ),
-                'validators' => $edit ? array() : array(
-                    array(
-                        'name'    => 'Db\NoRecordExists',
-                        'options' => array(
-                            'table'   => $this->get('UserTable')->getTable(),
-                            'field'   => 'account',
-                            'adapter' => $this->get('UserTable')->getAdapter()
+        } else {
+            $this->add(
+                array(
+                    'name'       => 'account',
+                    'required'   => true,
+                    'filters'    => array(
+                        array('name' => 'StringTrim'),
+                        array('name' => 'StringToLower'),
+                    ),
+                    'validators' => array(
+                        array(
+                            'name'    => 'Db\NoRecordExists',
+                            'options' => array(
+                                'table'   => $table->getTable(),
+                                'field'   => 'account',
+                                'adapter' => $table->getAdapter()
+                            ),
                         ),
                     ),
-                ),
-            )
-        );
+                )
+            );
+        }
 
         $this->add(
             array(

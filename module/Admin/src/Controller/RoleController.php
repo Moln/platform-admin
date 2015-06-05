@@ -1,7 +1,7 @@
 <?php
 namespace Moln\Admin\Controller;
 
-use Moln\Admin\Form\RoleForm;
+use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -15,13 +15,14 @@ class RoleController extends AbstractActionController
 
     public function readAction()
     {
-        $roles = $this->identity()->getRoleIds();
+        $roles = $this->get('Admin\RoleTable')->fetchAll();
 
-        $children = array();
+        foreach ($roles as &$row) {
+            $row['parentId'] = intval($row['parent']) ? : null;
+        }
 
-        $children = $this->get('Admin\RoleTable')->showChildren($roles, $children);
 
-        return new JsonModel($children);
+        return new JsonModel(['data' => $roles]);
     }
 
     public function saveAction()

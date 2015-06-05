@@ -2,10 +2,10 @@
 namespace Moln\Admin\Controller;
 
 use Moln\Admin\Form\UserForm;
+use Moln\Admin\InputFilter\UserInputFilter;
 use Moln\Admin\Model\UserTable;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 
 /**
@@ -13,7 +13,7 @@ use Zend\View\Model\JsonModel;
  *
  * @package Admin\Controller
  */
-class UserController extends AbstractRestfulController
+class UserController extends AbstractActionController
 {
     public function readAction()
     {
@@ -21,10 +21,7 @@ class UserController extends AbstractRestfulController
         $paginator = $this->get('Admin\UserTable')->fetchPaginator(
             function (Select $select) use ($userId) {
                 $select->columns(array('user_id', 'account', 'real_name', 'email', 'status'));
-
-                if ($userId != 1) {
-                    $select->where->notIn("user_id", array(1));
-                }
+                $select->where($this->ui()->filter());
             }
         );
         $paginator->setCurrentPageNumber($this->getRequest()->getPost('page', 1));
@@ -39,37 +36,38 @@ class UserController extends AbstractRestfulController
     public function saveAction()
     {
         $data = $this->getRequest()->getPost();
-        $form = new UserForm();
-        $form->loadInputFilter(!empty($data['user_id']));
+        $form = new UserInputFilter(!empty($data['user_id']), $this->get('Admin\UserTable'));
         $form->setData($data);
 
         if ($form->isValid()) {
-            $data = $form->getData();
+            $data = $form->getValues();
             if (empty($data['password'])) {
                 unset($data['password']);
             } else {
                 $data['password'] = UserTable::encrypt($data['password']);
             }
-            $this->get('UserTable')->save($data);
+
+            $data = new \ArrayObject($data);
+            $this->get('Admin\UserTable')->save($data);
             if (isset($data['password'])) unset($data['password']);
-            return new JsonModel(array('data' => $data));
+            return new JsonModel(['data' => $data]);
         } else {
-            return new JsonModel(array('errors' => $form->getInputFilter()->getMessages()));
+            return new JsonModel(array('errors' => $form->getMessages()));
         }
     }
 
     public function deleteAction()
     {
         $userId = $this->getRequest()->getPost('user_id');
-        $this->get('UserTable')->deletePrimary($userId);
-        $this->get('AssignUserTable')->removeUserId($userId);
+        $this->get('Admin\UserTable')->deletePrimary($userId);
+        $this->get('Admin\AssignUserTable')->removeUserId($userId);
         return new JsonModel(array());
     }
 
     public function assignAction()
     {
         $userId      = $this->params('id');
-        $assignTable = $this->get('AssignUserTable');
+        $assignTable = $this->get('Admin\AssignUserTable');
         $roles       = $assignTable->getRolesByUserId($userId);
 
         if ($this->getRequest()->isPost()) {

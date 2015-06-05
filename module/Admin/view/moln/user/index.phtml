@@ -10,7 +10,6 @@
                     destroy: serviceUrl + "delete",
                     create: serviceUrl + "save"
                 },
-                pageSize: <?=\Zend\Paginator\Paginator::getDefaultItemCountPerPage()?>,
                 schema: {
                     model: {
                         id: "user_id",
@@ -19,7 +18,7 @@
                             account: {validation: { required: true} },
                             real_name: { validation: { required: true} },
                             email: { validation: {required: true} },
-                            status: { defaultValue: 0},
+                            status: {defaultValue: 0},
                             password: {editable: true}
                         }
                     },
@@ -27,7 +26,6 @@
                     "total": "total"
                 },
                 error: function (e) {
-                    console.log("err", e);
                     if (e.status == "customerror") {
                         for (var i in e.errors) {
                             for (var j in e.errors[i]) {
@@ -40,41 +38,70 @@
                         $('#admin-user-index-grid').data("kendoGrid").cancelChanges();
                     }
                 },
-                serverPaging: true
+                pageSize: 15,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: false
             });
 
         var statusData = [
-            {name: '开启', value: '0'},
-            {name: '禁用', value: '1'}
+            {text: '开启', value: '0'},
+            {text: '禁用', value: '1'}
         ];
         $("#admin-user-index-grid").kendoGrid({
             dataSource: dataSource,
             pageable: true,
             toolbar: [
-                {'name': 'create', 'text': '增加'}
+                {'name': 'create', 'text': '增加'},
+                {
+                    name: "用户角色分配",
+                    click: function (e) {
+                        var tr = $(e.target).closest("tr");
+                        var data = this.dataItem(tr);
+                        Platform.ui.newWindow({
+                            title: data.account + '::用户角色分配::用户管理',
+                            content: './admin/user/assign/id/' + data.user_id
+                        });
+                    }
+                }
             ],
+            filterable: {
+                extra: false,
+                messages: {
+                    info: "查找: ",
+                    filter: "提交",
+                    clear: "清除",
+                    selectValue: "------选择------",
+                    and: "并且",
+                    or: "或者"
+                },
+                operators: {
+                    string: {
+                        contains: "模糊查找"
+                    },
+                    number: {
+                        eq: "等于"
+                    },
+                    date: {
+                        ge: "大于等于",
+                        le: "小于",
+                        gt: "大于",
+                        lt: "小于"
+                    },
+                    enums: {
+                        eq: "满足条件"
+                    }
+                }
+            },
             columns: [
                 { field: "account", title: "用户名", width: "100px"  },
                 { field: "real_name", title: "真实姓名", width: "120px" },
                 { field: "email", title: "Email", width: "200px", editor: emailEditor },
-                { field: "status", title: "状态", editor: statusEditor, width: "100px", template: function (item) {
-                    return statusData[item.status].name;
-                }},
+                { field: "status",type: "enums", title: "状态", values: statusData, width: "100px"},
                 { field: "password", title: "密码", template: '', hidden: true},
                 { command: [
                     {'name': 'edit', 'text': '编辑'},
-                    {'name': 'destroy', 'text': '删除'},
-                    {
-                        name: "用户角色分配",
-                        click: function (e) {
-                            var tr = $(e.target).closest("tr");
-                            var data = this.dataItem(tr);
-                            Platform.ui.newWindow({
-                                title: data.account + '::用户角色分配::用户管理',
-                                content: './admin/user/assign/id/' + data.user_id
-                            });
-                        }
-                    }
+                    {'name': 'destroy', 'text': '删除'}
                 ], title: "&nbsp;", width: 260 }
             ],
             selectable: true,

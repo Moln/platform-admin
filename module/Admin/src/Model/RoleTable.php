@@ -16,7 +16,7 @@ use Zend\ServiceManager\ServiceLocatorAwareTrait;
 class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
-    protected $treeRoles;
+    protected $roles;
     protected $permissions;
 
     const CACHE_NAME = 'Cache\Moln\Admin\RoleTable';
@@ -94,13 +94,20 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
         return $this->permissions;
     }
 
-    public function getTreeRole($key = 'role_id', $childKey = 'items', callable $dataMapCallable = null)
+    public function fetchAll()
     {
-        if (!$this->treeRoles) {
-            $this->treeRoles = $this->cache(function () {
+        if (!$this->roles) {
+            $this->roles = $this->cache(function () {
                 return $this->select()->toArray();
             }, __CLASS__ . '.' . __FUNCTION__);
         }
+
+        return $this->roles;
+    }
+
+    public function getTreeRole($key = 'role_id', $childKey = 'items', callable $dataMapCallable = null)
+    {
+        $data = $this->fetchAll();
 
         $dataMapCallable = $dataMapCallable ?: function ($row) {
             return array(
@@ -110,7 +117,7 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
             );
         };
 
-        return $this->toTreeData($this->treeRoles, $key, $childKey, $dataMapCallable);
+        return $this->toTreeData($data, $key, $childKey, $dataMapCallable);
     }
 
     public function getTreeRoot()
