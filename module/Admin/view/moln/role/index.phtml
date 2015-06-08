@@ -1,45 +1,237 @@
-<div id="admin-role-index-grid"></div>
+<div>
+    <div id="admin-role-toolbar"></div>
+    <br>
+    <div id="admin-role-tree"></div>
+</div>
+<div class="admin-trees-index-tree-add-form pa-box">
+    <form class="form">
+        <ul>
+            <li>
+                <label>上级菜单:</label>
+                <span class="parent-name"></span>
+            </li>
+            <li>
+                <label for="role_name">角色名称:</label>
+                <input type="text" class="k-textbox" name="role_name" autofocus="autofocus" required/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="role_id"/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="parent_id"/>
+            </li>
+            <li class="form-row">
+                <button class="k-button" id="add_submit"><span class="k-icon k-i-tick"></span>提 交</button>
+                <button type="button" class="closeButton">返回</button>
+            </li>
+        </ul>
+    </form>
+</div>
+
+<div class="admin-trees-index-tree-edit-form pa-box">
+    <form class="form">
+        <ul>
+            <li>
+                <label for="role_name">角色名称:</label>
+                <input type="text" class="k-textbox" name="role_name" autofocus="autofocus" required/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="role_id"/>
+            </li>
+            <li>
+                <input type="hidden" class="k-textbox" name="parent_id"/>
+            </li>
+            <li class="form-row">
+                <button class="k-button" id="edit_submit"><span class="k-icon k-i-tick"></span>提 交
+                </button>
+                <button type="button" class="closeButton">返回</button>
+            </li>
+        </ul>
+    </form>
+</div>
+<style>
+    #admin-trees-index-tree {
+        float: left;
+    }
+
+    .admin-trees-index-tree-add-form,
+    .admin-trees-index-tree-edit-form {
+        padding: 2em;
+        width: 460px;
+        display: none;
+    }
+
+    .admin-trees-index-tree-add:hover,
+    .admin-trees-index-tree-delete:hover {
+        opacity: 0.5;
+    }
+</style>
 
 <script>
-    $(document).ready(function () {
-        var serviceUrl = "./admin/role/",
-            dataSource = new kendo.data.TreeListDataSource({
-                transport: {
-                    read: serviceUrl + "read",
-                    update: serviceUrl + "save",
-                    destroy: serviceUrl + "delete",
-                    create: serviceUrl + "save"
+    $(function () {
+        $("#admin-role-toolbar").kendoToolBar({
+            items: [
+                {
+                    type: "button",
+                    text: "增加ROOT角色",
+                    click: function () {
+                        alert(1);
+                    }
                 },
-                schema: {
-                    model: {
-                        id: "role_id",
-                        fields: {
-                            role_id: {type: "number", editable: false, nullable: true},
-                            name: {validation: {required: true}},
-                            parentId: {validation: {required: true}}
-                        }
-                    },
-//                    parse: function(response) {
-//                        for (var i=0; i < response.data.length; i++) {
-//                            response.data[i].parentId = response.data[i].parent == '0' ? null : response.data[i].parent;
-//                            response.data[i].parent = response.data[i].parent == '0' ? null : response.data[i].parent;
-//                        }
-//                        console.log( response.data);
-//                        return response;
-//                    },
-                    "data": "data",
-                    "total": "total"
+                {
+                    type: "button",
+                    text: "分配角色权限",
+                    click: function () {
+                        alert(1);
+                    }
                 },
-                error: function (e) {
+                {
+                    type: "button",
+                    text: "用户角色分配",
+                    click: function () {
+                        alert(1);
+                    }
                 }
-            });
-        $("#admin-role-index-grid").kendoTreeList({
-            dataSource: dataSource,
-            height: 540,
-            columns: [
-                {field: "Name"},
-                {field: "Phone"}
             ]
         });
+        $.get('./admin/role/read', function (data) {
+            console.log(data);
+            var $tree = $("#admin-role-tree").kendoTreeView({
+                    dragAndDrop: true,
+                    dataSource: data,
+                    checkboxes: {
+                        checkChildren: true
+                    },
+                    template: kendo.template($("#admin-trees-index-tree-template").html())
+//                    drop: function (e) {
+//                    },
+//                    dragend: function (e) {
+//                    }
+                }),
+                $treeView = $tree.data('kendoTreeView');
+        });
+/*
+
+*/
+/*
+        //添加菜单
+
+        //编辑菜单
+
+        $treeView.select($());
+        $treeView.expand(".k-item");
+
+        //Root节点添加
+        $('#admin-trees-index-tree-add').click(function () {
+
+            $addform.parent().fadeIn(200).siblings('.pa-box').hide();
+            $addform.find('input:role_name').val('');
+            $addform.find('span.parent-name').html('根菜单');
+            $addform.find('input:first').focus();
+            return false;
+        });
+
+        $(".closeButton").kendoButton({
+            icon: "cancel"
+        }).on('click', function (e) {
+            $addform.parent().fadeOut(200);
+            $editForm.parent().fadeOut(200);
+        });
+        //节点添加
+        $tree.on("click", ".admin-trees-index-tree-add", function (e) {
+
+            var dataItem = $treeView.dataItem($(this).closest(".k-item"));
+
+            $addform.parent().fadeIn(200).siblings('.pa-box').hide();
+
+            $addform.find('input:text').val('');
+            $addform.find('span.parent-name').html(dataItem.text);
+            $addform.find('input[name=role_id]').val(dataItem.role_id);
+            $addform.find('input[name=parent]').val(dataItem.parent);
+            $addform.data('appendParent', $(this).closest(".k-item"));
+            $addform.find('input:first').focus();
+
+            return false;
+        });
+
+        //节点删除
+        $tree.on("click", ".admin-trees-index-tree-delete", function (e) {
+
+            e.preventDefault();
+
+            var node = $(this).closest(".k-item"),
+                dataItem = $treeView.dataItem(node),
+                nodes = node.find('.k-item').andSelf(),
+                data = new Array();
+
+            nodes.each(function () {
+                var nodeData = $treeView.dataItem(this);
+                data.push(nodeData.role_id);
+
+            });
+
+            $.post('./admin/role/delete', {'data': data}, function () {
+                $treeView.remove(node);
+            });
+
+            return false;
+        });
+
+        $('#add_submit').paRemoteClick(function (e) {
+
+            e.preventDefault();
+
+            var parent = $addform.data('appendParent') || undefined,
+                data = {"name": $addform.get(0).role_name.value, "parent": $addform.get(0).role_id.value};
+
+            return {
+                url: './admin/role/save',
+                data: data,
+                success: function (result) {
+                    if (result.errors) {
+                        alert(result.errors);
+                    } else {
+                        result = {"text": $addform.get(0).role_name.value, "role_id": result.role_id, "parent_id": result.parent};
+                        $treeView.append(result, parent);
+                        $addform.parent().fadeOut(200);
+                    }
+                }
+            };
+        });
+
+        $('#edit_submit').paRemoteClick(function (e) {
+
+            e.preventDefault();
+
+            var current = $editForm.data('current') || undefined,
+                data = {"role_id": $editForm.get(0).role_id.value, "name": $editForm.get(0).role_name.value, "parent": $editForm.get(0).parent_id.value};
+
+            return {
+                url: './admin/role/save',
+                data: data,
+                success: function (result) {
+
+                    if (result.errors) {
+                        alert(result.errors);
+                    } else {
+
+                        var item = $treeView.dataItem(current);
+                        item.set('role_name', result.name);
+                        item.set('role_id', result.role_id);
+                        item.set('parent_id', result.parent);
+                        $treeView.text($editForm.data('current'), result.name);
+
+                        $editForm.parent().fadeOut(200);
+                    }
+                }
+            };
+        });*/
     });
+
+</script>
+
+<script id="admin-trees-index-tree-template" type="text/kendo-ui-template">
+    #: item.text #
+    <span class="admin-trees-index-tree-add k-icon k-i-plus"></span>
+    <span class="admin-trees-index-tree-delete k-icon k-i-close"></span>
 </script>

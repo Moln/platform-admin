@@ -2,6 +2,7 @@
 namespace Moln\Admin\Controller;
 
 use Zend\Db\Sql\Select;
+use Zend\Json\Json;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -15,14 +16,9 @@ class RoleController extends AbstractActionController
 
     public function readAction()
     {
-        $roles = $this->get('Admin\RoleTable')->fetchAll();
+        $roles = $this->get('Admin\RoleTable')->getTreeRole()[0]['items'];
 
-        foreach ($roles as &$row) {
-            $row['parentId'] = intval($row['parent']) ? : null;
-        }
-
-
-        return new JsonModel(['data' => $roles]);
+        return new JsonModel($roles);
     }
 
     public function saveAction()
