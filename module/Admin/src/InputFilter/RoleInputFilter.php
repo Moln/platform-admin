@@ -1,7 +1,9 @@
 <?php
 
 namespace Moln\Admin\InputFilter;
+use Moln\Admin\Model\RoleTable;
 use Zend\InputFilter\InputFilter;
+use Zend\Validator\Callback;
 
 
 /**
@@ -13,22 +15,38 @@ use Zend\InputFilter\InputFilter;
  */
 class RoleInputFilter extends InputFilter
 {
-    public function __construct()
+    public function __construct($add, $roles = [], RoleTable $table)
     {
-        $this->add(
-            array(
-                'name'    => 'menu_id',
-                'filters' => array(
-                    array('name' => 'int')
-                ),
-            )
-        );
+
+        if (!$add) {
+            $this->add(
+                array(
+                    'name'    => 'role_id',
+                    'filters' => array(
+                        array('name' => 'int')
+                    ),
+                )
+            );
+        }
 
         $this->add(
             array(
-                'name'    => 'parent_id',
+                'name'    => 'parent',
                 'filters' => array(
                     array('name' => 'int')
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'callback',
+                        'options' => array(
+                            'callback' => function ($value) use ($table, $roles) {
+                                return $table->isValidParentAtRoles($value, $roles);
+                            },
+                            'messages' => array(
+                                Callback::INVALID_VALUE => '无权设置, 不在人个权限下'
+                            ),
+                        ),
+                    ),
                 ),
             )
         );
@@ -39,33 +57,6 @@ class RoleInputFilter extends InputFilter
                 'required' => true,
                 'filters'  => array(
                     array('name' => 'StringTrim')
-                ),
-            )
-        );
-        $this->add(
-            array(
-                'name'     => 'url',
-                'required' => true,
-                'filters'  => array(
-                    array('name' => 'StringTrim')
-                ),
-            )
-        );
-
-        $this->add(
-            array(
-                'name'    => 'per_id',
-                'filters' => array(
-                    array('name' => 'int')
-                ),
-            )
-        );
-        $this->add(
-            array(
-                'name'     => 'order',
-                'required' => false,
-                'filters'  => array(
-                    array('name' => 'int')
                 ),
             )
         );

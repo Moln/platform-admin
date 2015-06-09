@@ -51,7 +51,7 @@ class AssignUserTable extends AbstractTableGateway
         $select = $this->sql->select();
         $select->where(array('user_id' => $id));
         $select->join(
-            array('r' => $this->get('Admin\RoleTable')->getTable()),
+            array('r' => 'admin_role'),
             $this->table . '.role_id=r.role_id',
             array('role_id')
         );

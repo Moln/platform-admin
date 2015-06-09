@@ -22,7 +22,7 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
     const CACHE_NAME = 'Cache\Moln\Admin\RoleTable';
 
 
-    public function cache($callable, $key)
+    private function cache($callable, $key)
     {
         if ($this->getServiceLocator()->has(self::CACHE_NAME)) {
             /** @var \Zend\Cache\Storage\Adapter\AbstractAdapter $cache */
@@ -109,8 +109,8 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
     {
         $data = $this->fetchAll();
 
-        $dataMapCallable = $dataMapCallable ?: function ($row) {
-            return array(
+        $dataMapCallable = $dataMapCallable ?: function ($row, $data) {
+            return $data + array(
                 'role_id'   => $row['role_id'],
                 'text'      => $row['name'],
                 'parent_id' => $row['parent'],
@@ -122,7 +122,7 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
 
     public function getTreeRoot()
     {
-        return $this->getTreeRole()[0];
+        return $this->getTreeRole()[0]['items'];
     }
 
     private function toTreeData($rows, $key = 'role_id', $childKey = 'items', callable $dataMapCallable = null)
@@ -131,8 +131,9 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
         $data   = array($rootId => array($childKey => array()));
         foreach ($rows as $row) {
             if (!isset($data[$row[$key]])) {
-                $data[$row[$key]] = $dataMapCallable($row);
+                $data[$row[$key]] = [];
             }
+            $data[$row[$key]] = $dataMapCallable($row, $data[$row[$key]]);
 
             $data[$row['parent']][$childKey][] = &$data[$row[$key]];
         }
@@ -140,59 +141,26 @@ class RoleTable extends TableGateway implements ServiceLocatorAwareInterface
         return $data;
     }
 
-    public function showChildren($roleIds)
+    private function getRoleParents($roleId, &$parents = [])
     {
-        $children = array();
+        $roles = $this->getTreeRole();
 
-        $select = $this->sql->select();
-        $select->columns(array('role_id', 'name', 'parent'))->where(array('role_id' => $roleIds));
+        if ($roles[$roleId]['parent_id']) {
+            $parents[] = $roles[$roleId]['parent_id'];
+            $this->getRoleParents($roles[$roleId]['parent_id'], $parents);
+        }
 
-        $roles = $this->selectWith($select)->toArray();
-
-        $this->getChildrenByRoles($roles, $children);
-
-        return $children;
-
+        return $parents;
     }
 
-    private function getChildrenByRoles($roles, & $array)
+    public function isValidParentAtRoles($parent, $accessRoles)
     {
-        if (!is_array($roles)) return;
-
-        foreach ($roles as $role) {
-
-            $array[] = $role;
-
-            $select = $this->sql->select();
-
-            $select->columns(array('role_id', 'name', 'parent'))->where(array('parent' => $role['role_id']));
-
-            $children = $this->selectWith($select)->toArray();
-
-            if (is_array($children)) {
-
-                $this->getChildrenByRoles($children, $array);
-            }
+        if (in_array($parent, $accessRoles)) {
+            return true;
         }
-    }
 
-    public function validChildren($roles, $targetNode)
-    {
+        $parents = $this->getRoleParents($parent);
 
-        $children = array();
-
-        $children = $this->showChildren($roles, $children);
-
-        $flag = false;
-
-        foreach ($children as $child) {
-
-            if ($child['role_id'] == $targetNode) {
-                $flag = true;
-                break;
-            }
-        }
-        return $flag;
-
+        return !empty(array_intersect($accessRoles, $parents));
     }
 }

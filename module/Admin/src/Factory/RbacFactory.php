@@ -1,6 +1,7 @@
 <?php
 
-namespace Moln\Admin\Rbac\Service;
+namespace Moln\Admin\Factory;
+
 use Zend\Permissions\Rbac\Rbac;
 use Zend\Permissions\Rbac\Role;
 use Zend\ServiceManager\FactoryInterface;

@@ -1,5 +1,5 @@
 <?php
-namespace Moln\Admin\Listener;
+namespace Moln\Admin\Rbac;
 
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\EventManager\EventManagerInterface;
@@ -40,8 +40,8 @@ class PermissionGuardListener extends AbstractListenerAggregate
          * @var \Zend\Authentication\AuthenticationService $auth
          * @var \Zend\Permissions\Rbac\Rbac $rbac
          */
-        $auth = $sm->get('auth');
-        $rbac = $sm->get('Admin\Rbac');
+        $auth = $sm->get('Moln\Admin\AuthenticationService');
+        $rbac = $sm->get('Moln\Admin\Rbac');
 
         $roles = [];
 
@@ -94,7 +94,6 @@ class PermissionGuardListener extends AbstractListenerAggregate
 
         $rolePermissionResults = $roleTable->getPermissions();
 
-        $permissions = [];
         foreach ($rolePermissionResults as $row) {
             if ($controller == $row['controller'] && $action == $row['action']) {
                 return $row['permission'];

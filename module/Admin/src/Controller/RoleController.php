@@ -1,8 +1,7 @@
 <?php
 namespace Moln\Admin\Controller;
 
-use Zend\Db\Sql\Select;
-use Zend\Json\Json;
+use Moln\Admin\InputFilter\RoleInputFilter;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -14,61 +13,70 @@ use Zend\View\Model\JsonModel;
 class RoleController extends AbstractActionController
 {
 
-    public function readAction()
+    /**
+     * @return \Moln\Admin\Model\RoleTable
+     */
+    private function getRoleTable()
     {
-        $roles = $this->get('Admin\RoleTable')->getTreeRole()[0]['items'];
-
-        return new JsonModel($roles);
+        return $this->get('Admin\RoleTable');
     }
 
-    public function saveAction()
+    public function readAction()
     {
-        $parent = $this->getRequest()->getPost('parent');
+        $roles = $this->getRoleTable()->getTreeRole()[0]['items'];
+        $accessRoles = $this->get('Admin\AssignUserTable')->getRoleIdsByUserId($this->identity()->getUserId());
 
-        $roles = $this->identity()->getRoleIds();
+        return new JsonModel(['roles' => $roles, 'access_roles' => $accessRoles]);
+    }
 
-        $flag = $this->get('Admin\RoleTable')->validChildren($roles, $parent);
+    public function addAction()
+    {
+        $roles     = $this->get('Admin\AssignUserTable')->getRoleIdsByUserId($this->identity()->getUserId());
+        $roleTable = $this->getRoleTable();
+        $filters   = new RoleInputFilter(true, $roles, $roleTable);
+        $filters->setData($_REQUEST);
 
-        if (!$flag) return new JsonModel(array('errors' => "无权修改"));
-
-        $data = $this->getRequest()->getPost();
-        $form = new RoleForm();
-        $form->loadInputFilter();
-        $form->setData($data);
-        if ($form->isValid()) {
-            $data = $form->getData();
-            $this->get('Admin\RoleTable')->save($data);
-
-            return new JsonModel($data);
-        } else {
-            return new JsonModel(array('errors' => $form->getInputFilter()->getMessages()));
+        if (!$filters->isValid()) {
+            return new JsonModel(['errors' => $filters->getMessages()]);
         }
+
+        $data = $filters->getValues();
+
+        $roleTable->insert($data);
+        $data['role_id'] = $roleTable->getLastInsertValue();
+
+        return new JsonModel($data);
     }
 
     public function updateAction()
     {
-        $parent  = $this->getRequest()->getPost('parent');
-        $role_id = $this->getRequest()->getPost('role_id');
+        $roles     = $this->get('Admin\AssignUserTable')->getRoleIdsByUserId($this->identity()->getUserId());
+        $roleTable = $this->getRoleTable();
+        $filters   = new RoleInputFilter(false, $roles, $roleTable);
+        $filters->setData($_REQUEST);
 
-        $roles = $this->identity()->getRoleIds();
+        if (!$filters->isValid()) {
+            return new JsonModel(['errors' => $filters->getMessages()]);
+        }
 
-        $flag = $this->get('Admin\RoleTable')->validChildren($roles, $parent);
+        $data = $filters->getValues();
 
-        if (!$flag) return new JsonModel(array('errors' => "无权移动"));
-
-        $this->get('Admin\RoleTable')->update(array("parent" => $parent), array('role_id' => $role_id));
+        $this->getRoleTable()->update(
+            ['parent' => $data['parent'], 'name' => $data['name']],
+            ['role_id' => $data['role_id']]
+        );
 
         return new JsonModel(array('code' => 1));
     }
 
     public function deleteAction()
     {
-        $datas = $this->getRequest()->getPost('data');
+        $roles = $this->getRequest()->getPost('roles');
 
-        foreach ($datas as $data) {
-            $this->get('Admin\RoleTable')->deletePrimary($data);
-            $this->get('AssignUserTable')->removeRoleId($data);
-            $this->get('AssignPermissionTable')->removeRoleId($data);
+        foreach ($roles as $roleId) {
+            $this->getRoleTable()->deletePrimary($roleId);
+            $this->get('Admin\AssignUserTable')->removeRoleId($roleId);
+            $this->get('Admin\AssignPermissionTable')->removeRoleId($roleId);
         }
         return new JsonModel(array('code' => 1));
     }
@@ -84,9 +92,11 @@ class RoleController extends AbstractActionController
             if (!$pushPermissions) return new JsonModel(array('code' => -1, 'msg' => '更新失败'));
             $assignTable->resetPermissionsByRoleId($roleId, $pushPermissions);
 
-            return new JsonModel(array(
-                'code' => 1
-            ));
+            return new JsonModel(
+                array(
+                    'code' => 1
+                )
+            );
         }
         return array(
             'role_id'     => $roleId,
@@ -111,13 +121,6 @@ class RoleController extends AbstractActionController
         return array(
             'role_id' => $roleId,
             'users'   => $users,
-        );
-    }
-
-    public function treesAction()
-    {
-        return array(
-            'trees' => $this->get('Admin\RoleTable')->getTreesByRoleId(),
         );
     }
 }

@@ -5,7 +5,7 @@ use ZfcRbac\Guard\GuardInterface;
 return array(
     'router'          => array(
         'routes' => array(
-            'home'   => array(
+            'home'     => array(
                 'type'    => 'Literal',
                 'options' => array(
                     'route'    => '/',
@@ -16,7 +16,7 @@ return array(
                     ),
                 ),
             ),
-            'login'  => array(
+            'login'    => array(
                 'type'    => 'Literal',
                 'options' => array(
                     'route'    => '/login',
@@ -27,7 +27,7 @@ return array(
                     ),
                 ),
             ),
-            'logout' => array(
+            'logout'   => array(
                 'type'    => 'Literal',
                 'options' => array(
                     'route'    => '/logout',
@@ -38,7 +38,7 @@ return array(
                     ),
                 ),
             ),
-            'admin'  => array(
+            'admin'    => array(
                 'type'         => 'segment',
                 'options'      => array(
                     'route'       => '/admin[/:controller[/:action]]',
@@ -58,7 +58,7 @@ return array(
                     ),
                 ),
             ),
-            'admin-ui'  => array(
+            'admin-ui' => array(
                 'type'         => 'segment',
                 'options'      => array(
                     'route'       => '/ui/admin[/:ctrl[/:name]]',
@@ -97,6 +97,7 @@ return array(
         'factories'  => array(
             'Moln\Admin\AuthenticationAdapterPluginManager' => 'Moln\Admin\Factory\AuthenticationAdapterPluginManagerFactory',
             'Moln\Admin\AuthenticationService'              => 'Moln\Admin\Factory\AuthenticationServiceFactory',
+            'Moln\Admin\Rbac'                                     => 'Moln\Admin\Factory\AuthenticationServiceFactory',
         ),
         'invokables' => array(
             'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
@@ -154,21 +155,21 @@ return array(
                 'expanded' => true,
                 'items'    => array(
                     0 => array(
-                        'text'       => '用户管理',
-                        'index'      => 0,
-                        'url'        => './admin/user',
+                        'text'  => '用户管理',
+                        'index' => 0,
+                        'url'   => './admin/user',
 //                        'permission' => 'admin.user.index',
                     ),
                     1 => array(
-                        'text'       => '角色管理',
-                        'index'      => 1,
-                        'url'        => './admin/role',
+                        'text'  => '角色管理',
+                        'index' => 1,
+                        'url'   => './admin/role',
 //                        'permission' => 'admin.role.index',
                     ),
                     2 => array(
-                        'text'       => '权限管理',
-                        'index'      => 2,
-                        'url'        => './admin/permission',
+                        'text'  => '权限管理',
+                        'index' => 2,
+                        'url'   => './admin/permission',
 //                        'permission' => 'admin.permission.index',
                     ),
                     4 => array(
@@ -177,9 +178,9 @@ return array(
                         'url'   => './ui/admin/index/self',
                     ),
                     5 => array(
-                        'text'       => '角色关系',
-                        'index'      => 5,
-                        'url'        => './admin/role/trees',
+                        'text'  => '角色关系',
+                        'index' => 5,
+                        'url'   => './admin/role/trees',
 //                        'permission' => 'admin.role.trees',
                     ),
                 ),
