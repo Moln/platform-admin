@@ -177,12 +177,6 @@ return array(
                         'index' => 4,
                         'url'   => './ui/admin/index/self',
                     ),
-                    5 => array(
-                        'text'  => '角色关系',
-                        'index' => 5,
-                        'url'   => './admin/role/trees',
-//                        'permission' => 'admin.role.trees',
-                    ),
                 ),
             ),
             1 => array(
@@ -199,6 +193,9 @@ return array(
                     ),
                 ),
             ),
+        ),
+        'permission_scan_controller_dir' => array(
+            'Moln\Admin' => __DIR__ . '/../src/Controller',
         ),
     ),
 

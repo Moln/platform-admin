@@ -1,7 +1,10 @@
 <?php
 namespace Moln\Admin\Controller;
 
+use Moln\Admin\Module;
 use Zend\Code\Reflection\FileReflection;
+use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -14,70 +17,91 @@ class PermissionController extends AbstractActionController
 {
     protected $permissionTable;
 
+    /**
+     * read
+     * @PermissionName index
+     */
     public function readAction()
     {
-        return new JsonModel($this->get('PermissionTable')->select()->toArray());
+        $results = $this->get('Admin\PermissionTable')->select(function (Select $select) {
+            $select->where(['permission' => new Expression('concat(controller,"::",action)')]);
+        })->toArray();
+        return new JsonModel($results);
     }
 
+    /**
+     * save
+     * @PermissionName index
+     */
     public function saveAction()
     {
         $id    = (int)$this->getRequest()->getPost('per_id');
         $title = $this->getRequest()->getPost('title');
 
-        $this->get('PermissionTable')->updateTitle($id, $title);
+        $this->get('Admin\PermissionTable')->updateTitle($id, $title);
         return new JsonModel($this->getRequest()->getPost());
     }
 
-
     /**
      * 初始化权限
+     *
+     * @PermissionName index
      */
     public function initAction()
     {
-        $config = $this->getServiceLocator()->get('ApplicationConfig');
+        $dirs = (array)$this->get('config')[Module::CONFIG_KEY]['permission_scan_controller_dir'];
 
-        $actions    = array();
-        $modulePath = realpath(__DIR__ . '/../../../../');
-
-        foreach ($config['modules'] as $module) {
-            $pattern = $modulePath . "/$module/src/$module/Controller/*Controller.php";
-            foreach (glob($pattern) as $file) {
+        $actions = array();
+        foreach ($dirs as $module => $dir) {
+            foreach (glob($dir . '/*Controller.php') as $file) {
                 include_once $file;
-                $ctrl       = basename($file, "Controller.php");
+
+                $ctrlName = basename($file, 'Controller.php');
+
                 $reflection = new FileReflection($file);
                 $class      = $reflection->getClass();
                 foreach ($class->getMethods() as $method) {
-                    if ($method->getName() == 'getMethodFromAction'
-                        || $method->getName() == 'notFoundAction'
-                    ) {
+                    if ($method->getName() == 'getMethodFromAction' || $method->getName() == 'notFoundAction') {
                         continue;
                     }
                     if (substr($method->getName(), -6) == 'Action') {
                         $action = substr($method->getName(), 0, -6);
-                        $module = $this->toRouteName($module);
-                        $ctrl   = $this->toRouteName($ctrl);
-                        $action = $this->toRouteName($action);
+                        $title = $ctrlName . '.' . $action;
 
-                        $title = $index = strtolower("$module.$ctrl.$action");
+                        $permission = $index = $class->getName() . '::' . $action;
                         if ($method->getDocBlock()) {
                             $title = $method->getDocBlock()->getShortDescription();
+                            if ($method->getDocBlock()->hasTag('PermissionName')) {
+                                $permission = $method->getDocBlock()->getTag('PermissionName')->getContent();
+                                if (!strpos($permission, '::')) {
+                                    $permission = $class->getName() . '::' . $permission;
+                                }
+                            }
                         }
-                        $actions[$index] = array($module, $ctrl, $action, $title);
+
+                        $actions[$index] = array($class->getName(), $module, $action, $permission, $title);
                     }
                 }
             }
         }
 
-        $perTable    = $this->get('PermissionTable');
+        $perTable    = $this->get('Admin\PermissionTable');
         $permissions = $perTable->select();
 
         foreach ($permissions as $row) {
-            $index = "{$row['module']}.{$row['controller']}.{$row['action']}";
+            $index = "{$row['controller']}::{$row['action']}";
             if (isset($actions[$index])) {
-                if ($row->title == $index && $row->title != $actions[$index][3]) {
-                    $row->title = $actions[$index][3];
-                    $row->save();
+                $update = false;
+                if ($row->title == $index && $row->title != $actions[$index][4]) {
+                    $row->title = $actions[$index][4];
+                    $update = true;
                 }
+                if ($row->permission != $actions[$index][3]) {
+                    $row->permission = $actions[$index][3];
+                    $update = true;
+                }
+
+                $update && $row->save();
                 unset($actions[$index]);
             } else {
                 $row->delete();
@@ -88,27 +112,22 @@ class PermissionController extends AbstractActionController
         foreach ($actions as $row) {
             $perTable->insert(
                 array(
-                    'module'     => $row[0],
-                    'controller' => $row[1],
+                    'controller' => $row[0],
+                    'module'     => $row[1],
                     'action'     => $row[2],
-                    'title'      => $row[3],
+                    'permission' => $row[3],
+                    'title'      => $row[4],
                 )
             );
         }
-        /** @var \Zend\Cache\Storage\Adapter\Filesystem $cache */
-        $cache = $this->getServiceLocator()->get('cache.permission');
-        $cache->removeItem('rbac');
+        $this->getEventManager()->trigger('permission.update');
 
         return new JsonModel(array('code' => true));
     }
 
-    private function toRouteName($name)
-    {
-        return ltrim(strtolower(preg_replace('/([A-Z])/', '-$1', $name)), '-');
-    }
-
     /**
      * 角色权限分配
+     * @PermissionName index
      */
     public function assignAction()
     {
@@ -120,27 +139,15 @@ class PermissionController extends AbstractActionController
             $pushRoles = $this->getRequest()->getPost('role_id');
             $assignTable->resetPermissionsById($permissionId, $pushRoles);
 
-            $this->getServiceLocator()->get('cache.permission')->removeItem('rbac');
-            return new JsonModel(array(
-                'code' => 1
-            ));
+            $this->getEventManager()->trigger('permission.update');
+            return new JsonModel(
+                array(
+                    'code' => 1
+                )
+            );
         }
         return array(
             'roles' => $roles,
         );
-    }
-
-    public function queryAction()
-    {
-        $url = $this->getRequest()->getPost('url');
-        $url = parse_url($url);
-        $url = $url['path'];
-        $url = array_pad(explode('/', $url), 4, 'index');
-
-        array_shift($url);
-        list($module, $ctrl, $action) = $url;
-
-        $per_id = $this->get('PermissionTable')->fetchByRule($module, $ctrl, $action);
-        return new JsonModel(array('data' => implode('.', $url), 'code' => 1));
     }
 }

@@ -48,7 +48,6 @@
         });
 
         $.get('./admin/index/init', function (r) {
-            console.log(r);
             $("#left-pane").kendoPanelBar({
                 dataSource: r.menu,
                 select: function (e) {
