@@ -4,10 +4,13 @@
     "description": "Global management system.",
     "require": {
         "php": ">=5.5",
-        "zendframework/zendframework": "2.*",
+        "zendframework/zendframework": "2.4.*",
         "moln/gzfextra": "dev-master",
         "zf-commons/zfc-rbac": "2.5.1",
         "zfcampus/zf-hal":"~1.0"
+    },
+    "require-dev": {
+        "fabpot/php-cs-fixer": "~1.0"
     },
     "authors": [
         {
@@ -18,6 +21,7 @@
     "autoload":{
         "psr-4":{
             "Moln\\Admin\\":"module/Admin/src",
+            "Moln\\ModelManager\\":"module/ModelManager/src",
             "Product\\":"module/Product/src"
         }
     },

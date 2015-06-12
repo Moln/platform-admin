@@ -72,11 +72,6 @@ return array(
                         'action'        => 'ui',
                     ),
                 ),
-                'child_routes' => array(
-                    'params' => array(
-                        'type' => 'Wildcard',
-                    ),
-                ),
             ),
         ),
     ),
@@ -149,7 +144,7 @@ return array(
     'moln_admin'      => array(
         'layout' => 'moln-admin-layout/default',
         'menus'  => array(
-            0 => array(
+            'admin' => array(
                 'text'     => '系统',
                 'index'    => 0,
                 'expanded' => true,
@@ -176,20 +171,6 @@ return array(
                         'text'  => '个人信息',
                         'index' => 4,
                         'url'   => './ui/admin/index/self',
-                    ),
-                ),
-            ),
-            1 => array(
-                'text'       => '产品管理',
-                'index'      => 1,
-                'expanded'   => true,
-                'permission' => 'product.index.index',
-                'items'      => array(
-                    0 => array(
-                        'text'       => '产品管理',
-                        'index'      => 0,
-                        'url'        => './product',
-                        'permission' => 'product.index.index',
                     ),
                 ),
             ),

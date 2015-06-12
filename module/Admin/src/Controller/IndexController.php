@@ -42,7 +42,7 @@ class IndexController extends AbstractActionController
         $menu = $menuFilter($menu);
 
         return array(
-            'menu' => $menu
+            'menu' => array_values($menu)
         );
     }
 

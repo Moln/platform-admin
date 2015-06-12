@@ -1,0 +1,115 @@
+<div>
+    <fieldset>
+        <legend>菜单配置:</legend>
+
+    <div></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>选择数据源:</legend>
+
+        <div>
+            <select id="ui-config-sources">
+                <option> -- 选择数据源 -- </option>
+            </select>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>数据查询规则:</legend>
+
+        <fieldset>
+            <legend>普通模式:</legend>
+            查询表: <select id="ui-config-tables"></select>
+
+            <form id="ui-config-table-columns">
+            <table >
+                <thead>
+                <tr>
+                    <th>查询显示</th>
+                    <th>字段名</th>
+                    <th>别名</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            </form>
+        </fieldset>
+
+        <fieldset>
+            <legend>SQL模式:</legend>
+            SQL 语句:
+            <textarea style="width: 100%;" rows="10" class="k-textbox"></textarea>
+        </fieldset>
+    </fieldset>
+
+    <fieldset>
+        <legend>数据查询规则:</legend>
+
+        <table id="ui-config-columns">
+            <thead>
+            <tr>
+                <th>字段名</th>
+                <th>在列表显示</th>
+                <th>显示名称</th>
+                <th>显示模板</th>
+                <th>定宽</th>
+                <th>列表显示顺序</th>
+                <th>字段排序</th>
+                <th>过滤器</th>
+                <th>类型</th>
+            </tr>
+            </thead>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>明细视图:</legend>
+
+        <div></div>
+    </fieldset>
+</div>
+
+<script>
+    $(function () {
+        $.get(
+            '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'init'])?>',
+            function (r) {
+                var $selectSource = $("#ui-config-sources"),
+                    $selectTable  = $("#ui-config-tables");
+
+                for(var i = 0; i < r.data_source.length; i++) {
+                    var item = r.data_source[i];
+                    $selectSource.append('<option value="'+item.name+'" data-adapter="'+item.adapter+'">'+item.name+'</option>');
+                }
+
+                $selectSource.change(function () {
+                    if (!$selectSource.val()) {
+                        return ;
+                    }
+                    $.get(
+                        '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'get-tables'])?>/name/' + $selectSource.val(),
+                        function (r) {
+                            if (r.error) {
+                                alert(r.error);
+                                return ;
+                            }
+
+                            $.each(r.tables, function (table, columns) {
+                                var $option = '<option value="'+table+'">'+table+'</option>';
+                                $option.data('columns', columns);
+                                $selectTable.append($option);
+                            });
+                        }
+                    )
+                });
+
+                $selectTable.change(function () {
+
+                });
+            }
+        );
+    });
+</script>

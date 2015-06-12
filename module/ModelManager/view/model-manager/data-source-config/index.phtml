@@ -1,0 +1,51 @@
+<?php
+$adapters = array(
+    'Mysql'   => 'Mysql',
+    'Oracle'  => 'Oracle',
+    'IbmDB2'  => 'IbmDB2',
+    'Sqlite'  => 'Sqlite',
+    'Pgsql'   => 'Pgsql',
+    'Sqlsrv'  => 'Sqlsrv',
+    'Restful' => 'Restful',
+);
+?>
+<div>
+    <form id="modelManager-databaseConfig-index">
+        数据源名称: <input name="name" class="k-textbox"><br>
+        选择数据源: <?= $this->formSelect(new \Zend\Form\Element\Select('adapter', ['options' => $adapters])) ?><br>
+
+        数据源配置:
+        <div>
+            地址: <input required name="hostname" class="k-textbox"><br>
+            用户名: <input required name="username" class="k-textbox"><br>
+            密码: <input name="password" class="k-textbox"><br>
+            端口: <input name="port" class="k-textbox"><br>
+            数据库: <input required name="database" class="k-textbox"><br>
+            数据库编码: <input name="charset" class="k-textbox"><br>
+            <input type="submit" value="提交">
+        </div>
+    </form>
+
+    <div>
+        <table>
+
+        </table>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#modelManager-databaseConfig-index').submit(function (e) {
+            e.preventDefault();
+
+            $.post(
+                '<?=$this->url('model-manager/params', ['controller' => 'data-source-config', 'action' => 'add'])?>',
+                $(this).serialize(),
+                function () {
+                    alert('添加成功');
+                }
+            );
+
+        });
+    });
+</script>

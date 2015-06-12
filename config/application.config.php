@@ -3,7 +3,7 @@ return array(
     'modules' => [
         'ZfcRbac',
         'Moln\Admin',
-        'Product',
+        'Moln\ModelManager',
     ],
 
     'module_listener_options' => array(
