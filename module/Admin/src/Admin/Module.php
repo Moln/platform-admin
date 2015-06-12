@@ -3,7 +3,7 @@ namespace Admin;
 
 use Admin\Listener\Operation;
 use Gzfextra\Db\TableGateway\AbstractTableGateway;
-use Gzfextra\Mvc\GlobalModuleRouteListener;
+use Gzfextra\Router\GlobalModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;

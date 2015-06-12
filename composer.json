@@ -3,7 +3,7 @@
     "keywords": ["admin","zendframework2", "zf2"],
     "description": "Global management system.",
     "require": {
-        "zendframework/zendframework": "2.*",
+        "zendframework/zendframework": "2.4.*",
         "moln/gzfextra": "1.*"
     },
     "authors": [
