@@ -62,7 +62,9 @@ abstract class AbstractDbAdapterDataSource implements DataSourceInterface
     {
         $tables = [];
         foreach ($this->getMetadata()->getTables() as $table) {
-            $tables[$table->getName()] = $table->getColumns();
+            foreach ($table->getColumns() as $column) {
+                $tables[$table->getName()][] = $column->getName();
+            }
         }
 
         return $tables;

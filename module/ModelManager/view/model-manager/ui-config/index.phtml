@@ -1,104 +1,153 @@
 <div>
-    <fieldset>
-        <legend>菜单配置:</legend>
+    <form id="ui-config-form">
+        <fieldset>
+            <legend>菜单配置:</legend>
 
-    <div></div>
-    </fieldset>
-
-    <fieldset>
-        <legend>选择数据源:</legend>
-
-        <div>
-            <select id="ui-config-sources">
-                <option> -- 选择数据源 -- </option>
-            </select>
-        </div>
-    </fieldset>
-
-    <fieldset>
-        <legend>数据查询规则:</legend>
+            <div></div>
+        </fieldset>
 
         <fieldset>
-            <legend>普通模式:</legend>
-            查询表: <select id="ui-config-tables"></select>
+            <legend>选择数据源:</legend>
 
-            <form id="ui-config-table-columns">
-            <table >
+            <div>
+                <select name="source" id="ui-config-sources">
+                    <option> -- 选择数据源 --</option>
+                </select>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>数据查询规则:</legend>
+            <input type="radio" name="query_type" value="normal" checked> 普通模式 <br>
+            <input type="radio" name="query_type" value="sql"> SQL模式 <br>
+
+
+            <fieldset>
+                <legend>普通模式:</legend>
+                查询表: <select name="table" id="ui-config-tables">
+                    <option> -- 选择数据表 --</option>
+                </select>
+
+                <table id="ui-config-table-columns-config">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>字段名</th>
+                        <th>别名</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset>
+                <legend>SQL模式:</legend>
+                SQL 语句:
+                <textarea style="width: 100%;" rows="10" name="sql" class="k-textbox"></textarea>
+            </fieldset>
+
+            <button id="ui-config-columns-config-submit" type="button">确认</button>
+        </fieldset>
+
+        <fieldset>
+            <legend>数据查询规则:</legend>
+
+            <table id="ui-config-columns">
                 <thead>
                 <tr>
-                    <th>查询显示</th>
                     <th>字段名</th>
-                    <th>别名</th>
+                    <th>隐藏显示</th>
+                    <th>显示名称</th>
+                    <th>显示模板</th>
+                    <th>定宽</th>
+                    <th>列表显示顺序</th>
+                    <th>字段排序</th>
+                    <th>过滤器</th>
+                    <th>类型</th>
                 </tr>
                 </thead>
                 <tbody>
 
                 </tbody>
             </table>
-            </form>
         </fieldset>
 
         <fieldset>
-            <legend>SQL模式:</legend>
-            SQL 语句:
-            <textarea style="width: 100%;" rows="10" class="k-textbox"></textarea>
+            <legend>明细视图:</legend>
+
+            <div>
+                <input type="checkbox" name="detail_enable" value="1"> 开启详细模板 <br>
+                <input type="radio" name="detail_view_type" value="table"> 表格 <br>
+            <textarea name="detail_template" style="width: 100%;" rows="10" id="ui-config-detail-template"></textarea>
+            </div>
         </fieldset>
-    </fieldset>
 
-    <fieldset>
-        <legend>数据查询规则:</legend>
-
-        <table id="ui-config-columns">
-            <thead>
-            <tr>
-                <th>字段名</th>
-                <th>在列表显示</th>
-                <th>显示名称</th>
-                <th>显示模板</th>
-                <th>定宽</th>
-                <th>列表显示顺序</th>
-                <th>字段排序</th>
-                <th>过滤器</th>
-                <th>类型</th>
-            </tr>
-            </thead>
-        </table>
-    </fieldset>
-
-    <fieldset>
-        <legend>明细视图:</legend>
-
-        <div></div>
-    </fieldset>
+        <button type="submit">提交</button>
+    </form>
 </div>
 
+<script id="ui-config-column-config-template" type="text/kendo-ui-template">
+    <tr>
+        <td>#:item.column#</td>
+        <td><input type="checkbox" name="ui_hidden[#:item.column#]" value="1"></td>
+        <td><input type="text" name="ui_title[#:item.column#]" value=""></td>
+        <td><input type="text" name="ui_template[#:item.column#]" value=""></td>
+        <td><input type="number" step="10" name="ui_width[#:item.column#]" value=""></td>
+        <td><input type="number" name="ui_index[#:item.column#]" value=""></td>
+        <td><input type="checkbox" name="ui_sortable[#:item.column#]" value=""></td>
+        <td><input type="checkbox" name="ui_filterable[#:item.column#]" value=""></td>
+        <td><select name="ui_type[#:item.column#]">
+                <option value="string">String</option>
+                <option value="Int">Int</option>
+                <option value="datetime">DataTime</option>
+                <option value="Enum">Enum</option>
+            </select></td>
+    </tr>
+</script>
+
+<script id="ui-config-table-columns-row-template" type="text/kendo-ui-template">
+    <tr><td><input type="checkbox" checked name="column_enable[#:column#]" value="1"></td>
+    <td>#:column#</td>
+    <td><input type="text" data-default-name="#:column#" name="column_alias[#:column#]"></td>
+    </tr>
+</script>
 <script>
     $(function () {
+
+        var $selectSource = $("#ui-config-sources"),
+            $selectTable = $("#ui-config-tables"),
+            $columnsConfigBody = $('#ui-config-columns tbody'),
+            $tableColumnsConfigSubmit = $('#ui-config-columns-config-submit'),
+            $tableColumnsConfigBody = $('#ui-config-table-columns-config tbody'),
+            $detailTemplate = $('#ui-config-detail-template'),
+            $uiConfigForm = $('#ui-config-form');
+
         $.get(
             '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'init'])?>',
             function (r) {
-                var $selectSource = $("#ui-config-sources"),
-                    $selectTable  = $("#ui-config-tables");
 
-                for(var i = 0; i < r.data_source.length; i++) {
+                for (var i = 0; i < r.data_source.length; i++) {
                     var item = r.data_source[i];
-                    $selectSource.append('<option value="'+item.name+'" data-adapter="'+item.adapter+'">'+item.name+'</option>');
+                    $selectSource.append('<option value="' + item.name + '" data-adapter="' + item.adapter + '">' + item.name + '</option>');
                 }
 
+                //数据源选择
                 $selectSource.change(function () {
                     if (!$selectSource.val()) {
-                        return ;
+                        return;
                     }
                     $.get(
                         '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'get-tables'])?>/name/' + $selectSource.val(),
                         function (r) {
                             if (r.error) {
                                 alert(r.error);
-                                return ;
+                                return;
                             }
 
                             $.each(r.tables, function (table, columns) {
-                                var $option = '<option value="'+table+'">'+table+'</option>';
+                                var $option = $('<option value="' + table + '">' + table + '</option>');
                                 $option.data('columns', columns);
                                 $selectTable.append($option);
                             });
@@ -106,10 +155,65 @@
                     )
                 });
 
+                //数据表选择
                 $selectTable.change(function () {
+                    if (!$selectTable.val()) {
+                        return;
+                    }
+                    var columns = $('option:selected', this).data('columns');
 
+                    $tableColumnsConfigBody.empty();
+                    $.each(columns, function (i, column) {
+                        $tableColumnsConfigBody.append(
+                            kendo.template($('#ui-config-table-columns-row-template').html())({column:column})
+                        );
+                    });
                 });
             }
         );
+
+        //数据查询规则确认
+        $tableColumnsConfigSubmit.click(function (e) {
+            $columnsConfigBody.empty();
+
+            var columnNames = [];
+            $tableColumnsConfigBody.find('input[name^=column_alias]').each(function () {
+                if ($(this).parent().parent().find('input[name^=column_enable]').prop('checked')) {
+                    columnNames.push(this.value || $(this).data('default-name'));
+                }
+            });
+
+            $.each(columnNames, function (i, name) {
+                $columnsConfigBody.append(
+                    kendo.template($('#ui-config-column-config-template').html())(
+                        {item: {column: name}}
+                    )
+                );
+            });
+        });
+
+        $('input[name=detail_view_type][value=table]').click(function (e) {
+            var $tmpl = $('<table></table>');
+
+            $tableColumnsConfigBody.find('input[name^=column_alias]').each(function () {
+                if ($(this).parent().parent().find('input[name^=column_enable]').prop('checked')) {
+                    var val = this.value || $(this).data('default-name');
+                    $tmpl.append('<tr><td>' + val + '</td><td>#:' + val + '#</td></tr>');
+                }
+            });
+            $detailTemplate.val($tmpl.get(0).outerHTML);
+        });
+
+        $uiConfigForm.submit(function (e) {
+            e.preventDefault();
+
+            $.post(
+                './model-manager/ui-config/save',
+                $(this).serialize(),
+                function (r) {
+                    alert('添加成功');
+                }
+            );
+        });
     });
 </script>

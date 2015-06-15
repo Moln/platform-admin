@@ -110,6 +110,11 @@ return array(
             'primary' => 'id',
             'adapter' => 'Moln\ModelManager',
         ),
+        'ModelManager\UiConfigTable' => array(
+            'table'   => 'model_manager_ui_config',
+            'primary' => 'id',
+            'adapter' => 'Moln\ModelManager',
+        ),
     ),
 
     'service_manager' => array(

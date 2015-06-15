@@ -2,8 +2,11 @@
 
 namespace Moln\ModelManager\Controller;
 
+use Moln\ModelManager\InputFilter\UiConfigInputFilter;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 
 /**
@@ -32,14 +35,31 @@ class UiConfigController extends AbstractActionController
         );
     }
 
+    public function viewAction()
+    {
+        if (!$id = $this->params('id')) {
+            $this->notFoundAction();
+        }
+
+        $table = $this->getUiConfigTable();
+
+        $config = $table->loadConfig($id);
+
+        return new ViewModel(['id' => $id, 'config' => $config]);
+    }
+
 
     public function getTablesAction()
     {
+        return json_decode(
+            '{"tables":{"chargelog":["id","account","pt","dt","pid"],"player":["account","pid","puid","type","username","passwd","idcard","blocktime","state","lastlogintime","lastlogouttime","errors","createtime","monthloginnum","phone"],"user":["id","fullName","email"]},"error":null}',
+            1
+        );
 
         /** @var \Moln\ModelManager\DataSource\DataSourceManager $dataSourceManager */
-        $dataSourceManager     = $this->get('Moln\ModelManager\DataSourceManager');
+        $dataSourceManager = $this->get('Moln\ModelManager\DataSourceManager');
         $dataSourceConfigTable = $this->get('ModelManager\DataSourceConfigTable');
-        $dataSourceConfig      = $dataSourceConfigTable->select(['name' => $this->params('name')])->current();
+        $dataSourceConfig = $dataSourceConfigTable->select(['name' => $this->params('name')])->current();
 
         $error = null;
         try {
@@ -59,6 +79,32 @@ class UiConfigController extends AbstractActionController
             'tables' => $tables,
             'error'  => $error
         );
+    }
+
+    public function saveAction()
+    {
+        $filters = new UiConfigInputFilter();
+        $filters->setData($_REQUEST);
+
+        if (!$filters->isValid()) {
+            return ['errors' => $filters->getMessages()];
+        }
+
+        $data = $filters->getValues();
+
+        $table = $this->get('ModelManager\UiConfigTable');
+
+        $table->insert($data);
+
+        return new JsonModel(['code' => 1]);
+    }
+
+    /**
+     * @return \Moln\ModelManager\Model\UiConfigTable
+     */
+    public function getUiConfigTable()
+    {
+        return $this->get('ModelManager\UiConfigTable');
     }
 
 }
