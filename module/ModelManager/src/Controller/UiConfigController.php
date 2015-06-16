@@ -35,19 +35,23 @@ class UiConfigController extends AbstractActionController
         );
     }
 
-    public function viewAction()
+    public function readAction()
     {
-        if (!$id = $this->params('id')) {
-            $this->notFoundAction();
-        }
+        $table   = $this->getUiConfigTable();
 
-        $table = $this->getUiConfigTable();
+        /** @var \Zend\Paginator\Paginator $paginator */
+        $paginator = $table->fetchPaginator(
+            function (Select $select) {
+                $select->columns(['id', 'name', 'source', 'table']);
+            }
+        );
+        $paginator->setCurrentPageNumber($this->getRequest()->getPost('page', 1));
 
-        $config = $table->loadConfig($id);
-
-        return new ViewModel(['id' => $id, 'config' => $config]);
+        return [
+            'total' => $paginator->getTotalItemCount(),
+            'data'  => $paginator->getCurrentItems()->toArray(),
+        ];
     }
-
 
     public function getTablesAction()
     {
@@ -57,9 +61,9 @@ class UiConfigController extends AbstractActionController
         );
 
         /** @var \Moln\ModelManager\DataSource\DataSourceManager $dataSourceManager */
-        $dataSourceManager = $this->get('Moln\ModelManager\DataSourceManager');
+        $dataSourceManager     = $this->get('Moln\ModelManager\DataSourceManager');
         $dataSourceConfigTable = $this->get('ModelManager\DataSourceConfigTable');
-        $dataSourceConfig = $dataSourceConfigTable->select(['name' => $this->params('name')])->current();
+        $dataSourceConfig      = $dataSourceConfigTable->select(['name' => $this->params('name')])->current();
 
         $error = null;
         try {

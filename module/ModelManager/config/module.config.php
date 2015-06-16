@@ -56,22 +56,33 @@ return array(
                 'text'     => '模型管理',
                 'expanded' => true,
                 'items'    => array(
-                    0 => array(
+                    array(
                         'text'  => '数据表模型',
                         'index' => 0,
                         'url'   => './ui/model-manager/data-source-config/index',
 //                        'permission' => 'admin.user.index',
                     ),
-                    1 => array(
-                        'text'  => '菜单&UI配置',
+                    array(
+                        'text'  => '模型UI配置',
                         'index' => 1,
                         'url'   => './ui/model-manager/ui-config/index',
 //                        'permission' => 'admin.role.index',
                     ),
-                    2 => array(
+                    array(
+                        'text'  => '模型UI列表',
+                        'index' => 1,
+                        'url'   => './ui/model-manager/ui-config/list',
+//                        'permission' => 'admin.role.index',
+                    ),
+                    array(
                         'text'  => '权限管理',
                         'index' => 2,
                         'url'   => './ui/model-manager/permission/index',
+//                        'permission' => 'admin.permission.index',
+                    ),
+                    array(
+                        'text'  => '查询测试',
+                        'url'   => './model-manager/source/view/id/1',
 //                        'permission' => 'admin.permission.index',
                     ),
                 ),
@@ -112,6 +123,7 @@ return array(
         ),
         'ModelManager\UiConfigTable' => array(
             'table'   => 'model_manager_ui_config',
+            'invokable' => 'Moln\ModelManager\Model\UiConfigTable',
             'primary' => 'id',
             'adapter' => 'Moln\ModelManager',
         ),

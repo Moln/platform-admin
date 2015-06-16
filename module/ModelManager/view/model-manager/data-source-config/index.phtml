@@ -11,18 +11,24 @@ $adapters = array(
 ?>
 <div>
     <form id="modelManager-databaseConfig-index">
-        数据源名称: <input name="name" class="k-textbox"><br>
+        数据源名称: <input required name="name" class="k-textbox"><br>
         选择数据源: <?= $this->formSelect(new \Zend\Form\Element\Select('adapter', ['options' => $adapters])) ?><br>
 
         数据源配置:
         <div>
-            地址: <input required name="hostname" class="k-textbox"><br>
-            用户名: <input required name="username" class="k-textbox"><br>
-            密码: <input name="password" class="k-textbox"><br>
-            端口: <input name="port" class="k-textbox"><br>
-            数据库: <input required name="database" class="k-textbox"><br>
-            数据库编码: <input name="charset" class="k-textbox"><br>
-            <input type="submit" value="提交">
+            <div role="modelManager-dataSourceConfig-db">
+                地址: <input required name="hostname" class="k-textbox"><br>
+                用户名: <input required name="username" class="k-textbox"><br>
+                密码: <input name="password" class="k-textbox"><br>
+                端口: <input name="port" class="k-textbox"><br>
+                数据库: <input required name="database" class="k-textbox"><br>
+                数据库编码: <input name="charset" class="k-textbox"><br>
+                <input type="submit" value="提交">
+            </div>
+            <div role="modelManager-dataSourceConfig-restful">
+                地址: <input required name="url" type="url" class="k-textbox"><br>
+                <input type="submit" value="提交">
+            </div>
         </div>
     </form>
 
@@ -35,7 +41,18 @@ $adapters = array(
 
 <script>
     $(function () {
-        $('#modelManager-databaseConfig-index').submit(function (e) {
+        var $o = $('#modelManager-databaseConfig-index'),
+            $divForm = $o.find('>div'),
+            $divRestful = $o.find('div[role=modelManager-dataSourceConfig-restful]'),
+            $divDb = $o.find('div[role=modelManager-dataSourceConfig-db]');
+        $o.find('select[name=adapter]').change(function () {
+            if (this.value == 'Restful') {
+                $divForm.empty().append($divRestful);
+            } else {
+                $divForm.empty().append($divDb);
+            }
+        }).change();
+        $o.submit(function (e) {
             e.preventDefault();
 
             $.post(

@@ -52,7 +52,20 @@ class UiConfigInputFilter extends InputFilter
             //
             [
                 'name' => 'ui_hidden',
-                'filters' => [$jsonEncodeFilter],
+                'filters' => [
+                    [
+                        'name' => 'callback',
+                        'options' => [
+                            'callback' => function ($value) {
+                                foreach ($value as $key => &$val) {
+                                    $val = (bool) $val;
+                                }
+
+                                return json_encode($value);
+                            }
+                        ]
+                    ]
+                ],
             ],
             [
                 'name' => 'ui_title',

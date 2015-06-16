@@ -3,7 +3,7 @@
 <script>
     $(function () {
         var config = <?=json_encode($config)?>;
-        var fieldsConfig = {}, columnsConfig = [];
+        var fieldsConfig = {}, columnsConfig = [], gridSettings = {};
 
         $.each(config.column_alias, function (name, alias) {
             var column = alias || name;
@@ -22,26 +22,27 @@
             if (config.ui_width[column]) {
                 columnConfig.width = config.ui_width[column];
             }
-            columnConfig.sortable = config.ui_sortable && config.ui_sortable[column];
-            columnConfig.filterable = config.ui_filterable && config.ui_filterable[column];
+            columnConfig.sortable = Boolean(config.ui_sortable && config.ui_sortable[column]);
+            columnConfig.filterable = Boolean(config.ui_filterable && config.ui_filterable[column]);
 
             columnsConfig.push(columnConfig);
         });
 
         if (config.detail_enable) {
-            columnsConfig.detailTemplate = config.detail_template;
+            gridSettings.detailTemplate = config.detail_template;
         }
 
         var $grid = $('#model-manager-model-<?=$id?>'),
-            serviceUrl = "./admin/user/",
+            serviceUrl = "./model-manager/source/",
             dataSource = new kendo.data.DataSource({
                 transport: {
-                    read: serviceUrl + "read",
-                    update: serviceUrl + "save",
-                    destroy: serviceUrl + "delete",
-                    create: serviceUrl + "save"
+                    read: serviceUrl + "read/id/<?=$id?>",
+                    update: serviceUrl + "save/id/<?=$id?>",
+                    destroy: serviceUrl + "delete/id/<?=$id?>",
+                    create: serviceUrl + "save/id/<?=$id?>"
                 },
                 schema: {
+                    id: 'id',
                     model: {
                         fields: fieldsConfig
                     },
@@ -66,23 +67,9 @@
             });
 
 
-        $grid.kendoGrid({
+        $grid.kendoGrid($.extend({
             dataSource: dataSource,
             pageable: true,
-//            toolbar: [
-//                {'name': 'create', 'text': '增加'},
-//                {
-//                    name: "用户角色分配",
-//                    click: function (e) {
-//                        var tr = $(e.target).closest("tr");
-//                        var data = this.dataItem(tr);
-//                        Platform.ui.newWindow({
-//                            title: data.account + '::用户角色分配::用户管理',
-//                            content: './admin/user/assign/id/' + data.user_id
-//                        });
-//                    }
-//                }
-//            ],
             filterable: {
                 extra: false,
                 messages: {
@@ -116,24 +103,6 @@
             selectable: true,
 //            editable: "popup",
             sortable: true
-
-//            cancel: function (e) { console.log('cancel', arguments); },
-//            change: function (e) { console.log('change', arguments); },
-//            columnHide: function (e) { console.log('columnHide', arguments); },
-//            columnMenuInit: function (e) { console.log('columnMenuInit', arguments); },
-//            columnReorder: function (e) { console.log('columnReorder', arguments); },
-//            columnResize: function (e) { console.log('columnResize', arguments); },
-//            columnShow: function (e) { console.log('columnShow', arguments); },
-//            dataBinding: function (e) { console.log('dataBinding', arguments); },
-//            dataBound: function (e) { console.log('dataBound', arguments); },
-//            detailCollapse: function (e) { console.log('detailCollapse', arguments); },
-//            detailExpand: function (e) { console.log('detailExpand', arguments); },
-//            detailInit: function (e) { console.log('detailInit', arguments); },
-//            edit: function (e) { console.log('edit', arguments); },
-//            filterMenuInit: function (e) { console.log('filterMenuInit', arguments); },
-//            remove: function (e) { console.log('remove', arguments); },
-//            save: function (e) { console.log('save', arguments); },
-//            saveChanges: function (e) { console.log('saveChanges', arguments); },
-        });
+        }, gridSettings));
     });
 </script>

@@ -11,4 +11,12 @@ interface DataSourceInterface {
      * @return array
      */
     public function getTables();
+
+
+    /**
+     * @return \Zend\Paginator\Paginator
+     */
+    public function read();
+
+    public function setDataConfig(array $config);
 }

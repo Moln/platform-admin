@@ -19,6 +19,11 @@ class UiConfigTable extends TableGateway
             throw new \RuntimeException('Not found config id: ' . $id);
         }
 
+        return $this->parseConfig($config);
+    }
+
+    public function parseConfig($config)
+    {
         $jsonColumns = [
             'column_enable',
             'column_alias',
@@ -37,5 +42,6 @@ class UiConfigTable extends TableGateway
         }
 
         return $config;
+
     }
 }

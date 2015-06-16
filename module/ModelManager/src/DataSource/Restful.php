@@ -22,4 +22,17 @@ class Restful implements DataSourceInterface
     {
         // TODO: Implement getTables() method.
     }
+
+    /**
+     * @return \Zend\Paginator\Paginator
+     */
+    public function read()
+    {
+        // TODO: Implement read() method.
+    }
+
+    public function setDataConfig(array $config)
+    {
+        // TODO: Implement setDataConfig() method.
+    }
 }

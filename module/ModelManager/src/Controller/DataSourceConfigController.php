@@ -2,7 +2,9 @@
 
 namespace Moln\ModelManager\Controller;
 
-use Moln\ModelManager\InputFilter\DataSourceConfigInputFilter;
+use Moln\ModelManager\InputFilter\DataSourceConfig\BaseConfigInputFilter;
+use Moln\ModelManager\InputFilter\DataSourceConfig\DbInputFilter;
+use Moln\ModelManager\InputFilter\DataSourceConfig\RestfulInputFilter;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -20,15 +22,24 @@ class DataSourceConfigController extends AbstractActionController
     public function addAction()
     {
 
-        $filters = new DataSourceConfigInputFilter();
+        $baseConfigFilters = new BaseConfigInputFilter();
 
-        $filters->setData($_REQUEST);
+        $baseConfigFilters->setData($_REQUEST);
 
-        if (!$filters->isValid()) {
-            return array('errors' => $filters->getMessages());
+        if (!$baseConfigFilters->isValid()) {
+            return array('errors' => $baseConfigFilters->getMessages());
         }
 
-        $data   = $filters->getValues();
+        $data   = $baseConfigFilters->getValues();
+
+        $filter2 = $data['adapter'] == 'Restful' ? new RestfulInputFilter() : new DbInputFilter();
+        $filter2->setData($_REQUEST);
+        if (!$filter2->isValid()) {
+            return array('errors' => $filter2->getMessages());
+        }
+
+        $data += $filter2->getValues();
+
         $table  = $this->get('ModelManager\DataSourceConfigTable');
         $config = array(
             'name'    => $data['name'],

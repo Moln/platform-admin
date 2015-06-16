@@ -18,37 +18,48 @@
 
         <fieldset>
             <legend>数据查询规则:</legend>
-            <input type="radio" name="query_type" value="normal" checked> 普通模式 <br>
-            <input type="radio" name="query_type" value="sql"> SQL模式 <br>
+            <div data-type="db">
+                <input type="radio" name="query_type" value="normal" checked> 普通模式 <br>
+                <input type="radio" name="query_type" value="sql"> SQL模式 <br>
 
 
-            <fieldset>
-                <legend>普通模式:</legend>
-                查询表: <select name="table" id="ui-config-tables">
-                    <option> -- 选择数据表 --</option>
-                </select>
+                <fieldset>
+                    <legend>普通模式:</legend>
+                    查询表: <select name="table" id="ui-config-tables">
+                        <option> -- 选择数据表 --</option>
+                    </select>
 
-                <table id="ui-config-table-columns-config">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>字段名</th>
-                        <th>别名</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                    <table id="ui-config-table-columns-config">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>字段名</th>
+                            <th>别名</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
-            </fieldset>
+                        </tbody>
+                    </table>
+                </fieldset>
 
-            <fieldset>
-                <legend>SQL模式:</legend>
-                SQL 语句:
-                <textarea style="width: 100%;" rows="10" name="sql" class="k-textbox"></textarea>
-            </fieldset>
+                <fieldset>
+                    <legend>SQL模式:</legend>
+                    SQL 语句:
+                    <textarea style="width: 100%;" rows="10" name="sql" class="k-textbox"></textarea>
+                </fieldset>
 
-            <button id="ui-config-columns-config-submit" type="button">确认</button>
+                <button id="ui-config-columns-config-submit" type="button">确认</button>
+            </div>
+
+            <div data-type="restful">
+                <button id="ui-config-restful-add" type="button">添加</button>
+                <div>
+                    <div><input type="text" name="restful_fields[]"><button>删除</button></div>
+                </div>
+
+                <button id="ui-config-restful-submit" type="button">确认</button>
+            </div>
         </fieldset>
 
         <fieldset>
@@ -80,7 +91,8 @@
             <div>
                 <input type="checkbox" name="detail_enable" value="1"> 开启详细模板 <br>
                 <input type="radio" name="detail_view_type" value="table"> 表格 <br>
-            <textarea name="detail_template" style="width: 100%;" rows="10" id="ui-config-detail-template"></textarea>
+                <textarea name="detail_template" style="width: 100%;" rows="10"
+                          id="ui-config-detail-template"></textarea>
             </div>
         </fieldset>
 
@@ -108,9 +120,10 @@
 </script>
 
 <script id="ui-config-table-columns-row-template" type="text/kendo-ui-template">
-    <tr><td><input type="checkbox" checked name="column_enable[#:column#]" value="1"></td>
-    <td>#:column#</td>
-    <td><input type="text" data-default-name="#:column#" name="column_alias[#:column#]"></td>
+    <tr>
+        <td><input type="checkbox" checked name="column_enable[#:column#]" value="1"></td>
+        <td>#:column#</td>
+        <td><input type="text" data-default-name="#:column#" name="column_alias[#:column#]"></td>
     </tr>
 </script>
 <script>
@@ -122,7 +135,12 @@
             $tableColumnsConfigSubmit = $('#ui-config-columns-config-submit'),
             $tableColumnsConfigBody = $('#ui-config-table-columns-config tbody'),
             $detailTemplate = $('#ui-config-detail-template'),
-            $uiConfigForm = $('#ui-config-form');
+            $uiConfigForm = $('#ui-config-form'),
+            $restfulAddButton = $('#ui-config-restful-add'),
+            $restfulAddContext = $('#ui-config-restful-add').next(),
+            $restfulFieldObj = $restfulAddContext.children('div'),
+            $restfulSubmit = $('#ui-config-restful-submit')
+            ;
 
         $.get(
             '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'init'])?>',
@@ -165,7 +183,7 @@
                     $tableColumnsConfigBody.empty();
                     $.each(columns, function (i, column) {
                         $tableColumnsConfigBody.append(
-                            kendo.template($('#ui-config-table-columns-row-template').html())({column:column})
+                            kendo.template($('#ui-config-table-columns-row-template').html())({column: column})
                         );
                     });
                 });
@@ -214,6 +232,25 @@
                     alert('添加成功');
                 }
             );
+        });
+
+        $restfulAddContext.on('click', 'button', function () {
+            $(this).parent().remove();
+        });
+        $restfulAddButton.click(function () {
+            $restfulAddContext.append($restfulFieldObj.clone());
+        });
+        $restfulSubmit.click(function () {
+
+            $restfulAddContext.find('input').each(function () {
+                if (this.value) {
+                    $columnsConfigBody.append(
+                        kendo.template($('#ui-config-column-config-template').html())(
+                            {item: {column: this.value}}
+                        )
+                    );
+                }
+            });
         });
     });
 </script>
