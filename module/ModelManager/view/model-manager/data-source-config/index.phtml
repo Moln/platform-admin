@@ -17,16 +17,23 @@ $adapters = array(
         数据源配置:
         <div>
             <div role="modelManager-dataSourceConfig-db">
-                地址: <input required name="hostname" class="k-textbox"><br>
-                用户名: <input required name="username" class="k-textbox"><br>
-                密码: <input name="password" class="k-textbox"><br>
-                端口: <input name="port" class="k-textbox"><br>
-                数据库: <input required name="database" class="k-textbox"><br>
-                数据库编码: <input name="charset" class="k-textbox"><br>
+                地址: <input required name="driver_options[hostname]" class="k-textbox"><br>
+                用户名: <input required name="driver_options[username]" class="k-textbox"><br>
+                密码: <input name="driver_options[password]" class="k-textbox"><br>
+                端口: <input name="driver_options[port]" class="k-textbox"><br>
+                数据库: <input required name="driver_options[database]" class="k-textbox"><br>
+                数据库编码: <input name="driver_options[charset]" class="k-textbox"><br>
                 <input type="submit" value="提交">
             </div>
             <div role="modelManager-dataSourceConfig-restful">
                 地址: <input required name="url" type="url" class="k-textbox"><br>
+                数据字段:
+                <div data-type="restful">
+                    <button id="dataSourceConfig-restful-add" type="button">添加</button>
+                    <div>
+                        <div><input type="text" name="fields[]"><button type="button">删除</button></div>
+                    </div>
+                </div>
                 <input type="submit" value="提交">
             </div>
         </div>
@@ -41,15 +48,28 @@ $adapters = array(
 
 <script>
     $(function () {
+        var $restfulAddButton = $('#dataSourceConfig-restful-add'),
+            $restfulAddContext = $('#dataSourceConfig-restful-add').next(),
+            $restfulFieldObj = $restfulAddContext.children('div');
+
+        $restfulAddContext.on('click', 'button', function () {
+            $(this).parent().remove();
+        });
+        $restfulAddButton.click(function () {
+            $restfulAddContext.append($restfulFieldObj.clone());
+        });
+
         var $o = $('#modelManager-databaseConfig-index'),
             $divForm = $o.find('>div'),
             $divRestful = $o.find('div[role=modelManager-dataSourceConfig-restful]'),
             $divDb = $o.find('div[role=modelManager-dataSourceConfig-db]');
         $o.find('select[name=adapter]').change(function () {
             if (this.value == 'Restful') {
-                $divForm.empty().append($divRestful);
+                $divDb.detach();
+                $divRestful.appendTo($divForm);
             } else {
-                $divForm.empty().append($divDb);
+                $divRestful.detach();
+                $divDb.appendTo($divForm);
             }
         }).change();
         $o.submit(function (e) {
@@ -62,7 +82,7 @@ $adapters = array(
                     alert('添加成功');
                 }
             );
-
         });
+
     });
 </script>

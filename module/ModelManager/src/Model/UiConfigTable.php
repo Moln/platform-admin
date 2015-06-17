@@ -25,8 +25,7 @@ class UiConfigTable extends TableGateway
     public function parseConfig($config)
     {
         $jsonColumns = [
-            'column_enable',
-            'column_alias',
+            'source_config',
             'ui_hidden',
             'ui_title',
             'ui_template',

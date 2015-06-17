@@ -27,27 +27,15 @@ class UiConfigInputFilter extends InputFilter
         $inputs = [
             //
             [
+                'name' => 'name',
+            ],
+            [
                 'name' => 'source',
             ],
             [
-                'name' => 'table',
+                'name' => 'source_adapter',
             ],
             //
-            [
-                'name' => 'query_type',
-            ],
-            [
-                'name' => 'column_enable',
-                'filters' => [$jsonEncodeFilter],
-            ],
-            [
-                'name' => 'column_alias',
-                'filters' => [$jsonEncodeFilter],
-            ],
-            [
-                'required' => false,
-                'name' => 'sql',
-            ],
 
             //
             [
@@ -98,8 +86,10 @@ class UiConfigInputFilter extends InputFilter
             //
             [
                 'name' => 'detail_enable',
+                'fallback_value' => false,
             ],
             [
+                'required' => false,
                 'name' => 'detail_template',
             ],
         ];

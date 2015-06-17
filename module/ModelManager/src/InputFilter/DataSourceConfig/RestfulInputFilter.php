@@ -2,6 +2,7 @@
 
 namespace Moln\ModelManager\InputFilter\DataSourceConfig;
 use Zend\InputFilter\InputFilter;
+use Zend\InputFilter\ArrayInput;
 
 
 /**
@@ -19,6 +20,15 @@ class RestfulInputFilter extends InputFilter
         $this->add(
             [
                 'name'    => 'url',
+                'filters' => [
+                    ['name' => 'StringTrim']
+                ],
+            ]
+        );
+        $this->add(
+            [
+                'type'    => 'Zend\InputFilter\ArrayInput',
+                'name'    => 'fields',
                 'filters' => [
                     ['name' => 'StringTrim']
                 ],

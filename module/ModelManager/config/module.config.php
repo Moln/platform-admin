@@ -81,8 +81,13 @@ return array(
 //                        'permission' => 'admin.permission.index',
                     ),
                     array(
-                        'text'  => '查询测试',
-                        'url'   => './model-manager/source/view/id/1',
+                        'text'  => '查询测试4',
+                        'url'   => './model-manager/source/view/id/4',
+//                        'permission' => 'admin.permission.index',
+                    ),
+                    array(
+                        'text'  => '查询测试2',
+                        'url'   => './model-manager/source/view/id/2',
 //                        'permission' => 'admin.permission.index',
                     ),
                 ),

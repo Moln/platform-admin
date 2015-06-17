@@ -2,11 +2,11 @@
 
 namespace Moln\ModelManager\Controller;
 
+use Moln\ModelManager\InputFilter\UiConfig\DbUiConfigInputFilter;
 use Moln\ModelManager\InputFilter\UiConfigInputFilter;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
 
 
 /**
@@ -42,7 +42,7 @@ class UiConfigController extends AbstractActionController
         /** @var \Zend\Paginator\Paginator $paginator */
         $paginator = $table->fetchPaginator(
             function (Select $select) {
-                $select->columns(['id', 'name', 'source', 'table']);
+                $select->columns(['id', 'name', 'source']);
             }
         );
         $paginator->setCurrentPageNumber($this->getRequest()->getPost('page', 1));
@@ -55,11 +55,7 @@ class UiConfigController extends AbstractActionController
 
     public function getTablesAction()
     {
-        return json_decode(
-            '{"tables":{"chargelog":["id","account","pt","dt","pid"],"player":["account","pid","puid","type","username","passwd","idcard","blocktime","state","lastlogintime","lastlogouttime","errors","createtime","monthloginnum","phone"],"user":["id","fullName","email"]},"error":null}',
-            1
-        );
-
+        return json_decode('{"tables":{"chargelog":["id","account","pt","dt","pid"],"player":["account","pid","puid","type","username","passwd","idcard","blocktime","state","lastlogintime","lastlogouttime","errors","createtime","monthloginnum","phone"],"user":["id","fullName","email"]},"error":null}', 1);
         /** @var \Moln\ModelManager\DataSource\DataSourceManager $dataSourceManager */
         $dataSourceManager     = $this->get('Moln\ModelManager\DataSourceManager');
         $dataSourceConfigTable = $this->get('ModelManager\DataSourceConfigTable');
@@ -96,8 +92,18 @@ class UiConfigController extends AbstractActionController
 
         $data = $filters->getValues();
 
-        $table = $this->get('ModelManager\UiConfigTable');
+        if ($data['source_adapter'] != 'Restful') {
+            $filters2 = new DbUiConfigInputFilter();
+            $filters2->setData($this->getRequest()->getPost('source_config'));
+            if (!$filters2->isValid()) {
+                return ['errors' => $filters2->getMessages()];
+            }
 
+            $data += ['source_config' => json_encode($filters2->getValues())];
+        }
+        unset($data['source_adapter']);
+
+        $table = $this->get('ModelManager\UiConfigTable');
         $table->insert($data);
 
         return new JsonModel(['code' => 1]);

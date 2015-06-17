@@ -2,19 +2,15 @@
 
 namespace Moln\ModelManager\DataSource;
 use Gzfextra\Stdlib\OptionsTrait;
-use Zend\Http\ClientStatic;
-use Zend\Paginator\Paginator;
-use Zend\Paginator\Adapter\Callback;
 
 
 /**
- * Class Restful
- *
+ * Class JsonRpc
  * @package Moln\ModelManager\DataSource
- * @author  Xiemaomao
+ * @author Xiemaomao
  * @version $Id$
  */
-class Restful implements DataSourceInterface
+class JsonRpc implements DataSourceInterface
 {
     use OptionsTrait;
 
@@ -40,26 +36,6 @@ class Restful implements DataSourceInterface
      */
     public function read()
     {
-        $results = [];
-        $getResults = function ($offset = null, $itemCountPerPage = null) use (&$results) {
-            if (empty($results)) {
-                $client = ClientStatic::get($this->getUrl(), ['offset' => $offset, 'limit' => $itemCountPerPage]);
-
-                $results = json_decode($client->getBody(), true);
-            }
-
-            return $results;
-        };
-
-        $adapter = new Callback(
-            function ($offset, $itemCountPerPage) use ($getResults) {
-                return $getResults($offset, $itemCountPerPage)['data'];
-            }, function () use ($getResults) {
-                return $getResults()['total'];
-            }
-        );
-
-        return new Paginator($adapter);
     }
 
     public function setDataConfig(array $config)

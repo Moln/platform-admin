@@ -5,7 +5,7 @@
         var config = <?=json_encode($config)?>;
         var fieldsConfig = {}, columnsConfig = [], gridSettings = {};
 
-        $.each(config.column_alias, function (name, alias) {
+        config.column_alias && $.each(config.column_alias, function (name, alias) {
             var column = alias || name;
             fieldsConfig[column] = {type: config.ui_type[column]};
         });

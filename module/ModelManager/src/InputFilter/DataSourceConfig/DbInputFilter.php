@@ -15,6 +15,7 @@ class DbInputFilter extends InputFilter
 
     public function __construct()
     {
+        $inputFilter = new InputFilter();
 
         $this->add(
             [
@@ -46,7 +47,7 @@ class DbInputFilter extends InputFilter
                 'required' => false,
                 'name'    => 'port',
                 'filters' => [
-                    ['name' => 'StringTrim']
+                    ['name' => 'StringTrim'],
                 ],
             ]
         );

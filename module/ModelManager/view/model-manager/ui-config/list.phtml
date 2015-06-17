@@ -17,7 +17,6 @@
                         fields: {
                             id: {type: "number", editable: false, nullable: true },
                             source: {editable: false, nullable: true },
-                            table: {validation: { required: true} },
                             name: { validation: { required: true} }
                         }
                     },
@@ -77,7 +76,6 @@
             columns: [
                 { field: "name",  title: "名称", width: "150px"  },
                 { field: "source", title: "数据源", width: "200px" },
-                { field: "table", title: "数据表", width: "200px" },
                 { template:'<a href="./model-manager/source/view/id/#:id#" target="_blank">./model-manager/source/view/id/#:id#</a>', title: "查看链接"  },
                 { command: [
                     {'name': 'edit', 'text': '编辑'},

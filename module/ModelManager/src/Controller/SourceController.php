@@ -47,7 +47,7 @@ class SourceController extends AbstractActionController
                 (array)json_decode($dataSourceConfig['adapter_options'], true)
             );
 
-            $dataSource->setDataConfig((array)$config);
+            $dataSource->setDataConfig((array)$config['source_config']);
             $paginator = $dataSource->read($this->ui()->filter());
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];

@@ -1,9 +1,8 @@
 <div>
     <form id="ui-config-form">
         <fieldset>
-            <legend>菜单配置:</legend>
-
-            <div></div>
+            <legend>模型名称:</legend>
+            <input name="name" type="text">
         </fieldset>
 
         <fieldset>
@@ -11,22 +10,22 @@
 
             <div>
                 <select name="source" id="ui-config-sources">
-                    <option> -- 选择数据源 --</option>
+                    <option value=""> -- 选择数据源 --</option>
                 </select>
+                <input name="source_adapter" value="" type="hidden">
             </div>
         </fieldset>
 
         <fieldset>
             <legend>数据查询规则:</legend>
             <div data-type="db">
-                <input type="radio" name="query_type" value="normal" checked> 普通模式 <br>
-                <input type="radio" name="query_type" value="sql"> SQL模式 <br>
-
+                <input type="radio" name="source_config[query_type]" value="normal" checked> 普通模式 <br>
+                <input type="radio" name="source_config[query_type]" value="sql"> SQL模式 <br>
 
                 <fieldset>
                     <legend>普通模式:</legend>
-                    查询表: <select name="table" id="ui-config-tables">
-                        <option> -- 选择数据表 --</option>
+                    查询表: <select name="source_config[table]" id="ui-config-tables">
+                        <option value=""> -- 选择数据表 --</option>
                     </select>
 
                     <table id="ui-config-table-columns-config">
@@ -53,12 +52,6 @@
             </div>
 
             <div data-type="restful">
-                <button id="ui-config-restful-add" type="button">添加</button>
-                <div>
-                    <div><input type="text" name="restful_fields[]"><button>删除</button></div>
-                </div>
-
-                <button id="ui-config-restful-submit" type="button">确认</button>
             </div>
         </fieldset>
 
@@ -121,26 +114,24 @@
 
 <script id="ui-config-table-columns-row-template" type="text/kendo-ui-template">
     <tr>
-        <td><input type="checkbox" checked name="column_enable[#:column#]" value="1"></td>
+        <td><input type="checkbox" checked name="source_config[column_enable][#:column#]" value="1"></td>
         <td>#:column#</td>
-        <td><input type="text" data-default-name="#:column#" name="column_alias[#:column#]"></td>
+        <td><input type="text" data-default-name="#:column#" name="source_config[column_alias][#:column#]"></td>
     </tr>
 </script>
 <script>
     $(function () {
 
-        var $selectSource = $("#ui-config-sources"),
+         var $selectSource = $("#ui-config-sources"),
             $selectTable = $("#ui-config-tables"),
             $columnsConfigBody = $('#ui-config-columns tbody'),
             $tableColumnsConfigSubmit = $('#ui-config-columns-config-submit'),
             $tableColumnsConfigBody = $('#ui-config-table-columns-config tbody'),
             $detailTemplate = $('#ui-config-detail-template'),
             $uiConfigForm = $('#ui-config-form'),
-            $restfulAddButton = $('#ui-config-restful-add'),
-            $restfulAddContext = $('#ui-config-restful-add').next(),
-            $restfulFieldObj = $restfulAddContext.children('div'),
-            $restfulSubmit = $('#ui-config-restful-submit')
-            ;
+            $typeDb = $('div[data-type=db]'),
+            $queryRuleContext = $typeDb.parent(),
+            $typeRestful = $('div[data-type=restful]');
 
         $.get(
             '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'init'])?>',
@@ -156,21 +147,52 @@
                     if (!$selectSource.val()) {
                         return;
                     }
-                    $.get(
-                        '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'get-tables'])?>/name/' + $selectSource.val(),
-                        function (r) {
-                            if (r.error) {
-                                alert(r.error);
-                                return;
-                            }
 
-                            $.each(r.tables, function (table, columns) {
-                                var $option = $('<option value="' + table + '">' + table + '</option>');
-                                $option.data('columns', columns);
-                                $selectTable.append($option);
-                            });
-                        }
-                    )
+                    var adapter = $('option:selected', this).data('adapter');
+                    $selectSource.next('input').val(adapter)
+                    $columnsConfigBody.empty();
+
+                    if (adapter == 'Restful') {
+                        $typeDb.detach();
+                        $typeRestful.appendTo($queryRuleContext);
+
+                        $.get(
+                            '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'get-tables'])?>/name/' + $selectSource.val(),
+                            function (r) {
+                                if (r.error) {
+                                    alert(r.error);
+                                    return;
+                                }
+
+                                $.each(r.tables.restful, function (i, name) {
+                                    $columnsConfigBody.append(
+                                        kendo.template($('#ui-config-column-config-template').html())(
+                                            {item: {column: name}}
+                                        )
+                                    );
+                                });
+                            }
+                        );
+
+                    } else {
+                        $typeRestful.detach();
+                        $typeDb.appendTo($queryRuleContext);
+                        $.get(
+                            '<?=$this->url('model-manager/params', ['controller' => 'ui-config', 'action' => 'get-tables'])?>/name/' + $selectSource.val(),
+                            function (r) {
+                                if (r.error) {
+                                    alert(r.error);
+                                    return;
+                                }
+
+                                $.each(r.tables, function (table, columns) {
+                                    var $option = $('<option value="' + table + '">' + table + '</option>');
+                                    $option.data('columns', columns);
+                                    $selectTable.append($option);
+                                });
+                            }
+                        );
+                    }
                 });
 
                 //数据表选择
@@ -195,8 +217,8 @@
             $columnsConfigBody.empty();
 
             var columnNames = [];
-            $tableColumnsConfigBody.find('input[name^=column_alias]').each(function () {
-                if ($(this).parent().parent().find('input[name^=column_enable]').prop('checked')) {
+            $tableColumnsConfigBody.find('input[name^="source_config[column_alias]"]').each(function () {
+                if ($(this).parent().parent().find('input[name^="source_config[column_enable]"]').prop('checked')) {
                     columnNames.push(this.value || $(this).data('default-name'));
                 }
             });
@@ -213,8 +235,8 @@
         $('input[name=detail_view_type][value=table]').click(function (e) {
             var $tmpl = $('<table></table>');
 
-            $tableColumnsConfigBody.find('input[name^=column_alias]').each(function () {
-                if ($(this).parent().parent().find('input[name^=column_enable]').prop('checked')) {
+            $tableColumnsConfigBody.find('input[name^="source_config[column_alias]"]').each(function () {
+                if ($(this).parent().parent().find('input[name^="source_config[column_enable]"]').prop('checked')) {
                     var val = this.value || $(this).data('default-name');
                     $tmpl.append('<tr><td>' + val + '</td><td>#:' + val + '#</td></tr>');
                 }
@@ -234,23 +256,5 @@
             );
         });
 
-        $restfulAddContext.on('click', 'button', function () {
-            $(this).parent().remove();
-        });
-        $restfulAddButton.click(function () {
-            $restfulAddContext.append($restfulFieldObj.clone());
-        });
-        $restfulSubmit.click(function () {
-
-            $restfulAddContext.find('input').each(function () {
-                if (this.value) {
-                    $columnsConfigBody.append(
-                        kendo.template($('#ui-config-column-config-template').html())(
-                            {item: {column: this.value}}
-                        )
-                    );
-                }
-            });
-        });
     });
 </script>

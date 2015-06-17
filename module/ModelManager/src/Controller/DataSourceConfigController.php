@@ -32,13 +32,24 @@ class DataSourceConfigController extends AbstractActionController
 
         $data   = $baseConfigFilters->getValues();
 
-        $filter2 = $data['adapter'] == 'Restful' ? new RestfulInputFilter() : new DbInputFilter();
-        $filter2->setData($_REQUEST);
-        if (!$filter2->isValid()) {
-            return array('errors' => $filter2->getMessages());
+        if ($data['adapter'] == 'Restful') {
+            $filter2 = new RestfulInputFilter();
+            $filter2->setData($_REQUEST);
+            if (!$filter2->isValid()) {
+                return ['errors' => $filter2->getMessages()];
+            }
+
+            $data += $filter2->getValues();
+        } else {
+            $filter2 = new DbInputFilter();
+            $filter2->setData($this->getRequest()->getPost('driver_options', []));
+            if (!$filter2->isValid()) {
+                return ['errors' => $filter2->getMessages()];
+            }
+
+            $data += ['driver_options' => $filter2->getValues()];
         }
 
-        $data += $filter2->getValues();
 
         $table  = $this->get('ModelManager\DataSourceConfigTable');
         $config = array(
@@ -47,7 +58,7 @@ class DataSourceConfigController extends AbstractActionController
         );
 
         unset($data['name'], $data['adapter']);
-        $config['adapter_options'] = json_encode(['driver_options' => $data]);
+        $config['adapter_options'] = json_encode($data);
         $table->insert($config);
 
         return new JsonModel(['code' => 1]);
