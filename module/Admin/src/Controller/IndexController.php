@@ -1,7 +1,6 @@
 <?php
 namespace Moln\Admin\Controller;
 
-use Moln\Admin\Form\SelfForm;
 use Moln\Admin\InputFilter\SelfInputFilter;
 use Moln\Admin\Module;
 use Zend\Mvc\Controller\AbstractActionController;

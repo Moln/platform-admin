@@ -1,10 +1,10 @@
 <?php
 
 namespace Moln\ModelManager\DataSource;
+use Moln\ModelManager\Module;
+use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\Config;
-use Moln\ModelManager\Module;
 
 
 /**

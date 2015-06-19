@@ -1,7 +1,6 @@
 <?php
 
 namespace Moln\ModelManager\DataSource;
-use Gzfextra\Stdlib\OptionsTrait;
 
 
 /**

@@ -74,12 +74,12 @@ return array(
                         'url'   => './ui/model-manager/ui-config/list',
 //                        'permission' => 'admin.role.index',
                     ),
-                    array(
-                        'text'  => '权限管理',
-                        'index' => 2,
-                        'url'   => './ui/model-manager/permission/index',
-//                        'permission' => 'admin.permission.index',
-                    ),
+//                    array(
+//                        'text'  => '权限管理',
+//                        'index' => 2,
+//                        'url'   => './ui/model-manager/permission/index',
+////                        'permission' => 'admin.permission.index',
+//                    ),
                     array(
                         'text'  => '查询测试4',
                         'url'   => './model-manager/source/view/id/4',

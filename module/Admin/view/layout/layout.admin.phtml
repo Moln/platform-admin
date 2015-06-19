@@ -15,15 +15,15 @@
 <body>
 <div>
     <div class="k-header" id="g-top">
-        Hello {{'World'}}!
+
     </div>
 </div>
-<div id="horizontal">
+<div id="horizontal" style="overflow: hidden">
     <div id="left-pane">
     </div>
     <div>
     <div id="main">
-        <H1>Hello world!</H1>
+        <H1>Welcome!</H1>
     </div>
     </div>
 </div>
@@ -42,7 +42,7 @@
 
         $("#horizontal").kendoSplitter({
             panes: [
-                { collapsible: true, resizable: false, size: "220px", collapsedSize: "50px" },
+                { collapsible: true, resizable: false, size: "220px", },
                 { collapsible: false }
             ]
         });

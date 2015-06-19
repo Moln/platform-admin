@@ -7,6 +7,7 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * Class Permission
@@ -19,18 +20,22 @@ class PermissionController extends AbstractActionController
 
     /**
      * read
+     *
      * @PermissionName index
      */
     public function readAction()
     {
-        $results = $this->get('Admin\PermissionTable')->select(function (Select $select) {
-            $select->where(['permission' => new Expression('concat(controller,"::",action)')]);
-        })->toArray();
+        $results = $this->get('Admin\PermissionTable')->select(
+            function (Select $select) {
+                $select->where(['permission' => new Expression('concat(controller,"::",action)')]);
+            }
+        )->toArray();
         return new JsonModel($results);
     }
 
     /**
      * save
+     *
      * @PermissionName index
      */
     public function saveAction()
@@ -66,7 +71,7 @@ class PermissionController extends AbstractActionController
                     }
                     if (substr($method->getName(), -6) == 'Action') {
                         $action = substr($method->getName(), 0, -6);
-                        $title = $ctrlName . '.' . $action;
+                        $title  = $ctrlName . '.' . $action;
 
                         $permission = $index = $class->getName() . '::' . $action;
                         if ($method->getDocBlock()) {
@@ -94,11 +99,11 @@ class PermissionController extends AbstractActionController
                 $update = false;
                 if ($row->title == $index && $row->title != $actions[$index][4]) {
                     $row->title = $actions[$index][4];
-                    $update = true;
+                    $update     = true;
                 }
                 if ($row->permission != $actions[$index][3]) {
                     $row->permission = $actions[$index][3];
-                    $update = true;
+                    $update          = true;
                 }
 
                 $update && $row->save();
@@ -127,12 +132,13 @@ class PermissionController extends AbstractActionController
 
     /**
      * 角色权限分配
+     *
      * @PermissionName index
      */
     public function assignAction()
     {
         $permissionId = $this->params('id');
-        $assignTable  = $this->get('AssignPermissionTable');
+        $assignTable  = $this->get('Admin\AssignPermissionTable');
         $roles        = $assignTable->getRolesByPermissionId($permissionId);
 
         if ($this->getRequest()->isPost()) {
@@ -146,8 +152,10 @@ class PermissionController extends AbstractActionController
                 )
             );
         }
-        return array(
-            'roles' => $roles,
+        return new ViewModel(
+            [
+                'roles' => $roles,
+            ]
         );
     }
 }

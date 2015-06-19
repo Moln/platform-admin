@@ -4,9 +4,8 @@ namespace Moln\Admin\Listener;
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\EventManager\EventManagerInterface;
 use Zend\Mvc\MvcEvent;
-use Zend\Mvc\ModuleRouteListener;
-use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 
 /**

@@ -14,10 +14,10 @@
                     model: {
                         id: "user_id",
                         fields: {
-                            user_id: {type: "number", editable: false, nullable: true },
-                            account: {validation: { required: true} },
-                            real_name: { validation: { required: true} },
-                            email: { validation: {required: true} },
+                            user_id: {type: "number", editable: false, nullable: true},
+                            account: {validation: {required: true}},
+                            real_name: {validation: {required: true}},
+                            email: {validation: {required: true}},
                             status: {defaultValue: 0},
                             password: {editable: true}
                         }
@@ -42,27 +42,21 @@
                 serverFiltering: true,
                 serverPaging: true,
                 serverSorting: false
-            });
+            }),
+            statusData = [
+                {text: '开启', value: '0'},
+                {text: '禁用', value: '1'}
+            ],
+            $grid = $("#admin-user-index-grid");
 
-        var statusData = [
-            {text: '开启', value: '0'},
-            {text: '禁用', value: '1'}
-        ];
-        $("#admin-user-index-grid").kendoGrid({
+        $grid.kendoGrid({
             dataSource: dataSource,
             pageable: true,
             toolbar: [
                 {'name': 'create', 'text': '增加'},
                 {
-                    name: "用户角色分配",
-                    click: function (e) {
-                        var tr = $(e.target).closest("tr");
-                        var data = this.dataItem(tr);
-                        Platform.ui.newWindow({
-                            title: data.account + '::用户角色分配::用户管理',
-                            content: './admin/user/assign/id/' + data.user_id
-                        });
-                    }
+                    name: "admin-assign-role",
+                    text: '用户角色分配'
                 }
             ],
             filterable: {
@@ -94,47 +88,32 @@
                 }
             },
             columns: [
-                { field: "account", title: "用户名", width: "100px"  },
-                { field: "real_name", title: "真实姓名", width: "120px" },
-                { field: "email", title: "Email", width: "200px", editor: emailEditor },
-                { field: "status",type: "enums", title: "状态", values: statusData, width: "100px"},
-                { field: "password", title: "密码", template: '', hidden: true},
-                { command: [
-                    {'name': 'edit', 'text': '编辑'},
-                    {'name': 'destroy', 'text': '删除'}
-                ], title: "&nbsp;", width: 260 }
+                {field: "account", title: "用户名", width: "100px"},
+                {field: "real_name", title: "真实姓名", width: "120px"},
+                {field: "email", title: "Email", width: "200px", editor: emailEditor},
+                {field: "status", type: "enums", title: "状态", values: statusData, width: "100px"},
+                {field: "password", title: "密码", template: '', hidden: true},
+                {
+                    command: [
+                        {'name': 'edit', 'text': '编辑'},
+                        {'name': 'destroy', 'text': '删除'}
+                    ], title: "&nbsp;", width: 260
+                }
             ],
             selectable: true,
             editable: "popup",
             sortable: true,
             edit: function (e) {
                 if (!e.model.isNew()) {
-                    e.container.find("input[name=account]").attr('disabled', true);
+                    e.container.find("input[name=account]").prop('disabled', true);
                 }
             }
-
-//            cancel: function (e) { console.log('cancel', arguments); },
-//            change: function (e) { console.log('change', arguments); },
-//            columnHide: function (e) { console.log('columnHide', arguments); },
-//            columnMenuInit: function (e) { console.log('columnMenuInit', arguments); },
-//            columnReorder: function (e) { console.log('columnReorder', arguments); },
-//            columnResize: function (e) { console.log('columnResize', arguments); },
-//            columnShow: function (e) { console.log('columnShow', arguments); },
-//            dataBinding: function (e) { console.log('dataBinding', arguments); },
-//            dataBound: function (e) { console.log('dataBound', arguments); },
-//            detailCollapse: function (e) { console.log('detailCollapse', arguments); },
-//            detailExpand: function (e) { console.log('detailExpand', arguments); },
-//            detailInit: function (e) { console.log('detailInit', arguments); },
-//            edit: function (e) { console.log('edit', arguments); },
-//            filterMenuInit: function (e) { console.log('filterMenuInit', arguments); },
-//            remove: function (e) { console.log('remove', arguments); },
-//            save: function (e) { console.log('save', arguments); },
-//            saveChanges: function (e) { console.log('saveChanges', arguments); },
-        });
+        }),
+        kGrid = $grid.data('kendoGrid');
 
         function emailEditor(container, options) {
             $('<input required class="k-textbox k-invalid" name="' + options.field +
-                '" data-bind="value:' + options.field + '" type="email" />')
+            '" data-bind="value:' + options.field + '" type="email" />')
                 .appendTo(container);
         }
 
@@ -147,5 +126,18 @@
                     dataSource: statusData
                 });
         }
+
+        $grid.on('click', '.k-grid-admin-assign-role', function () {
+            $('<div>').appendTo('body').kendoWindow({
+                width: "70%",
+                height: '70%',
+                title: '用户角色分配',
+                content: "./admin/user/assign/id/" + kGrid.dataItem(kGrid.select()).id,
+                close: function () {
+                    this.destroy();
+                },
+                modal: true
+            }).data('kendoWindow').center();
+        });
     });
 </script>

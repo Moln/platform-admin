@@ -78,7 +78,17 @@
                     text: "分配角色权限",
                     enable: false,
                     click: function () {
-                        $tree
+                        var item = kTreeView.dataItem(kTreeView.select());
+                        $('<div>').appendTo('body').kendoWindow({
+                            width: "80%",
+                            height: '90%',
+                            title: '用户角色分配',
+                            content: "./admin/role/assign-permission/id/" + item.role_id,
+                            close: function () {
+                                this.destroy();
+                            },
+                            modal: true
+                        }).data('kendoWindow').center();
                     }
                 },
                 {
@@ -87,21 +97,30 @@
                     text: "用户角色分配",
                     enable: false,
                     click: function () {
-                        alert(1);
+                        var item = kTreeView.dataItem(kTreeView.select());
+                        $('<div>').appendTo('body').kendoWindow({
+                            width: "80%",
+                            height: '90%',
+                            title: '用户角色分配',
+                            content: "./admin/role/assign-user/id/" + item.role_id,
+                            close: function () {
+                                this.destroy();
+                            },
+                            modal: true
+                        }).data('kendoWindow').center();
                     }
                 }
             ]
-        }), $tree;
+        }), $tree, kTreeView;
         $.get('./admin/role/read', function (data) {
             $tree = $("#admin-role-tree").kendoTreeView({
                     dragAndDrop: true,
                     dataSource: data.roles,
-                    checkboxes: true,
                     template: kendo.template($("#admin-trees-index-tree-template").html()),
                     select: function (e) {
                         $toolbar.data("kendoToolBar").enable('#role-assign-permission');
                         $toolbar.data("kendoToolBar").enable('#role-assign-user');
-                        var dataItem = $treeView.dataItem(e.node);
+                        var dataItem = kTreeView.dataItem(e.node);
                     },
                     drop: function (e) {
                         if (e.dropPosition != 'over') {
@@ -112,12 +131,12 @@
                             return;
                         }
 
-                        var sourceNode = $treeView.dataItem(e.sourceNode),
-                            destinationNode = $treeView.dataItem(e.destinationNode);
+                        var sourceNode = kTreeView.dataItem(e.sourceNode),
+                            destinationNode = kTreeView.dataItem(e.destinationNode);
 
                         var $targetNode = $(e.destinationNode), allow = false;
                         $targetNode.parents('.k-item').andSelf().each(function () {
-                            var parentItem = $treeView.dataItem(this);
+                            var parentItem = kTreeView.dataItem(this);
                             if ($.inArray(parseInt(parentItem.role_id), data.access_roles) > -1) {
                                 allow = true;
                             }
@@ -125,8 +144,8 @@
                         e.setValid(allow);
                     },
                     dragend: function (e) {
-                        var sourceNode = $treeView.dataItem(e.sourceNode),
-                            destinationNode = $treeView.dataItem(e.destinationNode),
+                        var sourceNode = kTreeView.dataItem(e.sourceNode),
+                            destinationNode = kTreeView.dataItem(e.destinationNode),
                             data = {"role_id": sourceNode.role_id, "name": sourceNode.text, "parent": destinationNode.role_id};
 
                         if (e.dropPosition == 'over') {
@@ -135,11 +154,11 @@
                             });
                         }
                     }
-                }),
-                $treeView = $tree.data('kendoTreeView');
+                });
+            kTreeView = $tree.data('kendoTreeView');
 
-            $treeView.select($()); // clears selection
-            $treeView.expand(".k-item");
+            kTreeView.select($()); // clears selection
+            kTreeView.expand(".k-item");
 
 
             //节点添加
@@ -147,12 +166,12 @@
                 e.preventDefault();
 
                 var $item = $(this).closest(".k-item"),
-                    dataItem = $treeView.dataItem($item),
+                    dataItem = kTreeView.dataItem($item),
                     roleName = prompt("请输入角色名");
 
                 if (roleName) {
                     $.post('./admin/role/add', {'name': roleName, parent: dataItem.role_id}, function (result) {
-                        $treeView.append({
+                        kTreeView.append({
                             "text": result.name,
                             "role_id": result.role_id,
                             "parent_id": dataItem.role_id
@@ -168,18 +187,18 @@
                 if (confirm('确认删除?')) {
 
                     var node = $(this).closest(".k-item"),
-                        dataItem = $treeView.dataItem(node),
+                        dataItem = kTreeView.dataItem(node),
                         nodes = node.find('.k-item').andSelf(),
                         data = [];
 
                     nodes.each(function () {
-                        var nodeData = $treeView.dataItem(this);
+                        var nodeData = kTreeView.dataItem(this);
                         data.push(nodeData.role_id);
 
                     });
 
                     $.post('./admin/role/delete', {'roles': data}, function () {
-                        $treeView.remove(node);
+                        kTreeView.remove(node);
                     });
                 }
             });
@@ -189,7 +208,7 @@
                 e.preventDefault();
 
                 var $item = $(this).closest(".k-item"),
-                    dataItem = $treeView.dataItem($item),
+                    dataItem = kTreeView.dataItem($item),
                     roleName = prompt("请输入角色名", dataItem.text);
 
                 if (roleName) {

@@ -3,7 +3,6 @@
 namespace Moln\Admin\OperationLog\Listener;
 
 use Admin\Model\OperationLogTable;
-use Zend\Db\Sql\Predicate\Expression;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\ListenerAggregateTrait;

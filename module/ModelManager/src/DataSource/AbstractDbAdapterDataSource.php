@@ -4,7 +4,6 @@ namespace Moln\ModelManager\DataSource;
 use Gzfextra\Stdlib\OptionsTrait;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Metadata\Metadata;
-use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\Paginator\Adapter\DbSelect;

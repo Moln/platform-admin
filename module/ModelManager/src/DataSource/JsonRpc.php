@@ -28,7 +28,7 @@ class JsonRpc implements DataSourceInterface
      */
     public function getTables()
     {
-        return ['restful' => $this->getFields()];
+        return ['http' => $this->getFields()];
     }
 
     /**

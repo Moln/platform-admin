@@ -67,17 +67,21 @@
                         click: function (e) {
                             var tr = $(e.target).closest("tr");
                             var data = this.dataItem(tr);
-                            Platform.ui.newWindow({
+
+                            $('<div>').appendTo('body').kendoWindow({
+                                width: "70%",
+                                height: '70%',
                                 title: data.title + '::权限分配',
-                                content: './admin/permission/assign/id/' + data.per_id
-                            });
+                                content: './admin/permission/assign/id/' + data.per_id,
+                                close: function () {
+                                    this.destroy();
+                                },
+                                modal: true
+                            }).data('kendoWindow').center();
                         }
                     }
                 ], title: "&nbsp;"}
-            ],
-            dataBound: function (e) {
-                $grid.closest('.k-window-content').data('kendoWindow').center();
-            }
+            ]
         });
 
         Platform.ui.toolbarClick('admin-permission-init', serviceUrl + 'init');

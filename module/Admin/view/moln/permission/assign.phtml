@@ -1,55 +1,53 @@
+<div class="admin-permission-assign-toolbar"></div>
 <form class="admin-permission-assign-grid"></form>
 <script>
     $(document).ready(function () {
         var roles = <?=json_encode($roles)?>;
-        var dataSource = new kendo.data.DataSource({
-            transport: {
-                read: "./admin/role/read"
-            },
-            schema: {
-                model: {
-                    id: "role_id",
-                    fields: {
-                        role_id: {type: "number", editable: false, nullable: true },
-                        name: {validation: { required: true} }
+
+        var $tree = $(".admin-permission-assign-grid");
+
+        $.get('./admin/role/read', function (data) {
+            $tree.kendoTreeView({
+                dragAndDrop: true,
+                dataSource: data.roles,
+                checkboxes: {
+                    template: "<input type='checkbox' name='role_id[]' value='#=item.role_id#' />"
+                }
+            });
+            var $treeView = $tree.data('kendoTreeView');
+            $treeView.select($()); // clears selection
+            $treeView.expand(".k-item");
+
+            $.each(roles, function (i, id) {
+                $tree.find('input:checkbox[value='+id+']').prop('checked', true);
+            });
+        });
+
+        $('.admin-permission-assign-toolbar').kendoToolBar({
+            items: [
+                {
+                    type: "button",
+                    text: "全选/反选",
+                    click: function (e) {
+                        var checked = $(e.target).data('checked');
+                        $tree.find('input:checkbox[name="role_id[]"]').prop('checked', !checked);
+                        $(e.target).data('checked', !checked);
+                    }
+                },
+                {
+                    type: "button",
+                    text: "确认分配",
+                    click: function () {
+                        $.post(
+                            '<?=$this->uri()->getPath()?>',
+                            $tree.serialize(),
+                            function () {
+                                alert('更新成功');
+                            }
+                        );
                     }
                 }
-            }
-        });
-
-        var $grid = $(".admin-permission-assign-grid");
-
-        var $selectAll = $("<input type='checkbox'>").click(function () {
-            $grid.find('input:checkbox[name="role_id[]"]').prop('checked', this.checked);
-        });
-
-        $grid.kendoGrid({
-            dataSource: dataSource,
-            toolbar: [
-                {text: "确认分配", name: "admin-permission-assign", imageClass: "k-i-tick", iconClass: "k-icon"}
-            ],
-            columns: [
-                { field: 'role_id', title: '&nbsp;', width: "60px", template: '<input type="checkbox" name="role_id[]" value="#=role_id#">'},
-                { field: "name", title: "角色名"}
-            ],
-            editable: "inline",
-//            selectable: "multiple row",
-//            change: function (){
-//                console.log(arguments, this);
-//            },
-            dataBound: function (e) {
-                $.each(roles, function (i, id) {
-                    $grid.find('input:checkbox[value=' + id + ']').prop('checked', true);
-                });
-            }
-        }).data('kendoGrid').thead.find('th:first').append($selectAll);
-
-        Platform.ui.toolbarClick('admin-permission-assign', function () {
-            return {
-                url: '<?=$this->uri()->getPath()?>',
-                data: $grid.serialize(),
-                message: '分配成功'
-            };
+            ]
         });
     });
 </script>

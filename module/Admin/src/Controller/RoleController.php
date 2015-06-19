@@ -4,6 +4,7 @@ namespace Moln\Admin\Controller;
 use Moln\Admin\InputFilter\RoleInputFilter;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * Class RoleController
@@ -84,7 +85,7 @@ class RoleController extends AbstractActionController
     public function assignPermissionAction()
     {
         $roleId      = $this->params('id');
-        $assignTable = $this->get('AssignPermissionTable');
+        $assignTable = $this->get('Admin\AssignPermissionTable');
         $permissions = $assignTable->getPermissionsByRoleId($roleId);
 
         if ($this->getRequest()->isPost()) {
@@ -98,16 +99,16 @@ class RoleController extends AbstractActionController
                 )
             );
         }
-        return array(
+        return new ViewModel([
             'role_id'     => $roleId,
             'permissions' => $permissions,
-        );
+        ]);
     }
 
     public function assignUserAction()
     {
         $roleId      = $this->params('id');
-        $assignTable = $this->get('AssignUserTable');
+        $assignTable = $this->get('Admin\AssignUserTable');
         $users       = $assignTable->getUsersByRoleId($roleId);
 
         if ($this->getRequest()->isPost()) {
@@ -118,9 +119,9 @@ class RoleController extends AbstractActionController
 
             return new JsonModel(array('code' => 1));
         }
-        return array(
+        return new ViewModel([
             'role_id' => $roleId,
             'users'   => $users,
-        );
+        ]);
     }
 }

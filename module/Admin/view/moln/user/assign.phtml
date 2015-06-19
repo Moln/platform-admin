@@ -1,4 +1,6 @@
-<form class="admin-user-assign-grid"></form>
+<div class="admin-user-assign-toolbar"></div>
+<form class="admin-user-assign-view">
+</form>
 <script>
     $(document).ready(function () {
         var roles = <?=json_encode($roles)?>;
@@ -10,48 +12,52 @@
                 model: {
                     id: "role_id",
                     fields: {
-                        role_id: {type: "number", editable: false, nullable: true },
-                        name: {validation: { required: true} }
+                        role_id: {type: "number", editable: false, nullable: true},
+                        name: {validation: {required: true}}
                     }
                 }
             }
         });
 
-        var $grid = $(".admin-user-assign-grid");
+        var $tree = $(".admin-user-assign-view");
 
         var $selectAll = $("<input type='checkbox'>").click(function () {
-            $grid.find('input:checkbox[name="role_id[]"]').prop('checked', this.checked);
+            $tree.find('input:checkbox[name="role_id[]"]').prop('checked', this.checked);
         });
 
-        $grid.kendoGrid({
-            dataSource: dataSource,
-            toolbar: function () {
-                var grid = $grid.data('kendoGrid');
-                var $button = $(grid._createButton({
-                    text: "确认分配",
-                    name: "admin-user-assign",
-                    imageClass: "k-i-tick",
-                    iconClass: "k-icon"
-                }));
+        $.get('./admin/role/read', function (data) {
+            $tree.kendoTreeView({
+                dragAndDrop: true,
+                dataSource: data.roles,
+                checkboxes: {
+                    template: "<input type='checkbox' name='role_id[]' value='#=item.role_id#' />"
+                }
+            });
+            var $treeView = $tree.data('kendoTreeView');
+            $treeView.select($()); // clears selection
+            $treeView.expand(".k-item,.k-top");
 
-                Platform.ui.toolbarClick($button, function () {
-                    return {
-                        url: '<?=$this->uri()->getPath()?>',
-                        data: $grid.serialize(),
-                        message: '分配成功'
-                    };
-                });
-                return $button;
-            },
-            columns: [
-                { field: "role_id", sortable: false, title: "&nbsp;", template: '<input type="checkbox" name="role_id[]" value="#=role_id#">', width: 40},
-                { field: "name", title: "角色名"}
-            ],
-            dataBound: function (e) {
-                $.each(roles, function (i, id) {
-                    $grid.find('input:checkbox[value=' + id + ']').prop('checked', true);
-                });
-            }
-        }).data('kendoGrid').thead.find('th:first').append($selectAll);
+            $.each(roles, function (i, id) {
+                $tree.find('input:checkbox[value='+id+']').prop('checked', this.checked);
+            });
+        });
+
+        $('.admin-user-assign-toolbar').kendoToolBar({
+            items: [
+                {
+                    type: "button",
+                    text: "确认分配",
+                    click: function () {
+                        $.post(
+                            './admin/user/assign/id/<?=$user_id?>',
+                            $tree.serialize(),
+                            function () {
+                                alert('更新成功');
+                            }
+                        );
+                    }
+                }
+            ]
+        });
     });
 </script>

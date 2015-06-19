@@ -143,11 +143,13 @@ var Platform = {};
 
             //新增标签
             var taskBar = $tasks.data('kendoToolBar');
-            taskBar.add({
-                type: "button",
-                text: params.title,
-                group: "wins"
-            });
+            if (taskBar) {
+                taskBar.add({
+                    type: "button",
+                    text: params.title,
+                    group: "wins"
+                });
+            }
             var $newTask = $tasks.find('[data-group=wins]').last();
             var activateHandler = function () {
                 $tasks.data('g.window.activate', $newTask.get(0));
@@ -173,13 +175,16 @@ var Platform = {};
                 $win.trigger(EVENTS.WINDOW.CLOSE);
             });
 
-            //窗口绑定关闭事件
-            $win.bind(EVENTS.WINDOW.CLOSE, function (e) {
-                kw.destroy();
-                taskBar.remove($newTask);
+            if (taskBar) {
+                //窗口绑定关闭事件
+                $win.bind(EVENTS.WINDOW.CLOSE, function (e) {
+                    kw.destroy();
+                    taskBar.remove($newTask);
+                    taskBar.resize(taskBar.getSize());
+                });
                 taskBar.resize(taskBar.getSize());
-            });
-            taskBar.resize(taskBar.getSize());
+            }
+
             return $win;
         },
         toolbarClick: function (name, clickHandler) {

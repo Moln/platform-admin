@@ -1,12 +1,12 @@
 <?php
 namespace Moln\Admin\Controller;
 
-use Moln\Admin\Form\UserForm;
 use Moln\Admin\InputFilter\UserInputFilter;
 use Moln\Admin\Model\UserTable;
 use Zend\Db\Sql\Select;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 /**
  * Class UserController
@@ -48,7 +48,8 @@ class UserController extends AbstractActionController
             }
 
             $data = new \ArrayObject($data);
-            $this->get('Admin\UserTable')->save($data);
+            $this->getUserTable()->save($data);
+            $data = (array)$this->getUserTable()->find($data['user_id']);
             if (isset($data['password'])) unset($data['password']);
             return new JsonModel(['data' => $data]);
         } else {
@@ -67,20 +68,33 @@ class UserController extends AbstractActionController
     public function assignAction()
     {
         $userId      = $this->params('id');
-        $assignTable = $this->get('Admin\AssignUserTable');
+        if (!$userId) {
+            $this->notFoundAction();
+        }
+        $assignTable = $this->getAssignUserTable();
         $roles       = $assignTable->getRolesByUserId($userId);
 
         if ($this->getRequest()->isPost()) {
             $pushRoles = $this->getRequest()->getPost('role_id');
             $assignTable->resetUsersById($userId, $pushRoles);
-            return new JsonModel(
-                array(
-                    'code' => 1
-                )
-            );
+            return new JsonModel(['code' => 1]);
         }
-        return array(
-            'roles' => $roles,
-        );
+        return new ViewModel(['roles' => $roles, 'user_id' => $userId]);
+    }
+
+    /**
+     * @return \Moln\Admin\Model\UserTable
+     */
+    public function getUserTable()
+    {
+        return $this->get('Admin\UserTable');
+    }
+
+    /**
+     * @return \Moln\Admin\Model\AssignUserTable
+     */
+    public function getAssignUserTable()
+    {
+        return $this->get('Admin\AssignUserTable');
     }
 }
